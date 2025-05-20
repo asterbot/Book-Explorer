@@ -10,7 +10,7 @@ USER=<user>
 PWD=<password>
 ```
 
-3. To load the database into mysql, run `mysql -u <user> -p  testdb < books.sql`
+3. To load the database into mysql, run `mysql -u <user> -p cs348_project < books.sql`
 4. Run `pip install -r requirements.txt`
 5. Try running `python backend.py` and see that the first row of the database gets printed to the console. The expected output is:
 ```

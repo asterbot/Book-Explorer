@@ -16,7 +16,7 @@ cnx = mysql.connector.connect(
 cur = cnx.cursor()
 
 # Execute a query
-cur.execute("use testdb;")
+cur.execute("use cs348_project;")
 cur.execute("SELECT * from books;")
 
 # Fetch one result
