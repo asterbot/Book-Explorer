@@ -2,13 +2,15 @@
 
 ## Setup instructions
 
-1. Download and setup MySQL from the document on LEARN
+1. Download and setup MySQL from the document on LEARN.
 2. Create a `.env` file with the following structure:
 
 ```
 USER=<user>
 PWD=<password>
 ```
+
+Note: `<user>` and `<password>` is the username and password that you used when setting up MySQL.
 
 3. To load the database into mysql, run `mysql -u <user> -p cs348_project < books.sql`
 4. Run `pip install -r requirements.txt`
