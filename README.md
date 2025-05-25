@@ -1,4 +1,5 @@
 # CS 348 Project
+Our project is built using MySQL for the database, Python for the backend, and React/TypeScript for the frontend.
 
 ## Setup instructions
 
