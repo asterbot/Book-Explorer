@@ -1,10 +1,8 @@
-DROP TABLE IF EXISTS `users`;
-
 CREATE TABLE `users` (
-    `userID` VARCHAR(36),
+    `userID` INT,
     `name` VARCHAR(255),
     `email` VARCHAR(255),
-    PRIMARY KEY (uuid)
+    PRIMARY KEY (userID)
 );
 
 INSERT INTO `users` (`userID`, `name`, `email`) VALUES

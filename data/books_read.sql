@@ -1,8 +1,6 @@
-DROP TABLE IF EXISTS `books_read`;
-
 CREATE TABLE `books_read` (
-    `userID` VARCHAR(36),
-    `bookID` VARCHAR(36),
+    `userID` INT,
+    `bookID` INT,
     PRIMARY KEY (userID, bookID),
     FOREIGN KEY (userID) REFERENCES users(userID),
     FOREIGN KEY (bookID) REFERENCES books(bookID)
