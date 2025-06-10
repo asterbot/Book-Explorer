@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS `books`;
+
 CREATE TABLE `books` (
     `bookID`	INT,
     `title`	VARCHAR(512),
