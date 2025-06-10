@@ -4,7 +4,8 @@ import os
 
 
 class Database:
-    DOT_ENV_PATH = os.path.join(os.path.pardir, ".env")
+    # Get the directory where this file is located, then go up one level to project root
+    DOT_ENV_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env")
     config = dotenv_values(DOT_ENV_PATH)
 
     LOCALHOST_IP="127.0.0.1"
