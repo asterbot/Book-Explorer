@@ -1,10 +1,14 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
+
 from database import Database
+from config import get_env_config
 
+# Initialize flask app
 app = Flask(__name__)
+CORS(app)
 
-db = Database()
-db.use_database("cs348_project")
+PORT = get_env_config("VITE_BACKEND_PORT") or 5000
 
 @app.route('/')
 def hello():
@@ -13,14 +17,19 @@ def hello():
 @app.route('/search', methods=['GET'])
 def search_books():
     try:
+        db = Database()
+        db.use_database("cs348_project")
+
         search_query = request.args.get('q', '')
         limit = request.args.get('limit', 10, type=int)
-        
+  
         if search_query:
+            # Fetch that specific query from the db
             query = f"SELECT * FROM books WHERE title LIKE '%{search_query}%' LIMIT {limit};"
             db.run(query)
         else:
-            db.select_rows("books", ["bookID", "title", "authors", "average_rating", "isbn", "isbn13", "language_code", "num_pages", "ratings_count", "text_reviews_count", "publication_date", "publisher"])
+            # Fetch all books
+            db.select_rows("books", num_rows=limit)
         
         results = db.fetch_all()
         
@@ -38,7 +47,7 @@ def search_books():
                 "ratings_count": row[8],
                 "text_reviews_count": row[9],
             })
-        
+
         return jsonify({
             "results": books,
             "count": len(books)
@@ -48,4 +57,4 @@ def search_books():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, port=PORT)
