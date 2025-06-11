@@ -1,0 +1,4 @@
+DROP TABLE IF EXISTS `books_read`;
+DROP TABLE IF EXISTS `wishlists`;
+DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS `books`;
