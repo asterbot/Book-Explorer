@@ -1,13 +1,60 @@
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+
 from database import Database
+from config import get_env_config
 
-if __name__=="__main__":
-    print("Hello World Program")
-    db = Database()
+# Initialize flask app
+app = Flask(__name__)
+CORS(app)
 
-    db.use_database("cs348_project")
-    db.select_rows("books")
-    print(db.fetch_rows(1))
+PORT = get_env_config("VITE_BACKEND_PORT") or 5000
 
-    db.select_rows("books",["bookID","title"])
-    print(db.fetch_rows(1))
+@app.route('/')
+def hello():
+    return jsonify({"message": "CS348 Project API"})
 
+@app.route('/search', methods=['GET'])
+def search_books():
+    try:
+        db = Database()
+        db.use_database("cs348_project")
+
+        search_query = request.args.get('q', '')
+        limit = request.args.get('limit', 10, type=int)
+  
+        if search_query:
+            # Fetch that specific query from the db
+            query = f"SELECT * FROM books WHERE title LIKE '%{search_query}%' LIMIT {limit};"
+            db.run(query)
+        else:
+            # Fetch all books
+            db.select_rows("books", num_rows=limit)
+        
+        results = db.fetch_all()
+        
+        books = []
+        for row in results:
+            books.append({
+                "bookID": row[0],
+                "title": row[1],
+                "authors": row[2],
+                "average_rating": row[3],
+                "isbn": row[4],
+                "isbn13": row[5],
+                "language_code": row[6],
+                "num_pages": row[7],
+                "ratings_count": row[8],
+                "text_reviews_count": row[9],
+            })
+
+        return jsonify({
+            "results": books,
+            "count": len(books)
+        })
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+if __name__ == "__main__":
+    app.run(debug=True, port=PORT)

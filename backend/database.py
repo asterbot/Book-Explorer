@@ -1,12 +1,7 @@
 import mysql.connector
-from dotenv import dotenv_values
-import os
-
+from config import get_env_config
 
 class Database:
-    DOT_ENV_PATH = os.path.join(os.path.pardir, ".env")
-    config = dotenv_values(DOT_ENV_PATH)
-
     LOCALHOST_IP="127.0.0.1"
     LOCALHOST_PORT=3306
 
@@ -14,15 +9,15 @@ class Database:
         """Initialize connection and cursor"""
         try:
             self.cnx = mysql.connector.connect(
-                    host=self.LOCALHOST_IP,
-                    port=self.LOCALHOST_PORT,
-                    user=self.config["USER"],
-                    password=self.config["PWD"]
+                    host = self.LOCALHOST_IP,
+                    port = self.LOCALHOST_PORT,
+                    user = get_env_config("USER"),
+                    password = get_env_config("PWD")
             )
             self.cursor = self.cnx.cursor(buffered=True)
             print("Connection successful")
         except Exception:
-            print("Your connection failed, please check that your .env file is in the root of the repository")
+            print("Your connection failed, please ensure that your .env file is in the root of the repository and has correct values")
 
 
     def __del__(self):
@@ -45,7 +40,7 @@ class Database:
 
     ## ------------------------------ Query commands -------------------------------------
 
-    def select_rows(self, table:str, rows=["*"], condition = "") -> None:
+    def select_rows(self, table:str, rows=["*"], condition = "", num_rows=5) -> None:
         """
         Selects the provided rows of a given table
         By default selects all rows (*)
@@ -55,7 +50,10 @@ class Database:
             rows (list[str], optional): The rows to select. Defaults to ["*"].
         """
         rows_as_strings = ", ".join(rows)
-        self.cursor.execute(f"SELECT {rows_as_strings} FROM {table};")
+        self.cursor.execute(f"""SELECT {rows_as_strings} 
+                            FROM {table} 
+                            {f"WHERE {condition}" if condition else ""}
+                            LIMIT {num_rows};""")
 
     def run(self,query: str) -> None:
         """

@@ -13,16 +13,40 @@ PWD=<password>
 
 Note: `<user>` and `<password>` is the username and password that you used when setting up MySQL.
 
+3. To set up the database schema and sample data, run `./setup.sh` (Note: you may need to run `chmod +x setup.sh` first)
 
-3. To load the database into mysql, run `mysql -u <user> -p cs348_project < data/books.sql`
-4. Run `pip install -r requirements.txt`
-5. Try going into the `backend` folder running `python backend.py` and see that the first row of the database gets printed to the console. The expected output is:
+### Setting up backend
+Run the following to set up the backend:
+```bash
+cd backend
+chmod +x setup_venv.sh
+./setup_venv.sh
 ```
-Hello World Program
-Connection successful
-Switched to cs348_project
-[(1, 'Harry Potter and the Half-Blood Prince (Harry Potter  #6)', 'J.K. Rowling/Mary GrandPré', 4.57, '0439785960', 9780439785969, 'eng', 652, 2095690, 27591, '9/16/2006', 'Scholastic Inc.')]
-[(1, 'Harry Potter and the Half-Blood Prince (Harry Potter  #6)')]
-Disconnected from database
+> **Note:** If you don't want to set up a virtual environment and prefer to install the packages globally, simply run `pip install -r requirements.txt` in the backend folder
+
+
+### Setting up frontend
+Run the following to set up the frontend:
+```bash
+cd frontend
+npm install
+```
+
+## Running locally
+
+Run the frontend and backend in separate terminal sessions
+
+### Backend
+```bash
+cd backend
+python backend.py
+```
+
+
+### Frontend
+
+```bash
+cd frontend
+npm run dev
 ```
 
