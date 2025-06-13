@@ -56,5 +56,37 @@ def search_books():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/wishlist', methods=['GET'])
+def view_wishlist():
+    try:
+        db = Database()
+        db.use_database("cs348_project")
+
+        username = request.args.get('username')
+        query = f"SELECT bookID FROM wishlists WHERE userID = (SELECT userID FROM users WHERE name = '{username}');"
+        db.run(query)
+        results = db.fetch_all()
+        return jsonify({"results": results}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/wishlist', methods=['POST'])
+def add_to_wishlist():
+    try:
+        db = Database()
+        db.use_database("cs348_project")
+
+        data = request.get_json()
+        username = data.get('username')
+        bookID = data.get('bookID')
+        
+        query = f"INSERT INTO wishlists (userID, bookID) VALUES ((SELECT userID FROM users WHERE name = '{username}'), '{bookID}');"
+        db.run(query)
+        db.commit()
+        
+        return jsonify({"message": "Book added to wishlist", "username": username, "bookID": bookID}), 200
+    except Exception as e:
+        return jsonify({"message": "Error adding book to wishlist", "error": str(e)}), 500
+
 if __name__ == "__main__":
     app.run(debug=True, port=PORT)

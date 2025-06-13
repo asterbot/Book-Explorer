@@ -65,6 +65,12 @@ class Database:
         """
         self.cursor.execute(query)
 
+    def commit(self) -> None:
+        """
+        Commits the current transaction to persist changes
+        """
+        self.cnx.commit()
+
 
     ## ------------------------------ Fetch commands -------------------------------------
 
