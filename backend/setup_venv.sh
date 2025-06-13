@@ -10,9 +10,8 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo "Installing requirements"
-pip install -r requirements.txt
-
 echo "Activating venv"
 source venv/bin/activate
 
+echo "Installing requirements"
+pip install -r requirements.txt

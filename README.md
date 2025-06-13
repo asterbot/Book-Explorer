@@ -38,6 +38,7 @@ Run the frontend and backend in separate terminal sessions
 
 ### Backend
 ```bash
+source venv/bin/activate
 cd backend
 python backend.py
 ```
