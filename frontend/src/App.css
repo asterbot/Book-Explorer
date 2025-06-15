@@ -31,6 +31,15 @@
   margin-bottom: 30px;
 }
 
+.search-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin: 20px auto;
+  max-width: 500px;
+}
+
 .controls-section {
   display: flex;
   flex-direction: column;
@@ -151,4 +160,26 @@
   .app-header p {
     font-size: 14px;
   }
-} 
+}
+
+
+.app-content {
+  display: flex;
+  padding: 2rem;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.sidebar {
+  width: 25%;
+}
+
+.search-container {
+  margin-bottom: 1rem;
+}
+
+.books-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
