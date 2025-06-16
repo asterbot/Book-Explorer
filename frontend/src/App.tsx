@@ -25,7 +25,7 @@ enum bookStatus{
 
 async function viewWishlist(username: string, status: bookStatus = bookStatus.NOT_STARTED) {
   try {
-    const response = await fetch(`http://127.0.0.1:5000/wishlist?username=${username}&status=${status}`);
+    const response = await fetch(`http://127.0.0.1:5000/userlist?username=${username}&status=${status}`);
     const data = await response.json();
     return data.results;
   } catch (error) {
@@ -35,7 +35,7 @@ async function viewWishlist(username: string, status: bookStatus = bookStatus.NO
 
 async function addToWishlist(username: string, bookID: number) {
   try {
-    const response = await fetch(`http://127.0.0.1:5000/wishlist`, {
+    const response = await fetch(`http://127.0.0.1:5000/userlist`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -103,6 +103,8 @@ function App() {
   // Fetch book data from backend endpoint API
   useEffect(() => {
     setSearchQuery("harry potter");
+    setUsername("Alex");
+    setOtherUserName("Bob");
   }, []);
 
   return (
@@ -124,6 +126,7 @@ function App() {
             <input
               type="text"
               placeholder="Enter your username"
+              value = {username}
               onChange={(e) => setUsername(e.target.value)}
             />
           </div>
@@ -179,6 +182,7 @@ function App() {
             <input
               type="text"
               placeholder="Enter other username"
+              value={otherUsername}
               onChange={(e) => setOtherUserName(e.target.value)}
             />
           </div>

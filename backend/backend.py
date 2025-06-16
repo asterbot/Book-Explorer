@@ -24,11 +24,9 @@ def search_books():
         limit = request.args.get('limit', 10, type=int)
   
         if search_query:
-            # Fetch that specific query from the db
             query = f"SELECT * FROM books WHERE title LIKE '%{search_query}%' LIMIT {limit};"
             db.run(query)
         else:
-            # Fetch all books
             db.select_rows("books", num_rows=5)
         
         results = db.fetch_all()
@@ -56,8 +54,8 @@ def search_books():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/wishlist', methods=['GET'])
-def view_wishlist():
+@app.route('/userlist', methods=['GET'])
+def view_userlist():
     try:
         db = Database()
         db.use_database("cs348_project")
