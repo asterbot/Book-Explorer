@@ -8,6 +8,7 @@ CREATE TABLE `wishlists` (
 
 INSERT INTO `wishlists` (`userID`, `bookID`) VALUES
 ('1', '77'),
+('4', '77'),
 ('1', '78'),
 ('2', '79'),
 ('3', '80'),

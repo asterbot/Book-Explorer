@@ -8,12 +8,14 @@ import './App.css';
 
 function App() {
   const [books, setBooks] = useState<Book[]>(mockBooks);
+  
 
   // Fetch book data from backend endpoint API
   useEffect(()=>{
-    fetch(`http://localhost:5000/search`)
+    fetch(`http://127.0.0.1:5000/search`)
     .then(response => {
       return response.json();
+      console.log("hey");
     })
     .then(data => {
       setBooks(data.results);
