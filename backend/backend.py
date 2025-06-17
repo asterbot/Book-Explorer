@@ -24,12 +24,10 @@ def search_books():
         limit = request.args.get('limit', 10, type=int)
   
         if search_query:
-            # Fetch that specific query from the db
             query = f"SELECT * FROM books WHERE title LIKE '%{search_query}%' LIMIT {limit};"
             db.run(query)
         else:
-            # Fetch all books
-            db.select_rows("books", num_rows=limit)
+            db.select_rows("books", num_rows=5)
         
         results = db.fetch_all()
         
@@ -55,18 +53,55 @@ def search_books():
         
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@app.route('/genrecounts', methods=['GET'])
+def author_counts():
+    try:
+        db = Database()
+        db.use_database("cs348_project")
+        
+        query = "SELECT genre, COUNT(*) as count FROM books GROUP BY genre;"
+        db.run(query)
+        results = db.fetch_all()
 
-@app.route('/wishlist', methods=['GET'])
-def view_wishlist():
+        author_count_map = {}
+        for row in results:
+            author = row[0]
+            count = row[1]
+            author_count_map[author] = count
+
+        return jsonify({
+            "genre_counts": author_count_map,
+            "unique_genres": len(author_count_map)
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/userlist', methods=['GET'])
+def view_userlist():
     try:
         db = Database()
         db.use_database("cs348_project")
 
         username = request.args.get('username')
-        query = f"SELECT bookID FROM wishlists WHERE userID = (SELECT userID FROM users WHERE name = '{username}');"
+        status = request.args.get('status')
+        print(status)
+        query = f"""
+            SELECT b.bookID, b.title, b.authors
+            FROM userprogress u, books b 
+            WHERE userID = (SELECT userID FROM users WHERE name = '{username}') 
+                    AND b.bookID=u.bookID
+                    AND STATUS='{status}';"""
+
         db.run(query)
         results = db.fetch_all()
-        return jsonify({"results": results}), 200
+
+        books = []
+        for book in results:
+            books.append({"bookID": book[0], "title": book[1], "authors": book[2]})
+        
+        return jsonify({"results": books}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -79,14 +114,61 @@ def add_to_wishlist():
         data = request.get_json()
         username = data.get('username')
         bookID = data.get('bookID')
-        
-        query = f"INSERT INTO wishlists (userID, bookID) VALUES ((SELECT userID FROM users WHERE name = '{username}'), '{bookID}');"
+
+        query = f"INSERT INTO userprogress (userID, bookID) VALUES ((SELECT userID FROM users WHERE name = '{username}'), '{bookID}');"
         db.run(query)
         db.commit()
         
         return jsonify({"message": "Book added to wishlist", "username": username, "bookID": bookID}), 200
     except Exception as e:
         return jsonify({"message": "Error adding book to wishlist", "error": str(e)}), 500
+
+@app.route('/top-books', methods=['GET'])
+def top_books_by_rating():
+    try:
+        db = Database()
+        db.use_database("cs348_project")
+
+        limit = request.args.get('limit', 5, type=int)
+
+        query = f"SELECT title, average_rating FROM books ORDER BY average_rating DESC LIMIT {limit};"
+        db.run(query)
+        results = db.fetch_all()
+        return jsonify({"results": results}), 200
+
+    except Exception as e:
+        return jsonify({"message": "Error finding top 5 books by rating"}), 500
+    
+
+@app.route('/common-books', methods=['GET'])
+def common_books():
+    try:
+        db = Database()
+        db.use_database('cs348_project')
+
+        user1 = request.args.get('u1name', type=str)
+        user2 = request.args.get('u2name', type=str)
+        limit = request.args.get('limit', 5, type=int)
+
+        query = f"""
+        SELECT b.bookID, b.title
+        FROM userprogress us1, userprogress us2, books b
+        WHERE us1.userID=(SELECT userID from users WHERE name='{user1}') 
+                AND us2.userID=(SELECT userID from users WHERE name='{user2}') 
+                AND us1.bookID=us2.bookID and us1.bookID=b.bookID
+        LIMIT {limit}
+        """
+        db.run(query)
+        results = db.fetch_all()
+
+        books = []
+        for book in results:
+            books.append({"bookID": book[0], "title": book[1]})
+
+        return jsonify({"results": books}), 200
+        
+    except Exception as e:
+        return jsonify({"message": f"Error finding common books between users: {e}"}), 500
 
 @app.route('/users/<int:user_id>', methods=['PUT'])
 def update_user(user_id):
@@ -125,9 +207,10 @@ def top_wishlist_books():
 
         query = """
         SELECT Books.bookID, Books.title, COUNT(*) AS wishlist_count
-        FROM Wishlists
-        JOIN Books ON Wishlists.bookID = Books.bookID
-        GROUP BY Books.bookID
+        FROM userprogress
+        JOIN Books ON userprogress.bookID = Books.bookID
+        WHERE userprogress.status = 'NOT STARTED'
+        GROUP BY Books.bookID, Books.title
         ORDER BY wishlist_count DESC
         LIMIT 5;
         """
