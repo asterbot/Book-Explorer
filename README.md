@@ -13,7 +13,7 @@ PWD=<password>
 
 Note: `<user>` and `<password>` is the username and password that you used when setting up MySQL.
 
-3. To set up the database schema and sample data, run `./setup.sh` (Note: you may need to run `chmod +x setup.sh` first)
+3. To set up the database schema and sample data, run `./setup.sh` (Note: you may need to run `chmod +x setup.sh` first). Note that the script might prompt you to type in your password multiple times if you have a password associated with your MySQL account. 
 
 ### Setting up backend
 Run the following to set up the backend:
@@ -38,9 +38,9 @@ Run the frontend and backend in separate terminal sessions
 
 ### Backend
 ```bash
-source venv/bin/activate # if you are using a virtual env
 cd backend
-python backend.py
+source venv/bin/activate # if you are using a virtual env
+python backend.py # use python3 instead if you have an older python version installed
 ```
 
 
