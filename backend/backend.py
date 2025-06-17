@@ -55,6 +55,30 @@ def search_books():
         
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@app.route('/genrecounts', methods=['GET'])
+def author_counts():
+    try:
+        db = Database()
+        db.use_database("cs348_project")
+        
+        query = "SELECT genre, COUNT(*) as count FROM books GROUP BY genre;"
+        db.run(query)
+        results = db.fetch_all()
+
+        author_count_map = {}
+        for row in results:
+            author = row[0]
+            count = row[1]
+            author_count_map[author] = count
+
+        return jsonify({
+            "genre_counts": author_count_map,
+            "unique_genres": len(author_count_map)
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/wishlist', methods=['GET'])
 def view_wishlist():
