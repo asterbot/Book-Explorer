@@ -24,12 +24,10 @@ def search_books():
         limit = request.args.get('limit', 10, type=int)
   
         if search_query:
-            # Fetch that specific query from the db
             query = f"SELECT * FROM books WHERE title LIKE '%{search_query}%' LIMIT {limit};"
             db.run(query)
         else:
-            # Fetch all books
-            db.select_rows("books", num_rows=limit)
+            db.select_rows("books", num_rows=5)
         
         results = db.fetch_all()
         
@@ -80,17 +78,30 @@ def author_counts():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/wishlist', methods=['GET'])
-def view_wishlist():
+@app.route('/userlist', methods=['GET'])
+def view_userlist():
     try:
         db = Database()
         db.use_database("cs348_project")
 
         username = request.args.get('username')
-        query = f"SELECT bookID FROM wishlists WHERE userID = (SELECT userID FROM users WHERE name = '{username}');"
+        status = request.args.get('status')
+        print(status)
+        query = f"""
+            SELECT b.bookID, b.title, b.authors
+            FROM userprogress u, books b 
+            WHERE userID = (SELECT userID FROM users WHERE name = '{username}') 
+                    AND b.bookID=u.bookID
+                    AND STATUS='{status}';"""
+
         db.run(query)
         results = db.fetch_all()
-        return jsonify({"results": results}), 200
+
+        books = []
+        for book in results:
+            books.append({"bookID": book[0], "title": book[1], "authors": book[2]})
+        
+        return jsonify({"results": books}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -103,14 +114,61 @@ def add_to_wishlist():
         data = request.get_json()
         username = data.get('username')
         bookID = data.get('bookID')
-        
-        query = f"INSERT INTO wishlists (userID, bookID) VALUES ((SELECT userID FROM users WHERE name = '{username}'), '{bookID}');"
+
+        query = f"INSERT INTO userprogress (userID, bookID) VALUES ((SELECT userID FROM users WHERE name = '{username}'), '{bookID}');"
         db.run(query)
         db.commit()
         
         return jsonify({"message": "Book added to wishlist", "username": username, "bookID": bookID}), 200
     except Exception as e:
         return jsonify({"message": "Error adding book to wishlist", "error": str(e)}), 500
+
+@app.route('/top-books', methods=['GET'])
+def top_books_by_rating():
+    try:
+        db = Database()
+        db.use_database("cs348_project")
+
+        limit = request.args.get('limit', 5, type=int)
+
+        query = f"SELECT title, average_rating FROM books ORDER BY average_rating DESC LIMIT {limit};"
+        db.run(query)
+        results = db.fetch_all()
+        return jsonify({"results": results}), 200
+
+    except Exception as e:
+        return jsonify({"message": "Error finding top 5 books by rating"}), 500
+    
+
+@app.route('/common-books', methods=['GET'])
+def common_books():
+    try:
+        db = Database()
+        db.use_database('cs348_project')
+
+        user1 = request.args.get('u1name', type=str)
+        user2 = request.args.get('u2name', type=str)
+        limit = request.args.get('limit', 5, type=int)
+
+        query = f"""
+        SELECT b.bookID, b.title
+        FROM userprogress us1, userprogress us2, books b
+        WHERE us1.userID=(SELECT userID from users WHERE name='{user1}') 
+                AND us2.userID=(SELECT userID from users WHERE name='{user2}') 
+                AND us1.bookID=us2.bookID and us1.bookID=b.bookID
+        LIMIT {limit}
+        """
+        db.run(query)
+        results = db.fetch_all()
+
+        books = []
+        for book in results:
+            books.append({"bookID": book[0], "title": book[1]})
+
+        return jsonify({"results": books}), 200
+        
+    except Exception as e:
+        return jsonify({"message": f"Error finding common books between users: {e}"}), 500
 
 if __name__ == "__main__":
     app.run(debug=True, port=PORT)
