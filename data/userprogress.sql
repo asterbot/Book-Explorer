@@ -6,6 +6,7 @@ CREATE TABLE `userprogress` (
     PRIMARY KEY (userID, bookID),
     FOREIGN KEY (userID) REFERENCES users(userID),
     FOREIGN KEY (bookID) REFERENCES books(bookID)
+    ON DELETE CASCADE
 );
 
 

@@ -86,7 +86,6 @@ def view_userlist():
 
         username = request.args.get('username')
         status = request.args.get('status')
-        print(status)
         query = f"""
             SELECT b.bookID, b.title, b.authors
             FROM userprogress u, books b 
@@ -105,8 +104,8 @@ def view_userlist():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/wishlist', methods=['POST'])
-def add_to_wishlist():
+@app.route('/userprogress', methods=['POST'])
+def add_to_userprogress():
     try:
         db = Database()
         db.use_database("cs348_project")
@@ -114,14 +113,19 @@ def add_to_wishlist():
         data = request.get_json()
         username = data.get('username')
         bookID = data.get('bookID')
+        status = data.get('status')
 
-        query = f"INSERT INTO userprogress (userID, bookID) VALUES ((SELECT userID FROM users WHERE name = '{username}'), '{bookID}');"
+        query = f"""
+            INSERT INTO userprogress (userID, bookID, status) 
+            VALUES ((SELECT userID FROM users WHERE name = '{username}'), '{bookID}', '{status}')
+            ON DUPLICATE KEY UPDATE status = '{status}';
+        """
         db.run(query)
         db.commit()
         
-        return jsonify({"message": "Book added to wishlist", "username": username, "bookID": bookID}), 200
+        return jsonify({"message": "Book added to userprogress", "username": username, "bookID": bookID}), 200
     except Exception as e:
-        return jsonify({"message": "Error adding book to wishlist", "error": str(e)}), 500
+        return jsonify({"message": "Error adding book to userprogress", "error": str(e)}), 500
 
 @app.route('/top-books', methods=['GET'])
 def top_books_by_rating():
@@ -151,7 +155,7 @@ def common_books():
         limit = request.args.get('limit', 5, type=int)
 
         query = f"""
-        SELECT b.bookID, b.title
+        SELECT b.bookID, b.title, b.authors
         FROM userprogress us1, userprogress us2, books b
         WHERE us1.userID=(SELECT userID from users WHERE name='{user1}') 
                 AND us2.userID=(SELECT userID from users WHERE name='{user2}') 
@@ -163,12 +167,58 @@ def common_books():
 
         books = []
         for book in results:
-            books.append({"bookID": book[0], "title": book[1]})
+            books.append({"bookID": book[0], "title": book[1], "authors": book[2]})
 
         return jsonify({"results": books}), 200
         
     except Exception as e:
         return jsonify({"message": f"Error finding common books between users: {e}"}), 500
+
+@app.route('/book-completion-rates', methods=['GET'])
+def book_completion_rates():
+    try:
+        db = Database()
+        db.use_database('cs348_project')
+        
+        username = request.args.get('username', type=str)
+
+        query = f"""
+        SELECT 
+            b.bookID,
+            b.title,
+            b.authors,
+            COUNT(up_all.userID) as total_users,
+            SUM(CASE WHEN up_all.status = 'FINISHED' THEN 1 ELSE 0 END) as completed_users,
+            ROUND(
+                (SUM(CASE WHEN up_all.status = 'FINISHED' THEN 1 ELSE 0 END) * 100.0 / COUNT(up_all.userID)), 1
+            ) as completion_rate
+        FROM userprogress up_mine
+        JOIN books b ON up_mine.bookID = b.bookID AND up_mine.status = 'IN PROGRESS'
+        JOIN users u_mine ON up_mine.userID = u_mine.userID
+        JOIN userprogress up_all ON b.bookID = up_all.bookID
+        WHERE up_mine.status = 'IN PROGRESS' and u_mine.name = '{username}'
+        GROUP BY b.bookID, b.title, b.authors
+        ORDER BY completion_rate DESC, total_users DESC
+        """
+        
+        db.run(query)
+        results = db.fetch_all()
+
+        completion_data = []
+        for row in results:
+            completion_data.append({
+                "bookID": row[0],
+                "title": row[1],
+                "authors": row[2],
+                "total_users": row[3],
+                "completed_users": row[4],
+                "completion_rate": row[5]
+            })
+
+        return jsonify({"results": completion_data}), 200
+        
+    except Exception as e:
+        return jsonify({"error": f"Error getting book completion rates: {str(e)}"}), 500
 
 if __name__ == "__main__":
     app.run(debug=True, port=PORT)
