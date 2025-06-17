@@ -220,5 +220,67 @@ def book_completion_rates():
     except Exception as e:
         return jsonify({"error": f"Error getting book completion rates: {str(e)}"}), 500
 
+@app.route('/users/<int:user_id>', methods=['PUT'])
+def update_user(user_id):
+    try:
+        db = Database()
+        db.use_database("cs348_project")
+
+        data = request.get_json()
+        name = data.get("name")
+        email = data.get("email")
+
+        updates = []
+
+        if name:
+            updates.append(f"name = '{name}'")
+        if email:
+            updates.append(f"email = '{email}'")
+
+        if not updates:
+            return jsonify({"error": "No valid fields to update"}), 400
+
+        query = f"UPDATE users SET {', '.join(updates)} WHERE userID = {user_id};"
+        db.run(query)
+
+        return jsonify({"message": "User updated successfully."}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/books/top-wishlists', methods=['GET'])
+def top_wishlist_books():
+    try:
+        db = Database()
+        db.use_database("cs348_project")
+
+        query = """
+        SELECT Books.bookID, Books.title, COUNT(*) AS wishlist_count
+        FROM userprogress
+        JOIN Books ON userprogress.bookID = Books.bookID
+        WHERE userprogress.status = 'NOT STARTED'
+        GROUP BY Books.bookID, Books.title
+        ORDER BY wishlist_count DESC
+        LIMIT 5;
+        """
+
+        db.run(query)
+        results = db.fetch_all()
+
+        top_books = []
+        for row in results:
+            top_books.append({
+                "bookID": row[0],
+                "title": row[1],
+                "wishlist_count": row[2]
+            })
+
+        return jsonify(top_books), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 if __name__ == "__main__":
     app.run(debug=True, port=PORT)
