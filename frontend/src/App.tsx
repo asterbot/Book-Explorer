@@ -81,6 +81,16 @@ async function getBookCompletionRates(username: string) {
   }
 }
 
+async function getGenreCounts() {
+  try {
+    const response = await fetch("http://127.0.0.1:5000/genrecounts");
+    const data = await response.json();
+    return data.genre_counts;
+  } catch (error) {
+    console.error(`Error when connecting to DB: ${error}`);
+  }
+}
+
 function App() {
   const [books, setBooks] = useState<Book[]>();
   const [searchQuery, setSearchQuery] = useState("");
@@ -99,6 +109,10 @@ function App() {
 
   // Book completion rates
   const [completionRates, setCompletionRates] = useState<any[]>();
+
+  // Genre
+  const [genreCounts, setGenreCounts] = useState<{ [genre: string]: number }>();
+  const [showGenreDropdown, setShowGenreDropdown] = useState(false);
 
   const handleSearch = async () => {
     if (searchQuery.trim() !== "") {
@@ -128,6 +142,31 @@ function App() {
     const results = await getBookCompletionRates(username);
     setCompletionRates(results);
   };
+
+  const handleGenreCounts = async () => {
+    if (!genreCounts) {
+      const counts = await getGenreCounts();
+      setGenreCounts(counts);
+    }
+    setShowGenreDropdown((prev) => !prev);
+  };
+
+  const handleGenreClick = async (genre: string) => {
+    const results = await getBooksByGenre(genre);
+    setBooks(results);
+    setShowGenreDropdown(false);
+  };
+
+
+  async function getBooksByGenre(genre: string) {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/genre?genre=${genre}`);
+      const data = await response.json();
+      return data.results;
+    } catch (error) {
+      console.error(`Error fetching books by genre: ${error}`);
+    }
+  }
 
   const collapseLists = () => {
     setWishlist(undefined);
@@ -278,6 +317,24 @@ function App() {
                       No books currently in progress.
                     </p>
                   )}
+                </div>
+              )}
+            </div>
+            <div className="list-container">
+              <button className="list-button" onClick={handleGenreCounts}>
+                Genres
+              </button>
+              {showGenreDropdown && genreCounts && (
+                <div className="genre-dropdown">
+                  {Object.entries(genreCounts).map(([genre, count]) => (
+                    <div
+                      key={genre}
+                      className="genre-option"
+                      onClick={() => handleGenreClick(genre)}
+                    >
+                      <strong>{genre}</strong>: {count}
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

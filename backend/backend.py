@@ -78,6 +78,38 @@ def author_counts():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/genre', methods=['GET'])
+def books_by_genre():
+    try:
+        db = Database()
+        db.use_database("cs348_project")
+
+        genre = request.args.get("genre")
+        if not genre:
+            return jsonify({"error": "Missing 'genre' parameter"}), 400
+
+        query = f"""
+            SELECT bookID, title, authors
+            FROM books
+            WHERE genre = '{genre}'
+            ORDER BY title ASC;
+        """
+        db.run(query)
+        results = db.fetch_all()
+
+        books = []
+        for row in results:
+            books.append({
+                "bookID": row[0],
+                "title": row[1],
+                "authors": row[2],
+            })
+
+        return jsonify({"results": books, "count": len(books)}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/userlist', methods=['GET'])
 def view_userlist():
     try:
