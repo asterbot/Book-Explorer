@@ -288,7 +288,7 @@ def top_wishlist_books():
         db.use_database("cs348_project")
 
         query = """
-        SELECT Books.bookID, Books.title, COUNT(*) AS wishlist_count
+        SELECT Books.bookID, Books.title, Books.authors, COUNT(*) AS wishlist_count
         FROM userprogress
         JOIN Books ON userprogress.bookID = Books.bookID
         WHERE userprogress.status = 'NOT STARTED'
@@ -305,7 +305,8 @@ def top_wishlist_books():
             top_books.append({
                 "bookID": row[0],
                 "title": row[1],
-                "wishlist_count": row[2]
+                "authors": row[2],
+                "wishlist_count": row[3]
             })
 
         return jsonify(top_books), 200

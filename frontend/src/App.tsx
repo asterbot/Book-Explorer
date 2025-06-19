@@ -91,6 +91,19 @@ async function getGenreCounts() {
   }
 }
 
+
+async function viewTopWishlists() {
+  try {
+    const response = await fetch(
+      `http://127.0.0.1:5000/books/top-wishlists`
+    );
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(`Error when connecting to DB: ${error}`);
+  }
+}
+
 function App() {
   const [books, setBooks] = useState<Book[]>();
   const [searchQuery, setSearchQuery] = useState("");
@@ -113,6 +126,8 @@ function App() {
   // Genre
   const [genreCounts, setGenreCounts] = useState<{ [genre: string]: number }>();
   const [showGenreDropdown, setShowGenreDropdown] = useState(false);
+
+  const [topWishlists, setTopWishlists] = useState<Book[]>();
 
   const handleSearch = async () => {
     if (searchQuery.trim() !== "") {
@@ -168,12 +183,19 @@ function App() {
     }
   }
 
+
+  const handleViewTopWishlist = async () => {
+    const results = await viewTopWishlists();
+    setTopWishlists(results);
+  };
+
   const collapseLists = () => {
     setWishlist(undefined);
     setInProgress(undefined);
     setFinished(undefined);
     setCommonBooks(undefined);
     setCompletionRates(undefined);
+    setTopWishlists(undefined);
   };
 
   // Fetch book data from backend endpoint API
@@ -263,6 +285,26 @@ function App() {
               {finished && (
                 <div className="list-grid">
                   {finished.map((book) => (
+                    <div key={book.bookID}>
+                      <p>
+                        <span className="book-title">{book.title}</span>
+                        <span className="book-author"> by {book.authors}</span>
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="list-container">
+              <button
+                className="list-button"
+                onClick={() => handleViewTopWishlist()}
+              >
+                Top Current Wishlists
+              </button>
+              {topWishlists && (
+                <div className="list-grid">
+                  {topWishlists.map((book) => (
                     <div key={book.bookID}>
                       <p>
                         <span className="book-title">{book.title}</span>
