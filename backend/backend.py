@@ -55,7 +55,7 @@ def search_books():
         return jsonify({"error": str(e)}), 500
     
 @app.route('/genrecounts', methods=['GET'])
-def author_counts():
+def genre_counts():
     try:
         db = Database()
         db.use_database("cs348_project")
@@ -288,11 +288,11 @@ def top_wishlist_books():
         db.use_database("cs348_project")
 
         query = """
-        SELECT Books.bookID, Books.title, COUNT(*) AS wishlist_count
+        SELECT books.bookID, books.title, COUNT(*) AS wishlist_count
         FROM userprogress
-        JOIN Books ON userprogress.bookID = Books.bookID
+        JOIN books ON userprogress.bookID = books.bookID
         WHERE userprogress.status = 'NOT STARTED'
-        GROUP BY Books.bookID, Books.title
+        GROUP BY books.bookID, books.title
         ORDER BY wishlist_count DESC
         LIMIT 5;
         """
