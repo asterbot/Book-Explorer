@@ -1,0 +1,14 @@
++-------------+-------+
+| genre       | count |
++-------------+-------+
+| Fantasy     |    69 |
+| Fiction     | 10345 |
+| History     |   165 |
+| Non-Fiction |   106 |
+| Sci-Fi      |    14 |
+| Biography   |   100 |
+| Poetry      |    15 |
+| Romance     |   203 |
+| Mystery     |    97 |
+| Horror      |     9 |
++-------------+-------+
