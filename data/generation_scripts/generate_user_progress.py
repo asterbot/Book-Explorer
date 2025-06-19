@@ -1,20 +1,26 @@
 import sys
 import os
+from random import randint, choice
 
+# Importing library from another directory
 sys.path.append(os.path.join(os.pardir, os.pardir, 'backend'))
 from database import Database # type: ignore
-from random import randint, choice
 
 db = Database()
 db.use_database('cs348_project')
 
+done = [] # all tuples already added (to not have duplicates)
+
+# Possible choices for
+
+## states 
 states = ['NOT STARTED', 'IN PROGRESS', 'FINISHED']
 
-done = []
-
+## bookIDs
 db.run('SELECT bookID from books;')
 bookIDs = list(map(lambda x: x[0], db.fetch_all())) # all bookID's
 
+## userIDs
 db.run('SELECT userID from users;')
 userIDs = list(map(lambda x: x[0], db.fetch_all()))
 
