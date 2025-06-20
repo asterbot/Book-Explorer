@@ -1,6 +1,3 @@
-# CS 348 Project
-Our project is built using MySQL for the database, Python for the backend, and React/TypeScript for the frontend.
-
 ## Setup instructions
 
 1. Download and setup MySQL from the document on LEARN
@@ -50,4 +47,43 @@ python backend.py # use python3 instead if you have an older python version inst
 cd frontend
 npm run dev
 ```
+
+
+---
+
+## Features Implemented
+
+The current application supports the following features (linked to SQL queries in `queries/milestone1/`):
+
+- Search for books by title (R6)  
+- Add books to a wishlist (R7)  
+- View common books between users (R8)  
+- Browse top 5 highest-rated books (R9)  
+
+---
+
+## Project Components
+
+### C2. SQL Schema Files (located in `schema/`)  
+- `data/books.csv` – Full production dataset for the `Books` table.  
+- `data/books.sql` – Inserts sample data (subset of production) into the `Books` table.  
+- `data/users.sql` – Inserts sample entries into the `Users` table.  
+- `data/userprogress.sql` – Inserts sample progress records into the `UserProgress` table.  
+- `data/drop_tables.sql` – Resets all tables by dropping existing schema objects.
+
+### Sample Queries   
+- `queries/milestone1/R6-test.sql` – Search book titles  
+- `queries/milestone1/R7-test.sql` – Add to wishlist  
+- `queries/milestone1/R8-test.sql` – Find common books  
+- `queries/milestone1/R9-test.sql` – Top 5 books by rating  
+
+**Output Files** (in `queries/milestone1/`):  
+`R6-test.out`, `R7-test.out`, `R8-test.out`, `R9-test.out` contain the expected output from running the queries on the sample database (not the full dataset).
+
+### C5. Application Code  
+- `frontend/`: React + TypeScript client  
+- `backend/`: Python Flask server with REST API for SQL execution  
+- `setup.sh`: Script to initialize the database with schema and data  
+
+---
 
