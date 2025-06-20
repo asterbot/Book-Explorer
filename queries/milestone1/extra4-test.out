@@ -1,9 +1,9 @@
-+--------+--------------------------------------+----------------+
-| bookID | title                                | wishlist_count |
-+--------+--------------------------------------+----------------+
-|     77 | The Control of Nature                |              1 |
-|     78 | Annals of the Former World           |              1 |
-|     79 | Coming Into the Country              |              1 |
-|  36064 | American Tabloid (Underworld USA #1) |              1 |
-|   2619 | Great Expectations                   |              1 |
-+--------+--------------------------------------+----------------+
++--------+-----------------------------------+----------------+
+| bookID | title                             | wishlist_count |
++--------+-----------------------------------+----------------+
+|    291 | The Broken Wings                  |              2 |
+|     77 | The Control of Nature             |              1 |
+|    244 | The Puffin Book of Nonsense Verse |              1 |
+|     78 | Annals of the Former World        |              1 |
+|    245 | Henry Miller on Writing           |              1 |
++--------+-----------------------------------+----------------+
