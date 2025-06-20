@@ -64,7 +64,7 @@ The current application supports the following features (linked to SQL queries i
 
 ## Project Components
 
-### C2. SQL Schema Files (located in `schema/`)  
+### C2. SQL Schema Files (located in `data/`)  
 - `data/books.csv` – Full production dataset for the `Books` table.  
 - `data/books.sql` – Inserts sample data (subset of production) into the `Books` table.  
 - `data/users.sql` – Inserts sample entries into the `Users` table.  
