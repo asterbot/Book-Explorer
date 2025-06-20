@@ -66,9 +66,9 @@ The current application supports the following features (linked to SQL queries i
 
 ### C2. SQL Schema Files (located in `data/`)  
 - `data/books.csv` – Full production dataset for the `Books` table.  
-- `data/books.sql` – Inserts sample data (subset of production) into the `Books` table.  
-- `data/users.sql` – Inserts sample entries into the `Users` table.  
-- `data/userprogress.sql` – Inserts sample progress records into the `UserProgress` table.  
+- `data/books.sql` – Inserts sample data (approx. the first 300 entries of the production dataset) into the `Books` table.  
+- `data/users.sql` – Inserts sample entries into the `Users` table, generated using `data/generation_scripts/generate_users.py`.  
+- `data/userprogress.sql` – Inserts sample progress records into the `UserProgress` table, generated using `data/generation_scripts/generate_user_progress.py`.  
 - `data/drop_tables.sql` – Resets all tables by dropping existing schema objects.
 
 ### Sample Queries   
