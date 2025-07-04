@@ -6,6 +6,7 @@ CREATE TABLE userprogress (
     bookID INT,
     status status DEFAULT 'NOT STARTED',
     page_reached INT DEFAULT 0,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (userID, bookID),
     FOREIGN KEY (userID) REFERENCES users(userID),
     FOREIGN KEY (bookID) REFERENCES books(bookID)
