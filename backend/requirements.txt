@@ -1,4 +1,11 @@
-python-dotenv
-mysql-connector-python
+# Flask libraries
 flask
 flask-cors
+
+# SQL libraries
+psycopg2-binary
+setuptools
+
+# Other python libraries
+python-dotenv
+tabulate

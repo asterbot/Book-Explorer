@@ -18,7 +18,6 @@ def hello():
 def search_books():
     try:
         db = Database()
-        db.use_database("cs348_project")
 
         search_query = request.args.get('q', '')
         limit = request.args.get('limit', 10, type=int)
@@ -58,7 +57,6 @@ def search_books():
 def genre_counts():
     try:
         db = Database()
-        db.use_database("cs348_project")
         
         query = "SELECT genre, COUNT(*) as count FROM books GROUP BY genre;"
         db.run(query)
@@ -114,7 +112,6 @@ def books_by_genre():
 def view_userlist():
     try:
         db = Database()
-        db.use_database("cs348_project")
 
         username = request.args.get('username')
         status = request.args.get('status')
@@ -140,7 +137,6 @@ def view_userlist():
 def add_to_userprogress():
     try:
         db = Database()
-        db.use_database("cs348_project")
 
         data = request.get_json()
         username = data.get('username')
@@ -163,7 +159,6 @@ def add_to_userprogress():
 def top_books_by_rating():
     try:
         db = Database()
-        db.use_database("cs348_project")
 
         limit = request.args.get('limit', 5, type=int)
 
@@ -256,7 +251,6 @@ def book_completion_rates():
 def update_user(user_id):
     try:
         db = Database()
-        db.use_database("cs348_project")
 
         data = request.get_json()
         name = data.get("name")
@@ -285,7 +279,6 @@ def update_user(user_id):
 def top_wishlist_books():
     try:
         db = Database()
-        db.use_database("cs348_project")
 
         query = """
         SELECT books.bookID, books.title, COUNT(*) AS wishlist_count
