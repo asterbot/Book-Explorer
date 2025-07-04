@@ -1,7 +1,6 @@
-DROP TABLE IF EXISTS `book_publishers`;
-DROP TABLE IF EXISTS `publishers`;
-DROP TABLE IF EXISTS `book_authors`;
-DROP TABLE IF EXISTS `authors`;
+DROP TABLE IF EXISTS `user_book_tag`;
+DROP TABLE IF EXISTS `book_tag`;
+DROP TABLE IF EXISTS `tag`;
 DROP TABLE IF EXISTS `userprogress`;
 DROP TABLE IF EXISTS `books`;
 DROP TABLE IF EXISTS `users`;
