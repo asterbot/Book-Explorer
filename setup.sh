@@ -9,6 +9,7 @@ mysql -u $1 -p cs348_project < data/drop_tables.sql
 mysql -u $1 -p cs348_project < data/books.sql
 mysql -u $1 -p cs348_project < data/users.sql
 mysql -u $1 -p cs348_project < data/userprogress.sql
+mysql -u $1 -p cs348_project < data/book_clubs.sql
 
 echo "Database setup complete"
 echo "Now set up .env as-per the README"
