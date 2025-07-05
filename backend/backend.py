@@ -22,8 +22,6 @@ def search_books():
         search_query = request.args.get('q', '')
         limit = request.args.get('limit', 10, type=int)
         
-        search_query = "Harry Potter"
-  
         if search_query:
             query = f"SELECT * FROM books WHERE LOWER(title) LIKE LOWER('%{search_query}%') LIMIT {limit};"
             db.run(query)
@@ -60,7 +58,12 @@ def genre_counts():
     try:
         db = Database()
         
-        query = "SELECT genre, COUNT(*) as count FROM books GROUP BY genre;"
+        query = """
+                SELECT g.name, COUNT(*) as count 
+                FROM BookGenre bg, Genre g
+                WHERE bg.genreID=g.genreID 
+                GROUP BY g.name;
+        """
         db.run(query)
         results = db.fetch_all()
 
@@ -88,9 +91,10 @@ def books_by_genre():
             return jsonify({"error": "Missing 'genre' parameter"}), 400
 
         query = f"""
-            SELECT bookID, title, authors
-            FROM books
-            WHERE LOWER(genre) = LOWER('{genre}')
+            SELECT b.bookID, b.title, b.authors
+            FROM books b, BookGenre bg, Genre g
+            WHERE g.genreID=bg.genreID AND b.bookID=bg.bookID AND
+                    LOWER(g.name) = LOWER('{genre}')
             ORDER BY title ASC;
         """
         db.run(query)

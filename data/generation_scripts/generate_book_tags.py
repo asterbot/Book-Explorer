@@ -3,7 +3,7 @@ import random
 import sys
 
 sys.path.append(os.path.join(os.pardir, os.pardir, 'backend'))
-from database import Database 
+from database import Database # type: ignore
 
 db = Database()
 db.use_database('cs348_project')
@@ -23,7 +23,7 @@ for book_id in books:
     for tag_id in tag_ids:
         entries.append(f"({book_id}, {tag_id})")
 
-file_path = os.path.join(os.pardir, os.pardir, 'data', 'book_tag.sql')
+file_path = os.path.join(os.pardir, os.pardir, 'data', 'tags' ,'book_tag.sql')
 
 with open(file_path, 'a', encoding='utf-8') as f:
     f.write("INSERT INTO `book_tag` (`bookID`, `tagID`) VALUES\n")
