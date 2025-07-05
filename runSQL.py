@@ -6,7 +6,6 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'backe
 from database import Database # type: ignore
 
 
-
 if len(sys.argv) <= 1:
     raise ValueError("Enter name of SQL file to run. Usage: python runSQL.py [file].sql")
 

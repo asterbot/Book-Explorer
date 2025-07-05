@@ -21,12 +21,14 @@ def search_books():
 
         search_query = request.args.get('q', '')
         limit = request.args.get('limit', 10, type=int)
+        
+        search_query = "Harry Potter"
   
         if search_query:
-            query = f"SELECT * FROM books WHERE title LIKE '%{search_query}%' LIMIT {limit};"
+            query = f"SELECT * FROM books WHERE LOWER(title) LIKE LOWER('%{search_query}%') LIMIT {limit};"
             db.run(query)
         else:
-            db.select_rows("books", num_rows=5)
+            db.select_rows("books", num_rows=limit)
         
         results = db.fetch_all()
         
@@ -80,7 +82,6 @@ def genre_counts():
 def books_by_genre():
     try:
         db = Database()
-        db.use_database("cs348_project")
 
         genre = request.args.get("genre")
         if not genre:
@@ -89,7 +90,7 @@ def books_by_genre():
         query = f"""
             SELECT bookID, title, authors
             FROM books
-            WHERE genre = '{genre}'
+            WHERE LOWER(genre) = LOWER('{genre}')
             ORDER BY title ASC;
         """
         db.run(query)
@@ -175,7 +176,6 @@ def top_books_by_rating():
 def common_books():
     try:
         db = Database()
-        db.use_database('cs348_project')
 
         user1 = request.args.get('u1name', type=str)
         user2 = request.args.get('u2name', type=str)
@@ -205,7 +205,6 @@ def common_books():
 def book_completion_rates():
     try:
         db = Database()
-        db.use_database('cs348_project')
         
         username = request.args.get('username', type=str)
 

@@ -1,3 +1,5 @@
+# Run this script when there is a change to the data/ folder
+
 echo "Setting up database..."
 python runSQL.py data/drop_tables.sql
 python runSQL.py data/books.sql
