@@ -2,7 +2,7 @@ import sys
 import os
 
 sys.path.append(os.path.join(os.pardir, os.pardir, 'backend'))
-from database import Database 
+from database import Database # type: ignore
 
 db = Database()
 db.use_database('cs348_project')
@@ -24,7 +24,7 @@ for bookID, authors_str in books:
         book_author_pairs.append((bookID, author_to_id[author]))
 
 # write authors to authors.sql
-authors_sql_path = os.path.join(os.pardir, 'authors.sql')
+authors_sql_path = os.path.join(os.pardir, 'authors' ,'authors.sql')
 with open(authors_sql_path, 'a') as f:
     f.write("INSERT INTO authors (authorID, name) VALUES\n")
     for author, authorID in author_to_id.items():
