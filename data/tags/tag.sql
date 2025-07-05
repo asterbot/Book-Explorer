@@ -1,11 +1,11 @@
-CREATE TABLE `tag` (
-    `tagID` INT AUTO_INCREMENT,
-    `name` VARCHAR(255) NOT NULL,
+CREATE TABLE tag (
+    tagID SERIAL,
+    name VARCHAR(255) NOT NULL,
     PRIMARY KEY (tagID)
 );
 
 
-INSERT INTO `tag` (`name`) VALUES
+INSERT INTO tag (name) VALUES
 ('cozy'),
 ('book club'),
 ('slow burn'),

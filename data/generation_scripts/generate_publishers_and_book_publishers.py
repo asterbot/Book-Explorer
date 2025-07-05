@@ -28,7 +28,7 @@ for bookID, publisher in rows:
     book_publisher_links.append((bookID, publisherID))
 
 # write to publishers.sql
-with open(os.path.join(os.pardir, 'publishers.sql'), 'w') as f:
+with open(os.path.join(os.pardir, 'publishers' ,'publishers.sql'), 'w') as f:
     f.write("INSERT INTO publishers (publisherID, name) VALUES\n")
     for i, (name, publisherID) in enumerate(publisher_to_id.items()):
         escaped_name = name.replace("'", "''")
@@ -36,7 +36,7 @@ with open(os.path.join(os.pardir, 'publishers.sql'), 'w') as f:
         f.write(f"('{publisherID}', '{escaped_name}'){comma}\n")
 
 # write to book_publishers.sql
-with open(os.path.join(os.pardir, 'book_publishers.sql'), 'w') as f:
+with open(os.path.join(os.pardir, 'publishers', 'book_publishers.sql'), 'w') as f:
     f.write("INSERT INTO book_publishers (bookID, publisherID) VALUES\n")
     for i, (bookID, publisherID) in enumerate(book_publisher_links):
         comma = ',' if i < len(book_publisher_links) - 1 else ';'

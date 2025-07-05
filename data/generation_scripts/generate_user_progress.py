@@ -7,7 +7,6 @@ sys.path.append(os.path.join(os.pardir, os.pardir, 'backend'))
 from database import Database # type: ignore
 
 db = Database()
-db.use_database('cs348_project')
 
 done = [] # all tuples already added (to not have duplicates)
 
