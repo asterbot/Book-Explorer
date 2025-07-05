@@ -1,18 +1,12 @@
-if [ $# -ne 1 ]; then
-    echo "Usage: ./setup.sh [user-name]"
-    echo "Use the username used for mysql"
-    exit 1
-fi
+# Run this script when there is a change to the data/ folder
 
 echo "Setting up database..."
-mysql -u $1 -p cs348_project < data/drop_tables.sql
-mysql -u $1 -p cs348_project < data/books.sql
-mysql -u $1 -p cs348_project < data/users.sql
-mysql -u $1 -p cs348_project < data/userprogress.sql
-mysql -u $1 -p cs348_project < data/tag.sql
-mysql -u $1 -p cs348_project < data/book_tag.sql
-mysql -u $1 -p cs348_project < data/user_book_tag.sql
+python runSQL.py data/drop_tables.sql
+python runSQL.py data/books.sql
+python runSQL.py data/users.sql
+python runSQL.py data/userprogress.sql
+python runSQL.py data/tag.sql
+python runSQL.py data/book_tag.sql
+python runSQL.py data/user_book_tag.sql
 
-
-echo "Database setup complete"
-echo "Now set up .env as-per the README"
+echo "Database setup complete, check tables on postgresSQL"
