@@ -1,37 +1,19 @@
 ## Setup instructions
 
-1. Download and setup MySQL from the document on LEARN
-2. Create a `.env` file **at the root of the repository** with the following structure:
+## DB access
 
-```
-USER=<user>
-PWD=<password>
-```
+To set up the db, first set up the virtual environment:
 
-Note: `<user>` and `<password>` is the username and password that you used when setting up MySQL.
-
-3. To set up the database schema and sample data, run `./setup.sh` (Note: you may need to run `chmod +x setup.sh` first). Note that the script might prompt you to type in your password multiple times if you have a password associated with your MySQL account. 
-
-### Setting up backend
-Run the following to set up the backend:
 ```bash
 cd backend
-chmod +x setup_venv.sh
-./setup_venv.sh
+python -m venv venv/
+source venv/bin/active
+pip install -r requirements.txt 
 ```
-> **Note:** If you don't want to set up a virtual environment and prefer to install the packages globally, simply run `pip install -r requirements.txt` in the backend folder
 
-
-### Setting up frontend
-Run the following to set up the frontend:
-```bash
-cd frontend
-npm install
-```
+Then you should be able to run any SQL query with `python runSQL.py [name-of-sql-file].sql` (even if it is in another directory) and see the output
 
 ## Running locally
-
-Run the frontend and backend in separate terminal sessions
 
 ### Backend
 ```bash

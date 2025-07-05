@@ -1,42 +1,34 @@
-import mysql.connector
+import psycopg2
+from dotenv import load_dotenv
 from config import get_env_config
 
 class Database:
-    LOCALHOST_IP="127.0.0.1"
-    LOCALHOST_PORT=3306
 
-    def __init__(self):
+    def __init__(self, show_logs=True):
         """Initialize connection and cursor"""
-        try:
-            self.cnx = mysql.connector.connect(
-                    host = self.LOCALHOST_IP,
-                    port = self.LOCALHOST_PORT,
-                    user = get_env_config("USER"),
-                    password = get_env_config("PWD")
-            )
-            self.cursor = self.cnx.cursor(buffered=True)
-            print("Connection successful")
-        except Exception:
-            print("Your connection failed, please ensure that your .env file is in the root of the repository and has correct values")
+        
+        self.show_logs = show_logs
+        
+        load_dotenv()
+
+        self.cnx = psycopg2.connect(
+            user = get_env_config("user"),
+            password = get_env_config("password"),
+            host = get_env_config("host"),
+            port = get_env_config("port"),
+            dbname = get_env_config("dbname")
+        )
+
+        self.cursor = self.cnx.cursor()
+        if self.show_logs:
+            print("Connection to database successful")
 
 
     def __del__(self):
         """Disconnect upon object deletion"""
         self.cnx.close()
-        print("Disconnected from database")
-
-
-    def use_database(self,database: str) -> None:
-        """
-        Switches to provided database
-
-        Args:
-            database (str): Database name
-        """
-        self.cursor.execute(f"use {database};")
-        print(f"Switched to {database}")
-    
-
+        if self.show_logs:
+            print("Disconnected from database")
 
     ## ------------------------------ Query commands -------------------------------------
 

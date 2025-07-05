@@ -1,8 +1,11 @@
-CREATE TABLE `userprogress` (
-    `userID` INT,
-    `bookID` INT,
-    `status` ENUM('NOT STARTED', 'IN PROGRESS', 'FINISHED') DEFAULT 'NOT STARTED',
-    `page_reached` INT DEFAULT 0,
+DROP TYPE IF EXISTS status;
+CREATE TYPE status AS ENUM('NOT STARTED', 'IN PROGRESS', 'FINISHED');
+
+CREATE TABLE userprogress (
+    userID INT,
+    bookID INT,
+    status status DEFAULT 'NOT STARTED',
+    page_reached INT DEFAULT 0,
     PRIMARY KEY (userID, bookID),
     FOREIGN KEY (userID) REFERENCES users(userID),
     FOREIGN KEY (bookID) REFERENCES books(bookID)
@@ -11,7 +14,7 @@ CREATE TABLE `userprogress` (
 
 
 
-INSERT INTO `userprogress` (`userID`, `bookID`, `status`, `page_reached`) VALUES
+INSERT INTO userprogress (userID, bookID, status, page_reached) VALUES
 ('1', '77', 'NOT STARTED', 0),
 ('1', '78', 'IN PROGRESS', 30),
 ('1', '81', 'FINISHED', 288),
