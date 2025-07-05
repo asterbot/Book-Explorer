@@ -1,26 +1,28 @@
-import sys
 import os
-from random import randint, sample
 
-# Importing library from another directory
-sys.path.append(os.path.join(os.pardir, os.pardir, 'backend'))
-from database import Database # type: ignore
+book_genres = [
+    "Fantasy", "Science Fiction", "Mystery", "Thriller", "Romance",
+    "Historical Fiction", "Horror", "Adventure", "Dystopian", "Paranormal",
+    "Contemporary", "Young Adult", "New Adult", "Childrens", "Middle Grade",
+    "Literary Fiction", "Magical Realism", "Urban Fantasy", "Space Opera", "Cyberpunk",
+    "Steampunk", "Post-Apocalyptic", "Time Travel", "Alternate History", "Mythology",
+    "Fairy Tale", "Coming of Age", "Gothic", "Crime", "Detective",
+    "Psychological Thriller", "Legal Thriller", "Political Thriller", "Espionage", "Western",
+    "Survival", "Epic Fantasy", "High Fantasy", "Low Fantasy", "Dark Fantasy",
+    "Supernatural", "Occult", "Christian Fiction", "Inspirational", "Satire",
+    "Humor", "Drama", "War", "Military Fiction", "Political Fiction",
+    "Philosophical Fiction", "Science Fantasy", "Sword and Sorcery", "Hard Science Fiction", "Soft Science Fiction",
+    "Biopunk", "Cli-Fi", "Noir", "Techno-thriller", "Chick Lit",
+    "Domestic Fiction", "Family Saga", "Memoir", "Autobiography", "Biography",
+    "True Crime", "Self-Help", "Health", "Spirituality", "Religion",
+    "Travel", "Guide", "Cookbook", "Art", "Photography",
+    "Poetry", "Essay", "Anthology", "Classic", "Short Stories",
+    "Novella", "Graphic Novel", "Comic", "Manga", "Light Novel",
+    "Educational", "Textbook", "Reference", "Journal", "Encyclopedia",
+    "Dictionary", "Science", "Math", "Technology", "History",
+    "Economics", "Politics", "Sociology", "Psychology", "Anthropology"
+]
 
-db =  Database()
-
-## bookIDs
-db.run('SELECT bookID from books;')
-bookIDs = list(map(lambda x: x[0], db.fetch_all())) # all bookID's
-
-## genreIDs
-genreIDs = [i for i in range(1,9)]
-
-
-with open(os.path.join(os.pardir, 'genre.sql'), 'a') as f:
-    for bookID in bookIDs:
-        num_genres = randint(1,3)
-        genres = sample(genreIDs, num_genres)
-        
-        for genreID in genres:
-            f.write(f"({bookID}, {genreID}),\n")
-        
+with open(os.path.join(os.pardir, 'genres' ,'genre.sql'), 'a') as f:
+    for i in range(1, len(book_genres) + 1):
+        f.write(f"({i}, '{book_genres[i-1]}'),\n")

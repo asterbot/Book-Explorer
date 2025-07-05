@@ -1,14 +1,14 @@
-CREATE TABLE `user_book_tag` (
-    `userID` INT NOT NULL,
-    `bookID` INT NOT NULL,
-    `tagID` INT NOT NULL,
+CREATE TABLE user_book_tag (
+    userID INT NOT NULL,
+    bookID INT NOT NULL,
+    tagID INT NOT NULL,
     PRIMARY KEY (userID, bookID, tagID),
     FOREIGN KEY (userID) REFERENCES users(userID) ON DELETE CASCADE,
     FOREIGN KEY (bookID) REFERENCES books(bookID) ON DELETE CASCADE,
     FOREIGN KEY (tagID) REFERENCES tag(tagID) ON DELETE CASCADE
 );
 
-INSERT INTO `user_book_tag` (`userID`, `bookID`, `tagID`) VALUES
+INSERT INTO user_book_tag (userID, bookID, tagID) VALUES
 (49, 5, 99),
 (41, 53, 58),
 (45, 74, 59),

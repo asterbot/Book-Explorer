@@ -1,13 +1,13 @@
 -- global tag for books
-CREATE TABLE `book_tag` (
-    `bookID` INT NOT NULL,
-    `tagID` INT NOT NULL,
+CREATE TABLE book_tag (
+    bookID INT NOT NULL,
+    tagID INT NOT NULL,
     PRIMARY KEY (bookID, tagID),
     FOREIGN KEY (bookID) REFERENCES books(bookID) ON DELETE CASCADE,
     FOREIGN KEY (tagID) REFERENCES tag(tagID) ON DELETE CASCADE
 );
 
-INSERT INTO `book_tag` (`bookID`, `tagID`) VALUES
+INSERT INTO book_tag (bookID, tagID) VALUES
 (1, 38),
 (1, 1),
 (1, 41),

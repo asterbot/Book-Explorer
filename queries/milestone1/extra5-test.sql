@@ -1,8 +1,5 @@
 -- Count of books by genre
-SELECT genre, COUNT(*) as count FROM books GROUP BY genre;
-
--- Filter by genre
-SELECT bookID, title, authors
-FROM books
-WHERE genre = 'Fantasy'
-ORDER BY title ASC;
+SELECT g.name, COUNT(*) as count 
+FROM BookGenre bg, Genre g
+WHERE bg.genreID=g.genreID 
+GROUP BY g.name;

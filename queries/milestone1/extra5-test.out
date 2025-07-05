@@ -1,30 +1,104 @@
-+-------------+-------+
-| genre       | count |
-+-------------+-------+
-| Fantasy     |    14 |
-| Fiction     |   286 |
-| History     |     1 |
-| Non-Fiction |     7 |
-| Sci-Fi      |     7 |
-| Biography   |     8 |
-| Poetry      |     1 |
-| Romance     |     9 |
-+-------------+-------+
-+--------+-----------------------------------------------------------------------------------------+-----------------------------------------------+
-| bookID | title                                                                                   | authors                                       |
-+--------+-----------------------------------------------------------------------------------------+-----------------------------------------------+
-|      4 | Harry Potter and the Chamber of Secrets (Harry Potter  #2)                              | J.K. Rowling                                  |
-|      1 | Harry Potter and the Half-Blood Prince (Harry Potter  #6)                               | J.K. Rowling/Mary GrandPré                    |
-|      2 | Harry Potter and the Order of the Phoenix (Harry Potter  #5)                            | J.K. Rowling/Mary GrandPré                    |
-|      5 | Harry Potter and the Prisoner of Azkaban (Harry Potter  #3)                             | J.K. Rowling/Mary GrandPré                    |
-|      8 | Harry Potter Boxed Set  Books 1-5 (Harry Potter  #1-5)                                  | J.K. Rowling/Mary GrandPré                    |
-|     10 | Harry Potter Collection (Harry Potter  #1-6)                                            | J.K. Rowling                                  |
-|     30 | J.R.R. Tolkien 4-Book Boxed Set: The Hobbit and The Lord of the Rings                   | J.R.R. Tolkien                                |
-|     34 | The Fellowship of the Ring (The Lord of the Rings  #1)                                  | J.R.R. Tolkien                                |
-|     31 | The Lord of the Rings (The Lord of the Rings  #1-3)                                     | J.R.R. Tolkien                                |
-|     35 | The Lord of the Rings (The Lord of the Rings  #1-3)                                     | J.R.R. Tolkien/Alan  Lee                      |
-|     37 | The Lord of the Rings: Complete Visual Companion                                        | Jude Fisher                                   |
-|    119 | The Lord of the Rings: The Art of the Fellowship of the Ring                            | Gary Russell                                  |
-|     36 | The Lord of the Rings: Weapons and Warfare                                              | Chris   Smith/Christopher  Lee/Richard Taylor |
-|      9 | Unauthorized Harry Potter Book Seven News: "Half-Blood Prince" Analysis and Speculation | W. Frederick Zimmerman                        |
-+--------+-----------------------------------------------------------------------------------------+-----------------------------------------------+
++------------------------+---------+
+| name                   |   count |
+|------------------------+---------|
+| Contemporary           |      11 |
+| Crime                  |      13 |
+| Christian Fiction      |       7 |
+| Historical Fiction     |       9 |
+| Reference              |      13 |
+| Anthropology           |      17 |
+| Humor                  |      13 |
+| Low Fantasy            |      11 |
+| Religion               |      10 |
+| Fantasy                |      15 |
+| Dystopian              |      12 |
+| Survival               |       9 |
+| New Adult              |      12 |
+| Math                   |       9 |
+| Inspirational          |      10 |
+| Spirituality           |      13 |
+| Sword and Sorcery      |       7 |
+| Magical Realism        |       7 |
+| True Crime             |      10 |
+| Horror                 |      10 |
+| Drama                  |       9 |
+| Educational            |      12 |
+| Hard Science Fiction   |       8 |
+| Biography              |       8 |
+| Science Fantasy        |       6 |
+| Psychological Thriller |       8 |
+| Thriller               |       7 |
+| Occult                 |       6 |
+| Steampunk              |      10 |
+| Anthology              |       7 |
+| Novella                |       9 |
+| War                    |      15 |
+| Technology             |       3 |
+| Literary Fiction       |      12 |
+| Romance                |      14 |
+| Self-Help              |      19 |
+| Middle Grade           |       9 |
+| Fairy Tale             |       8 |
+| Mystery                |      14 |
+| Space Opera            |       7 |
+| Photography            |       9 |
+| Cli-Fi                 |      10 |
+| Mythology              |       9 |
+| Comic                  |       8 |
+| Domestic Fiction       |      13 |
+| Classic                |      15 |
+| Family Saga            |      14 |
+| Time Travel            |      12 |
+| High Fantasy           |      12 |
+| Light Novel            |       6 |
+| Supernatural           |       7 |
+| Political Thriller     |       8 |
+| Memoir                 |       7 |
+| Adventure              |      12 |
+| Techno-thriller        |      10 |
+| Textbook               |       8 |
+| Childrens              |       8 |
+| Soft Science Fiction   |       6 |
+| History                |       9 |
+| Sociology              |      17 |
+| Chick Lit              |      10 |
+| Noir                   |      10 |
+| Military Fiction       |      12 |
+| Cookbook               |       8 |
+| Guide                  |       7 |
+| Urban Fantasy          |      13 |
+| Biopunk                |      12 |
+| Paranormal             |       8 |
+| Short Stories          |       8 |
+| Epic Fantasy           |      15 |
+| Graphic Novel          |       6 |
+| Gothic                 |       8 |
+| Young Adult            |       6 |
+| Autobiography          |       7 |
+| Economics              |       8 |
+| Post-Apocalyptic       |      10 |
+| Dark Fantasy           |      16 |
+| Art                    |       9 |
+| Satire                 |       8 |
+| Poetry                 |      11 |
+| Political Fiction      |      13 |
+| Psychology             |      11 |
+| Alternate History      |       9 |
+| Espionage              |       8 |
+| Detective              |       9 |
+| Legal Thriller         |      11 |
+| Encyclopedia           |      10 |
+| Cyberpunk              |      10 |
+| Travel                 |       6 |
+| Philosophical Fiction  |      11 |
+| Science Fiction        |       7 |
+| Health                 |       8 |
+| Journal                |       7 |
+| Manga                  |      10 |
+| Science                |       6 |
+| Dictionary             |      10 |
+| Coming of Age          |      11 |
+| Western                |       7 |
+| Essay                  |       6 |
+| Politics               |      16 |
++------------------------+---------+
