@@ -309,6 +309,103 @@ def top_wishlist_books():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/bookclubs', methods=['GET'])
+def get_bookclubs():
+    try:
+        db = Database()
+        query = """
+            SELECT bc.clubID, bc.name, bc.description, COUNT(bcm.userid) as member_count
+            FROM bookclubs bc
+            LEFT JOIN bookclub_members bcm ON bc.clubID = bcm.clubID
+            GROUP BY bc.clubID, bc.name, bc.description
+            ORDER BY bc.name ASC;
+        """
+        db.run(query)
+        results = db.fetch_all()
+        bookclubs = [
+            {
+                "clubID": row[0],
+                "name": row[1],
+                "description": row[2],
+                "member_count": row[3],
+            }
+            for row in results
+        ]
+        return jsonify({"results": bookclubs}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/bookclubs/<int:club_id>', methods=['GET'])
+def bookclub_details(club_id):
+    try:
+        db = Database()
+
+        db.run(f"""
+            SELECT bc.clubID, bc.name, bc.description, COUNT(bcm.userID)
+            FROM bookclubs bc
+            LEFT JOIN bookclub_members bcm ON bc.clubID = bcm.clubID
+            WHERE bc.clubID={club_id}
+            GROUP BY bc.clubID, bc.name, bc.description;
+        """)
+        club_row = db.fetch_all()[0]
+        if not club_row:
+            return jsonify({"error": "Club not found"}), 404
+
+        clubID, name, description, member_count = club_row
+
+        db.run(f"""
+            SELECT b.bookID, b.title, b.authors
+            FROM bookclub_reads br
+            JOIN books b ON br.bookID = b.bookID
+            WHERE br.clubID={club_id} AND br.is_current = TRUE
+            ORDER BY br.start_date;
+        """)
+        current_books = [
+            {"bookID": r[0], "title": r[1], "authors": r[2]}
+            for r in db.fetch_all()
+        ]
+
+        db.run(f"""
+            SELECT b.bookID, b.title, b.authors, br.end_date
+            FROM bookclub_reads br
+            JOIN books b ON br.bookID = b.bookID
+            WHERE br.clubID={club_id} AND br.is_current = FALSE
+            ORDER BY br.end_date DESC;
+        """)
+        past_books = [
+            {
+                "bookID": r[0],
+                "title": r[1],
+                "authors": r[2],
+                "end_date": r[3],
+            }
+            for r in db.fetch_all()
+        ]
+
+        db.run(f"""
+            SELECT u.userID, u.name
+            FROM bookclub_members bcm
+            JOIN users u ON bcm.userID = u.userID
+            WHERE bcm.clubID={club_id}
+            ORDER BY u.name;
+        """)
+        members = [{"userID": r[0], "name": r[1]} for r in db.fetch_all()]
+
+        return jsonify({
+            "clubID": clubID,
+            "name": name,
+            "description": description,
+            "member_count": member_count,
+            "current_books": current_books,
+            "past_books": past_books,
+            "members": members,
+        })
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=PORT)

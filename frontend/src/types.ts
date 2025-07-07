@@ -12,3 +12,16 @@ export interface Book{
     publication_date: string,
     publisher: string
 }
+
+export type BookClub = {
+  clubID: number;
+  name: string;
+  description: string;
+  member_count: number;
+};
+
+export type ClubDetails = BookClub & {
+  current_books: Book[];
+  past_books: (Book & { end_date: string })[];
+  members: { userID: number; name: string }[];
+};

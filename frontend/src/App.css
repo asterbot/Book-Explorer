@@ -376,3 +376,17 @@
 .genre-option:hover {
   background-color: #e0e0e0;
 }
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
