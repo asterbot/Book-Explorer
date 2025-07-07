@@ -1,4 +1,4 @@
-echo "Setting up database..."
+# Run this script when there is a change to the data/ folder
 
 FILES=""
 
