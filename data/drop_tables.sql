@@ -1,3 +1,7 @@
+DROP TABLE IF EXISTS bookclub_members;
+DROP TABLE IF EXISTS bookclub_reads;
+DROP TABLE IF EXISTS bookclubs;
+
 DROP TABLE IF EXISTS user_book_tag;
 DROP TABLE IF EXISTS book_tag;
 DROP TABLE IF EXISTS tag;
