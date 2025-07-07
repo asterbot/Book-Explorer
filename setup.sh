@@ -1,5 +1,7 @@
 # Run this script when there is a change to the data/ folder
 
+echo "Setting up database..."
+
 FILES=""
 
 # Drop existing tables
