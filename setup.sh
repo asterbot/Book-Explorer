@@ -1,11 +1,11 @@
 # Run this script when there is a change to the data/ folder
 
-echo "Setting up database..."
-mysql -u $1 -p cs348_project < data/drop_tables.sql
-mysql -u $1 -p cs348_project < data/books.sql
-mysql -u $1 -p cs348_project < data/users.sql
-mysql -u $1 -p cs348_project < data/userprogress.sql
-mysql -u $1 -p cs348_project < data/book_clubs.sql
+# echo "Setting up database..."
+# mysql -u $1 -p cs348_project < data/drop_tables.sql
+# mysql -u $1 -p cs348_project < data/books.sql
+# mysql -u $1 -p cs348_project < data/users.sql
+# mysql -u $1 -p cs348_project < data/userprogress.sql
+# mysql -u $1 -p cs348_project < data/book_clubs.sql
 
 FILES=""
 
@@ -35,5 +35,7 @@ python runSQL.py data/publishers/book_publishers.sql
 python runSQL.py data/genres/genre.sql
 python runSQL.py data/genres/bookgenre.sql
 
+# Book Club
+python runSQL.py data/book_clubs.sql
 
 echo "Database setup complete, check tables on postgresSQL"
