@@ -3,6 +3,7 @@ CREATE TABLE publishers (
     name VARCHAR(255) UNIQUE
 );
 
+
 INSERT INTO publishers (publisherID, name) VALUES
 ('1', 'Scholastic Inc.'),
 ('2', 'Scholastic'),
@@ -55,7 +56,7 @@ INSERT INTO publishers (publisherID, name) VALUES
 ('49', 'Wiley'),
 ('50', 'Heinemann Drama'),
 ('51', 'McGraw-Hill'),
-('52', 'O''Reilly Media'),
+('52', 'OReilly Media'),
 ('53', 'Citadel'),
 ('54', 'Penguin Classics'),
 ('55', 'Signet'),
@@ -91,7 +92,7 @@ INSERT INTO publishers (publisherID, name) VALUES
 ('85', 'One World (UK)'),
 ('86', 'Interlink Publishing Group'),
 ('87', 'Knopf'),
-('88', 'Sterling Children''s Books'),
+('88', 'Sterling Childrens Books'),
 ('89', 'Simon & Schuster'),
 ('90', 'Atheneum Books for Young Readers'),
 ('91', 'Abdo Publishing Company'),
@@ -115,7 +116,7 @@ INSERT INTO publishers (publisherID, name) VALUES
 ('109', 'Back Bay Books'),
 ('110', 'Knopf Publishing Group'),
 ('111', 'Vintage International'),
-('112', 'Everyman''s Library'),
+('112', 'Everymans Library'),
 ('113', 'Sun and Moon Press'),
 ('114', 'Sky Books (NY)'),
 ('115', 'Picador'),
