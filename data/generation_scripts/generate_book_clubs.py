@@ -4,14 +4,14 @@ from random import randint, sample, choice
 from datetime import datetime, timedelta
 
 sys.path.append(os.path.join(os.pardir, os.pardir, "backend"))
-from database import Database
+from database import Database  # type: ignore
 
 db = Database()
 
 OUT_FILE   = os.path.join(os.pardir, "book_clubs.sql")
 NUM_CLUBS  = 117
 
-
+# Fetch required data
 db.run("SELECT userid FROM users;")
 user_ids = [row[0] for row in db.fetch_all()]
 
@@ -21,30 +21,40 @@ book_ids = [row[0] for row in db.fetch_all()]
 db.run("SELECT COALESCE(MAX(clubid), 0) FROM bookclubs;")
 next_club_id = db.fetch_all()[0][0] + 1
 
-with open(OUT_FILE, "a") as f:
+# Generate SQL
+with open(OUT_FILE, "a", encoding="utf-8") as f:
     for i in range(NUM_CLUBS):
         clubid      = next_club_id + i
         name        = f"Book Club {i + 1}"
         description = f"This is the description for {name}."
         creatorid   = choice(user_ids)
 
+        # Insert into bookclubs
         f.write(
             "INSERT INTO bookclubs (clubid, name, description, creatorid) "
             f"VALUES ({clubid}, '{name}', '{description}', {creatorid});\n"
         )
 
+        # Insert into bookclub_creators (new table)
+        f.write(
+            "INSERT INTO bookclub_creators (clubid, userid) "
+            f"VALUES ({clubid}, {creatorid});\n"
+        )
+
+        # Insert members (creator is included)
         members = set(sample(user_ids, randint(5, 20) - 1))
         members.add(creatorid)
-
         for uid in members:
             f.write(
                 f"INSERT INTO bookclub_members (clubid, userid) "
                 f"VALUES ({clubid}, {uid});\n"
             )
 
+        # Insert bookclub_reads (1–3 current + 5–15 past)
         used_books = set()
-        today      = datetime.today().date()
+        today = datetime.today().date()
 
+        # Current reads (is_current = TRUE)
         for _ in range(randint(1, 3)):
             bookid = choice([b for b in book_ids if b not in used_books])
             used_books.add(bookid)
@@ -57,11 +67,12 @@ with open(OUT_FILE, "a") as f:
                 f"VALUES ({clubid}, {bookid}, '{start}', '{end}', TRUE);\n"
             )
 
+        # Past reads (is_current = FALSE)
         for _ in range(randint(5, 15)):
             bookid = choice([b for b in book_ids if b not in used_books])
             used_books.add(bookid)
 
-            end   = today - timedelta(days=randint(1, 180))
+            end = today - timedelta(days=randint(1, 180))
             start = end - timedelta(days=30)
 
             f.write(
@@ -71,3 +82,4 @@ with open(OUT_FILE, "a") as f:
 
         f.write("\n")
 
+print(f"Generated {NUM_CLUBS} book clubs with creators, members, and reading history.")
