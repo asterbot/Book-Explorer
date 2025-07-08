@@ -125,7 +125,7 @@ def view_userlist():
             FROM userprogress u, books b 
             WHERE userID = (SELECT userID FROM users WHERE name = '{username}') 
                     AND b.bookID=u.bookID
-                    AND STATUS='{status}';"""
+                    AND u.status='{status}'"""
 
         db.run(query)
         results = db.fetch_all()
@@ -151,7 +151,7 @@ def add_to_userprogress():
         query = f"""
             INSERT INTO userprogress (userID, bookID, status) 
             VALUES ((SELECT userID FROM users WHERE name = '{username}'), '{bookID}', '{status}')
-            ON DUPLICATE KEY UPDATE status = '{status}';
+            ON CONFLICT (userID, bookID) DO UPDATE SET status = EXCLUDED.status
         """
         db.run(query)
         db.commit()
