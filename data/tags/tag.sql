@@ -1,6 +1,6 @@
 CREATE TABLE tag (
     tagID SERIAL,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL UNIQUE,
     PRIMARY KEY (tagID)
 );
 
