@@ -15,7 +15,6 @@ python runSQL.py data/user_rating.sql
 
 # Tags
 python runSQL.py data/tags/tag.sql
-python runSQL.py data/tags/book_tag.sql
 python runSQL.py data/tags/user_book_tag.sql
 
 # Authors
