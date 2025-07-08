@@ -35,14 +35,10 @@ def search_books():
             books.append({
                 "bookID": row[0],
                 "title": row[1],
-                "authors": row[2],
-                "average_rating": row[3],
-                "isbn": row[4],
-                "isbn13": row[5],
-                "language_code": row[6],
-                "num_pages": row[7],
-                "ratings_count": row[8],
-                "text_reviews_count": row[9],
+                "average_rating": row[2],
+                "isbn": row[3],
+                "language_code": row[4],
+                "num_pages": row[5],
             })
 
         return jsonify({
@@ -91,7 +87,7 @@ def books_by_genre():
             return jsonify({"error": "Missing 'genre' parameter"}), 400
 
         query = f"""
-            SELECT b.bookID, b.title, b.authors
+            SELECT b.bookID, b.title
             FROM books b, BookGenre bg, Genre g
             WHERE g.genreID=bg.genreID AND b.bookID=bg.bookID AND
                     LOWER(g.name) = LOWER('{genre}')
@@ -105,7 +101,6 @@ def books_by_genre():
             books.append({
                 "bookID": row[0],
                 "title": row[1],
-                "authors": row[2],
             })
 
         return jsonify({"results": books, "count": len(books)}), 200
@@ -121,7 +116,7 @@ def view_userlist():
         username = request.args.get('username')
         status = request.args.get('status')
         query = f"""
-            SELECT b.bookID, b.title, b.authors
+            SELECT b.bookID, b.title
             FROM userprogress u, books b 
             WHERE userID = (SELECT userID FROM users WHERE name = '{username}') 
                     AND b.bookID=u.bookID
@@ -132,7 +127,7 @@ def view_userlist():
 
         books = []
         for book in results:
-            books.append({"bookID": book[0], "title": book[1], "authors": book[2]})
+            books.append({"bookID": book[0], "title": book[1]})
         
         return jsonify({"results": books}), 200
     except Exception as e:
@@ -186,7 +181,7 @@ def common_books():
         limit = request.args.get('limit', 5, type=int)
 
         query = f"""
-        SELECT b.bookID, b.title, b.authors
+        SELECT b.bookID, b.title
         FROM userprogress us1, userprogress us2, books b
         WHERE us1.userID=(SELECT userID from users WHERE name='{user1}') 
                 AND us2.userID=(SELECT userID from users WHERE name='{user2}') 
@@ -198,7 +193,7 @@ def common_books():
 
         books = []
         for book in results:
-            books.append({"bookID": book[0], "title": book[1], "authors": book[2]})
+            books.append({"bookID": book[0], "title": book[1]})
 
         return jsonify({"results": books}), 200
         
@@ -216,7 +211,6 @@ def book_completion_rates():
         SELECT 
             b.bookID,
             b.title,
-            b.authors,
             COUNT(up_all.userID) as total_users,
             SUM(CASE WHEN up_all.status = 'FINISHED' THEN 1 ELSE 0 END) as completed_users,
             ROUND(
@@ -227,7 +221,7 @@ def book_completion_rates():
         JOIN users u_mine ON up_mine.userID = u_mine.userID
         JOIN userprogress up_all ON b.bookID = up_all.bookID
         WHERE up_mine.status = 'IN PROGRESS' and u_mine.name = '{username}'
-        GROUP BY b.bookID, b.title, b.authors
+        GROUP BY b.bookID, b.title
         ORDER BY completion_rate DESC, total_users DESC
         """
         
