@@ -1,6 +1,6 @@
 CREATE TABLE users (
     userID INT,
-    name VARCHAR(255) UNIQUE,
+    name VARCHAR(255),
     email VARCHAR(255),
     PRIMARY KEY (userID)
 );

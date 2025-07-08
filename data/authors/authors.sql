@@ -1,7 +1,6 @@
 CREATE TABLE authors (
     authorID INT PRIMARY KEY,
-    year_of_birth INT,
-    FOREIGN KEY (authorID) REFERENCES users(userID) ON DELETE CASCADE
+    name VARCHAR(255),
 );
 
 INSERT INTO authors (authorID, year_of_birth) VALUES

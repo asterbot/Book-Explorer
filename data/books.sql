@@ -1,11 +1,9 @@
 CREATE TABLE books (
-    bookID	INT,
+    bookID SERIAL PRIMARY KEY,
     title	VARCHAR(512),
-    average_rating	FLOAT,
     isbn	VARCHAR(10),
     language_code	VARCHAR(512),
     num_pages	INT,
-    PRIMARY KEY (bookID)
 );
 
 INSERT INTO books (bookID, title, average_rating, isbn, language_code, num_pages) VALUES ('1',  'Harry Potter and the Half-Blood Prince (Harry Potter #6)',  '4.57',  '0439785960',  'eng',  '652');

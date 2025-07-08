@@ -1,8 +1,7 @@
 CREATE TABLE book_publishers (
-    bookID INT,
+    bookID INT PRIMARY KEY,
     publisherID INT,
     publication_date VARCHAR(512),
-    PRIMARY KEY (bookID, publisherID),
     FOREIGN KEY (bookID) REFERENCES books(bookID) ON DELETE CASCADE,
     FOREIGN KEY (publisherID) REFERENCES publishers(publisherID) ON DELETE CASCADE
 );

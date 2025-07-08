@@ -9,7 +9,7 @@ CREATE TABLE userprogress (
     page_reached INT DEFAULT 0,
     last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (userID, bookID),
-    FOREIGN KEY (userID) REFERENCES users(userID),
+    FOREIGN KEY (userID) REFERENCES users(userID) ON DELETE CASCADE,
     FOREIGN KEY (bookID) REFERENCES books(bookID) ON DELETE CASCADE
 );
 
