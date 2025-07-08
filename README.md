@@ -7,8 +7,10 @@ To set up the db, first set up the virtual environment:
 ```bash
 cd backend
 python -m venv venv/
-source venv/bin/active
+source venv/bin/activate
 pip install -r requirements.txt 
+cd ..
+./setup.sh
 ```
 
 Then you should be able to run any SQL query with `python runSQL.py [name-of-sql-file].sql` (even if it is in another directory) and see the output

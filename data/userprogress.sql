@@ -1,4 +1,5 @@
 DROP TYPE IF EXISTS status;
+
 CREATE TYPE status AS ENUM('NOT STARTED', 'IN PROGRESS', 'FINISHED');
 
 CREATE TABLE userprogress (
@@ -6,13 +7,25 @@ CREATE TABLE userprogress (
     bookID INT,
     status status DEFAULT 'NOT STARTED',
     page_reached INT DEFAULT 0,
-    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (userID, bookID),
     FOREIGN KEY (userID) REFERENCES users(userID),
-    FOREIGN KEY (bookID) REFERENCES books(bookID)
-    ON DELETE CASCADE
+    FOREIGN KEY (bookID) REFERENCES books(bookID) ON DELETE CASCADE
 );
 
+
+CREATE OR REPLACE FUNCTION update_last_updated_column()
+RETURNS TRIGGER AS $$
+BEGIN
+   NEW.last_updated = CURRENT_TIMESTAMP;
+   RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER set_last_updated
+BEFORE UPDATE ON userprogress
+FOR EACH ROW
+EXECUTE FUNCTION update_last_updated_column();
 
 
 INSERT INTO userprogress (userID, bookID, status, page_reached) VALUES
