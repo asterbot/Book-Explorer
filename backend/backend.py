@@ -35,10 +35,9 @@ def search_books():
             books.append({
                 "bookID": row[0],
                 "title": row[1],
-                "average_rating": row[2],
-                "isbn": row[3],
-                "language_code": row[4],
-                "num_pages": row[5],
+                "isbn": row[2],
+                "language_code": row[3],
+                "num_pages": row[4],
             })
 
         return jsonify({
@@ -162,13 +161,18 @@ def top_books_by_rating():
 
         limit = request.args.get('limit', 5, type=int)
 
-        query = f"SELECT title, average_rating FROM books ORDER BY average_rating DESC LIMIT {limit};"
+        query = f"""
+            SELECT b.bookID, b.title, AVG(ur.rating) as avg_rating
+            FROM books b, UserRating ur
+            WHERE b.bookID=ur.bookID
+            GROUP BY b.bookID, b.title
+            ORDER BY avg_rating DESC LIMIT {limit};"""
         db.run(query)
         results = db.fetch_all()
         return jsonify({"results": results}), 200
 
     except Exception as e:
-        return jsonify({"message": "Error finding top 5 books by rating"}), 500
+        return jsonify({"message": f"Error finding top 5 books by rating: {e}"}), 500
     
 
 @app.route('/common-books', methods=['GET'])
@@ -233,10 +237,9 @@ def book_completion_rates():
             completion_data.append({
                 "bookID": row[0],
                 "title": row[1],
-                "authors": row[2],
-                "total_users": row[3],
-                "completed_users": row[4],
-                "completion_rate": row[5]
+                "total_users": row[2],
+                "completed_users": row[3],
+                "completion_rate": row[4]
             })
 
         return jsonify({"results": completion_data}), 200

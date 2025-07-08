@@ -2,9 +2,8 @@ CREATE TABLE BookGenre(
     bookID INT,
     genreID INT,
     PRIMARY KEY(bookID, genreID),
-    FOREIGN KEY (bookID) REFERENCES books(bookID),
-    FOREIGN KEY (genreID) REFERENCES Genre(genreID)
-    ON DELETE CASCADE
+    FOREIGN KEY (bookID) REFERENCES books(bookID) ON DELETE CASCADE,
+    FOREIGN KEY (genreID) REFERENCES Genre(genreID) ON DELETE CASCADE
 );
 
 INSERT INTO BookGenre(bookID, genreID) VALUES

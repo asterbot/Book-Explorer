@@ -4,6 +4,14 @@ CREATE TABLE bookclubs (
     description TEXT
 );
 
+CREATE TABLE bookclub_creators (
+    clubid    INT PRIMARY KEY,
+    userid    INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (clubid) REFERENCES bookclubs(clubid) ON DELETE CASCADE,
+    FOREIGN KEY (userid) REFERENCES users(userid)     ON DELETE CASCADE
+);
+
 CREATE TABLE bookclub_members (
     clubid    INT,
     userid    INT,
