@@ -29,8 +29,8 @@ with open(OUT_FILE, "a") as f:
         creatorid   = choice(user_ids)
 
         f.write(
-            "INSERT INTO bookclubs (clubid, name, description, creatorid) "
-            f"VALUES ({clubid}, '{name}', '{description}', {creatorid});\n"
+            "INSERT INTO bookclubs (clubid, name, description) "
+            f"VALUES ({clubid}, '{name}', '{description}');\n"
         )
 
         members = set(sample(user_ids, randint(5, 20) - 1))
