@@ -1,104 +1,104 @@
-+----------+--------------------------------------------------------------------------------------------------------------+--------------+
-|   bookid | title                                                                                                        |   avg_rating |
-|----------+--------------------------------------------------------------------------------------------------------------+--------------|
-|        1 | Harry Potter and the Half-Blood Prince (Harry Potter  #6)                                                    |      8       |
-|        4 | Harry Potter and the Chamber of Secrets (Harry Potter  #2)                                                   |      5       |
-|        5 | Harry Potter and the Prisoner of Azkaban (Harry Potter  #3)                                                  |      4.5     |
-|        9 | Unauthorized Harry Potter Book Seven News: "Half-Blood Prince" Analysis and Speculation                      |      9.66667 |
-|       12 | The Ultimate Hitchhiker's Guide: Five Complete Novels and One Story (Hitchhiker's Guide to the Galaxy  #1-5) |      5       |
-|       14 | The Hitchhiker's Guide to the Galaxy (Hitchhiker's Guide to the Galaxy  #1)                                  |      2       |
-|       16 | The Hitchhiker's Guide to the Galaxy (Hitchhiker's Guide to the Galaxy  #1)                                  |      3       |
-|       18 | The Ultimate Hitchhiker's Guide (Hitchhiker's Guide to the Galaxy  #1-5)                                     |      7.66667 |
-|       21 | A Short History of Nearly Everything                                                                         |      3       |
-|       23 | Bryson's Dictionary of Troublesome Words: A Writer's Guide to Getting It Right                               |      6.66667 |
-|       24 | In a Sunburned Country                                                                                       |      4       |
-|       26 | The Lost Continent: Travels in Small Town America                                                            |      3.25    |
-|       27 | Neither Here nor There: Travels in Europe                                                                    |      6.66667 |
-|       29 | The Mother Tongue: English and How It Got That Way                                                           |      2       |
-|       30 | J.R.R. Tolkien 4-Book Boxed Set: The Hobbit and The Lord of the Rings                                        |      6.33333 |
-|       34 | The Fellowship of the Ring (The Lord of the Rings  #1)                                                       |      8       |
-|       35 | The Lord of the Rings (The Lord of the Rings  #1-3)                                                          |      6       |
-|       36 | The Lord of the Rings: Weapons and Warfare                                                                   |      4       |
-|       37 | The Lord of the Rings: Complete Visual Companion                                                             |      3       |
-|       45 | Agile Web Development with Rails: A Pragmatic Guide                                                          |      4.25    |
-|       50 | Hatchet (Brian's Saga  #1)                                                                                   |     10       |
-|       51 | Hatchet: A Guide for Using "Hatchet" in the Classroom                                                        |      5       |
-|       53 | Guts: The True Stories behind Hatchet and the Brian Books                                                    |      4.25    |
-|       55 | Hatchet Jobs: Writings on Contemporary Fiction                                                               |      1       |
-|       57 | A Changeling for All Seasons (Changeling Seasons #1)                                                         |      5       |
-|       58 | Changeling (Changeling  #1)                                                                                  |      8       |
-|       59 | The Changeling Sea                                                                                           |     10       |
-|       61 | The Changeling                                                                                               |     10       |
-|       63 | The Changeling                                                                                               |      7       |
-|       67 | The Known World                                                                                              |      9       |
-|       69 | The Known World                                                                                              |      1       |
-|       71 | Traders  Guns & Money: Knowns and Unknowns in the Dazzling World of Derivatives                              |      7.33333 |
-|       74 | The John McPhee Reader (John McPhee Reader  #1)                                                              |      4       |
-|       75 | Uncommon Carriers                                                                                            |      9       |
-|       76 | Heirs of General Practice                                                                                    |      5       |
-|       77 | The Control of Nature                                                                                        |      8.5     |
-|       80 | La Place de la Concorde Suisse                                                                               |      1       |
-|       81 | Giving Good Weight                                                                                           |      6       |
-|       83 | Rising from the Plains                                                                                       |     10       |
-|       86 | The Heidi Chronicles: Uncommon Women and Others & Isn't It Romantic                                          |      4       |
-|       91 | Always Enough: God's Miraculous Provision Among the Poorest Children on Earth                                |      5       |
-|       92 | Mapping the Big Picture: Integrating Curriculum & Assessment K-12                                            |      5       |
-|       93 | Heidi (Heidi  #1-2)                                                                                          |      7.66667 |
-|       94 | Getting Results with Curriculum Mapping                                                                      |      6       |
-|       96 | There's Always Enough: The Miraculous Move of God in Mozambique                                              |     10       |
-|       98 | What to Expect the First Year (What to Expect)                                                               |      6       |
-|       99 | The Player's Handbook: The Ultimate Guide on Dating and Relationships                                        |      4       |
-|      100 | Simply Beautiful Beading: 53 Quick and Easy Projects                                                         |      9       |
-|      103 | God Emperor of Dune (Dune Chronicles  #4)                                                                    |      6.5     |
-|      105 | Chapterhouse: Dune (Dune Chronicles #6)                                                                      |      7.5     |
-|      106 | Dune Messiah (Dune Chronicles #2)                                                                            |      5       |
-|      109 | Heretics of Dune (Dune Chronicles  #5)                                                                       |      4.33333 |
-|      110 | The Road to Dune                                                                                             |      6       |
-|      119 | The Lord of the Rings: The Art of the Fellowship of the Ring                                                 |      4.5     |
-|      122 | The Power of One (The Power of One  #1)                                                                      |      1       |
-|      123 | The Power of One (The Power of One  #1)                                                                      |      2.33333 |
-|      129 | The Power of One: One Person  One Rule  One Month                                                            |     10       |
-|      130 | Power of an Hour: Business and Life Mastery in One Hour a Week                                               |      3       |
-|      131 | The Power of One: The Solo Play for Playwrights  Actors  and Directors                                       |      6       |
-|      133 | eBay for Dummies                                                                                             |      5       |
-|      135 | What to Sell on ebay and Where to Get It: The Definitive Guide to Product Sourcing for eBay and Beyond       |     10       |
-|      139 | ebay Timesaving Techniques for Dummies                                                                       |      7       |
-|      141 | Ruby Cookbook                                                                                                |      4       |
-|      142 | Ruby Ann's Down Home Trailer Park Cookbook                                                                   |      3.5     |
-|      147 | Rails Cookbook: Recipes for Rapid Web Development with Ruby                                                  |      6       |
-|      151 | Anna Karenina                                                                                                |      6       |
-|      153 | Anna Karenina                                                                                                |      9       |
-|      154 | CliffsNotes on Tolstoy's Anna Karenina                                                                       |      4.5     |
-|      155 | Anna Karenina                                                                                                |      3.5     |
-|      156 | Anna Karenina                                                                                                |      7       |
-|      157 | Anna Karenina                                                                                                |      3       |
-|      159 | Dinner with Anna Karenina                                                                                    |      8       |
-|      160 | Tolstoy: Anna Karenina                                                                                       |      5       |
-|      162 | Untouchable                                                                                                  |      2.5     |
-|      163 | The Untouchable                                                                                              |      5.5     |
-|      166 | Dalit: The Black Untaouchables of India                                                                      |      4.33333 |
-|      168 | Growing Up Untouchable in India: A Dalit Autobiography                                                       |      3.66667 |
-|      171 | The Evidence-Based Social Work Skills Book                                                                   |      9       |
-|      177 | A Wrinkle in Time: A Guide for Using "A Wrinkle in Time" in the Classroom                                    |      5.66667 |
-|      181 | A Wrinkle in Time: With Related Readings (A Wrinkle in Time Quintet #1)                                      |      8.5     |
-|      182 | Literature Circle Guide: A Wrinkle in Time                                                                   |      5       |
-|      201 | Una arruga en el tiempo – A Wrinkle in Time                                                                  |      1       |
-|      204 | The Long Shadow (The Morland Dynasty  #6)                                                                    |      5       |
-|      205 | A Long Shadow (Inspector Ian Rutledge  #8)                                                                   |      5.5     |
-|      208 | A Shadow in Summer (Long Price Quartet  #1)                                                                  |      5.33333 |
-|      230 | The Burnt Orange Heresy (Vintage Crime/Black Lizard)                                                         |      1       |
-|      231 | I am Charlotte Simmons                                                                                       |      2.5     |
-|      237 | Poetry for Young People: Edward Lear                                                                         |      8       |
-|      244 | The Puffin Book of Nonsense Verse                                                                            |      4.33333 |
-|      245 | Henry Miller on Writing                                                                                      |      8       |
-|      249 | Tropic of Cancer                                                                                             |     10       |
-|      251 | Nexus (The Rosy Crucifixion  #3)                                                                             |      7       |
-|      252 | Sexus (The Rosy Crucifixion  #1)                                                                             |      4       |
-|      253 | The Air-Conditioned Nightmare                                                                                |      5.5     |
-|      264 | The Portrait of a Lady                                                                                       |      5.66667 |
-|      269 | The Portrait of a Lady                                                                                       |     10       |
-|      277 | Writing                                                                                                      |      7.5     |
-|      278 | The War                                                                                                      |      9       |
-|      280 | The Ravishing of Lol Stein                                                                                   |      6       |
-|      285 | Love Letters                                                                                                 |      6       |
-+----------+--------------------------------------------------------------------------------------------------------------+--------------+
++----------+--------------------------------------------------------------------------------------------------------+--------------+
+|   bookid | title                                                                                                  |   avg_rating |
+|----------+--------------------------------------------------------------------------------------------------------+--------------|
+|       83 | Rising from the Plains                                                                                 |     10       |
+|       61 | The Changeling                                                                                         |     10       |
+|      662 | Atlas Shrugged                                                                                         |     10       |
+|       50 | Hatchet (Brian's Saga  #1)                                                                             |     10       |
+|      249 | Tropic of Cancer                                                                                       |     10       |
+|      129 | The Power of One: One Person  One Rule  One Month                                                      |     10       |
+|      382 | The Phantom Tollbooth: A Children's Play in Two Acts                                                   |     10       |
+|      269 | The Portrait of a Lady                                                                                 |     10       |
+|       96 | There's Always Enough: The Miraculous Move of God in Mozambique                                        |     10       |
+|      668 | We the Living                                                                                          |     10       |
+|      408 | The Names                                                                                              |     10       |
+|      135 | What to Sell on ebay and Where to Get It: The Definitive Guide to Product Sourcing for eBay and Beyond |     10       |
+|      399 | Underworld                                                                                             |     10       |
+|      672 | Sailing for Dummies                                                                                    |     10       |
+|      987 | A Killing Rain (Louis Kincaid  #6)                                                                     |     10       |
+|       59 | The Changeling Sea                                                                                     |     10       |
+|        9 | Unauthorized Harry Potter Book Seven News: "Half-Blood Prince" Analysis and Speculation                |      9.66667 |
+|      332 | The Wedding Clause                                                                                     |      9       |
+|      171 | The Evidence-Based Social Work Skills Book                                                             |      9       |
+|      278 | The War                                                                                                |      9       |
+|      797 | Lonely Planet Londres                                                                                  |      9       |
+|      678 | The Greatest Sailing Stories Ever Told: Twenty-Seven Unforgettable Stories                             |      9       |
+|      100 | Simply Beautiful Beading: 53 Quick and Easy Projects                                                   |      9       |
+|      681 | Natural Cures "They" Don't Want You to Know about                                                      |      9       |
+|      663 | For the New Intellectual: The Philosophy of Ayn Rand                                                   |      9       |
+|      359 | The Salmon of Doubt (Dirk Gently  #3)                                                                  |      9       |
+|      456 | Leviathan                                                                                              |      9       |
+|     1032 | Trump: The Art of the Deal                                                                             |      9       |
+|      357 | The Long Dark Tea-Time of the Soul (Dirk Gently  #2)                                                   |      9       |
+|      960 | Angels & Demons (Robert Langdon  #1)                                                                   |      9       |
+|       75 | Uncommon Carriers                                                                                      |      9       |
+|      829 | Odalisque (The Baroque Cycle  Vol. 1  Book 3)                                                          |      9       |
+|      447 | Moon Palace                                                                                            |      9       |
+|      153 | Anna Karenina                                                                                          |      9       |
+|       67 | The Known World                                                                                        |      9       |
+|      324 | Cien años de soledad                                                                                   |      9       |
+|      423 | Where I Was From                                                                                       |      9       |
+|      385 | On Bullshit                                                                                            |      9       |
+|      350 | Stranger in a Strange Land                                                                             |      9       |
+|     1005 | Think and Grow Rich: The Landmark Bestseller Now Revised and Updated for the 21st Century              |      8.5     |
+|      181 | A Wrinkle in Time: With Related Readings (A Wrinkle in Time Quintet #1)                                |      8.5     |
+|       77 | The Control of Nature                                                                                  |      8.5     |
+|      362 | Wish You Were Here: The Official Biography of Douglas Adams                                            |      8       |
+|      302 | Treasure Island (Great Illustrated Classics)                                                           |      8       |
+|       34 | The Fellowship of the Ring (The Lord of the Rings  #1)                                                 |      8       |
+|       58 | Changeling (Changeling  #1)                                                                            |      8       |
+|      354 | To Sail Beyond the Sunset                                                                              |      8       |
+|      245 | Henry Miller on Writing                                                                                |      8       |
+|      237 | Poetry for Young People: Edward Lear                                                                   |      8       |
+|      866 | Fullmetal Alchemist  Vol. 9 (Fullmetal Alchemist  #9)                                                  |      8       |
+|        1 | Harry Potter and the Half-Blood Prince (Harry Potter  #6)                                              |      8       |
+|      931 | Memoirs of a Geisha                                                                                    |      8       |
+|      159 | Dinner with Anna Karenina                                                                              |      8       |
+|      815 | Three Nights in August: Strategy  Heartbreak  and Joy Inside the Mind of a Manager                     |      8       |
+|      415 | Gravity's Rainbow                                                                                      |      8       |
+|      665 | The Virtue of Selfishness: A New Concept of Egoism                                                     |      8       |
+|      764 | Del amor y otros demonios                                                                              |      8       |
+|      394 | Lincoln at Gettysburg: The Words That Remade America                                                   |      8       |
+|      477 | Collapse of Complex Societies                                                                          |      8       |
+|       93 | Heidi (Heidi  #1-2)                                                                                    |      7.66667 |
+|      824 | The Cobweb                                                                                             |      7.66667 |
+|       18 | The Ultimate Hitchhiker's Guide (Hitchhiker's Guide to the Galaxy  #1-5)                               |      7.66667 |
+|      576 | 1000 Record Covers                                                                                     |      7.5     |
+|      105 | Chapterhouse: Dune (Dune Chronicles #6)                                                                |      7.5     |
+|      277 | Writing                                                                                                |      7.5     |
+|      515 | Programming Ruby: The Pragmatic Programmers' Guide                                                     |      7.5     |
+|       71 | Traders  Guns & Money: Knowns and Unknowns in the Dazzling World of Derivatives                        |      7.33333 |
+|      139 | ebay Timesaving Techniques for Dummies                                                                 |      7       |
+|       63 | The Changeling                                                                                         |      7       |
+|      404 | Running Dog                                                                                            |      7       |
+|      422 | A Book of Common Prayer                                                                                |      7       |
+|      251 | Nexus (The Rosy Crucifixion  #3)                                                                       |      7       |
+|     1007 | Think and Grow Rich                                                                                    |      7       |
+|      902 | The Westing Game                                                                                       |      7       |
+|      416 | Slow Learner: Early Stories                                                                            |      7       |
+|      397 | The Gettysburg Address                                                                                 |      7       |
+|      842 | The Psychology of Everyday Things                                                                      |      7       |
+|      156 | Anna Karenina                                                                                          |      7       |
+|      871 | Fullmetal Alchemist  Vol. 4 (Fullmetal Alchemist  #4)                                                  |      6.8     |
+|       27 | Neither Here nor There: Travels in Europe                                                              |      6.66667 |
+|      494 | Wizard: The Life and Times of Nikola Tesla: Biography of a Genius                                      |      6.66667 |
+|       23 | Bryson's Dictionary of Troublesome Words: A Writer's Guide to Getting It Right                         |      6.66667 |
+|      865 | The Alchemist                                                                                          |      6.66667 |
+|      420 | The Year of Magical Thinking                                                                           |      6.66667 |
+|      103 | God Emperor of Dune (Dune Chronicles  #4)                                                              |      6.5     |
+|      619 | Vice (V  #8)                                                                                           |      6.5     |
+|     1059 | Shibumi                                                                                                |      6.5     |
+|       30 | J.R.R. Tolkien 4-Book Boxed Set: The Hobbit and The Lord of the Rings                                  |      6.33333 |
+|      870 | Fullmetal Alchemist  Vol. 1 (Fullmetal Alchemist  #1)                                                  |      6.33333 |
+|      664 | The Fountainhead                                                                                       |      6.33333 |
+|      400 | Libra                                                                                                  |      6.25    |
+|      431 | The New York Trilogy                                                                                   |      6.2     |
+|      426 | We Tell Ourselves Stories in Order to Live: Collected Nonfiction                                       |      6.2     |
+|      131 | The Power of One: The Solo Play for Playwrights  Actors  and Directors                                 |      6       |
+|      110 | The Road to Dune                                                                                       |      6       |
+|      444 | Pyramids of Montauk: Explorations in Consciousness                                                     |      6       |
+|      285 | Love Letters                                                                                           |      6       |
+|      280 | The Ravishing of Lol Stein                                                                             |      6       |
+|      765 | Living to Tell the Tale                                                                                |      6       |
+|      484 | Reinventing the Enemy's Language: Contemporary Native Women's Writings of North America                |      6       |
++----------+--------------------------------------------------------------------------------------------------------+--------------+
