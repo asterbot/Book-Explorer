@@ -6,6 +6,9 @@ CREATE TABLE BookGenre(
     FOREIGN KEY (genreID) REFERENCES Genre(genreID) ON DELETE CASCADE
 );
 
+drop index if exists genre_id;
+create index genre_id on BookGenre(genreID);
+
 INSERT INTO BookGenre(bookID, genreID) VALUES
 (1, 5),
 (2, 79),

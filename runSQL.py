@@ -1,5 +1,6 @@
 import sys
 from tabulate import tabulate
+import traceback
 
 import os
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'backend'))
@@ -17,7 +18,13 @@ if __name__ == "__main__":
         query = f.read()
 
     db = Database(show_logs=False)
-    db.run(query)
+    
+    try:
+        db.run(query)
+    except Exception as e:
+        print(f"Error when running {FILE}\n")
+        traceback.print_exc()
+        exit(1)
     
     db.commit()
     

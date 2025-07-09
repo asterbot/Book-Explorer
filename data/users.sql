@@ -5,6 +5,9 @@ CREATE TABLE users (
     PRIMARY KEY (userID)
 );
 
+drop index if exists users_id;
+create index users_id on users(userID);
+
 INSERT INTO users (userID, name, email) VALUES
 ('1', 'Alex', 'alex@example.com'),
 ('2', 'Bob', 'bob@example.com'),
