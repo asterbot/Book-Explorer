@@ -1,17 +1,19 @@
 ## Setup instructions
 
 ## DB access
+The PostgreSQL database is already deployed on Supabase with all schema and data loaded.
+No setup is required unless you are making changes to the database.
 
-To set up the db, first set up the virtual environment:
+However, you should still set up the virtual environment to run the backend:
 
 ```bash
 cd backend
 python -m venv venv/
 source venv/bin/activate
 pip install -r requirements.txt 
-cd ..
-./setup.sh
 ```
+
+If you want to reinitialize the database, run `./setup.sh` in the root directory after setting up the virtual environment
 
 Then you should be able to run any SQL query with `python runSQL.py [name-of-sql-file].sql` (even if it is in another directory) and see the output
 
@@ -37,37 +39,33 @@ npm run dev
 
 ## Features Implemented
 
-The current application supports the following features (linked to SQL queries in `queries/milestone1/`):
+The current application supports the following features (linked to SQL queries in `queries/milestone2/`):
 
 - Search for books by title (R6)  
 - Add books to a wishlist (R7)  
-- View common books between users (R8)  
-- Browse top 5 highest-rated books (R9)  
+- View common books between two users (R8)  
+- View top 5 highest-rated books (R9)  
+- View top 5 most wishlisted books (R10)
+
+All five features are tested using both sample and production datasets. However, only R6–R8 are fully implemented in the frontend and are accessible through the application interface.
 
 ---
 
 ## Project Components
 
-### C2. SQL Schema Files (located in `data/`)  
-- `data/books.csv` – Full production dataset for the `Books` table.  
-- `data/books.sql` – Inserts sample data (approx. the first 300 entries of the production dataset) into the `Books` table.  
-- `data/users.sql` – Inserts sample entries into the `Users` table, generated using `data/generation_scripts/generate_users.py`.  
-- `data/userprogress.sql` – Inserts sample progress records into the `UserProgress` table, generated using `data/generation_scripts/generate_user_progress.py`.  
-- `data/drop_tables.sql` – Resets all tables by dropping existing schema objects.
+### C2. SQL Schema Files
+All schema files are located in `data/`
 
-### Sample Queries   
-- `queries/milestone1/R6-test.sql` – Search book titles  
-- `queries/milestone1/R7-test.sql` – Add to wishlist  
-- `queries/milestone1/R8-test.sql` – Find common books  
-- `queries/milestone1/R9-test.sql` – Top 5 books by rating  
+### C3. Sample Queries   
+All sample queries and outputs are located in `queries/milestone2/sample`
 
-**Output Files** (in `queries/milestone1/`):  
-`R6-test.out`, `R7-test.out`, `R8-test.out`, `R9-test.out` contain the expected output from running the queries on the sample database (not the full dataset).
+### C4. Production Queries   
+All production queries and outputs are located in `queries/milestone2/prod`
 
 ### C5. Application Code  
 - `frontend/`: React + TypeScript client  
 - `backend/`: Python Flask server with REST API for SQL execution  
-- `setup.sh`: Script to initialize the database with schema and data  
+- `setup.sh`: Script to load the database with schema and data (do not run unless anything in `data/` has changed) 
 
 ---
 
