@@ -4,6 +4,9 @@ CREATE TABLE Genre(
     PRIMARY KEY(genreID)
 );
 
+drop index if exists genre_id;
+create index genre_id on Genre(genreID);
+
 
 INSERT INTO Genre(genreID, name) VALUES
 (1, 'Fantasy'),

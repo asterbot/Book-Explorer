@@ -3,6 +3,9 @@ CREATE TABLE publishers (
     name VARCHAR(255) UNIQUE
 );
 
+drop index if exists publisher_id;
+create index publisher_id on publishers(publisherID);
+
 INSERT INTO publishers (publisherID, name) VALUES
 (1, 'Scholastic Inc.'),
 (2, 'Scholastic'),

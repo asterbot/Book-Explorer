@@ -6,7 +6,6 @@ sys.path.append(os.path.join(os.pardir, os.pardir, 'backend'))
 from database import Database #type: ignore
 
 db = Database()
-db.use_database('cs348_project')
 
 db.run('SELECT bookID FROM books LIMIT 100;')
 books = [row[0] for row in db.fetch_all()]
@@ -24,7 +23,7 @@ for user_id in range(1, num_users + 1):
             entries.add((user_id, book_id, tag_id))
 
 
-file_path = os.path.join(os.pardir, os.pardir, 'data', 'tag','user_book_tag.sql')
+file_path = os.path.join(os.pardir, os.pardir, 'data', 'tags','user_book_tag.sql')
 
 with open(file_path, 'a', encoding='utf-8') as f:
     f.write("INSERT INTO `user_book_tag` (`userID`, `bookID`, `tagID`) VALUES\n")

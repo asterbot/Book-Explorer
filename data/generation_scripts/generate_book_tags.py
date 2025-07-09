@@ -6,7 +6,6 @@ sys.path.append(os.path.join(os.pardir, os.pardir, 'backend'))
 from database import Database # type: ignore
 
 db = Database()
-db.use_database('cs348_project')
 
 db.run('SELECT bookID FROM books ORDER BY bookID LIMIT 100;')
 books = [row[0] for row in db.fetch_all()]
