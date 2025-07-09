@@ -12,4 +12,5 @@ JOIN users u_mine ON up_mine.userID = u_mine.userID
 JOIN userprogress up_all ON b.bookID = up_all.bookID
 WHERE up_mine.status = 'IN PROGRESS' and u_mine.name = 'ALEX'
 GROUP BY b.bookID, b.title
-ORDER BY completion_rate DESC, total_users DESC
+ORDER BY completion_rate DESC, total_users DESC;
+
