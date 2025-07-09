@@ -1,11 +1,7 @@
 #!/bin/bash
 
-if [ $# -ne 1 ]; then
-    echo "Provide username as argument"
-    echo "Usage: ./generate_outputs.sh [username]"
-    exit 1
-fi
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 for file in *.sql; do
-    mysql -u $1 --table cs348_project -p < $file > ${file%.*}.out
+    python $SCRIPT_DIR/../runSQL.py $file > ${file%.*}.out
 done
