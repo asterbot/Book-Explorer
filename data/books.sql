@@ -6,6 +6,9 @@ CREATE TABLE books (
     num_pages	INT
 );
 
+drop index if exists books_id;
+create index books_id on books(bookID);
+
 INSERT INTO books (bookID, title, isbn, language_code, num_pages) VALUES ('1', 'Harry Potter and the Half-Blood Prince (Harry Potter #6)', '0439785960', 'eng', '652');
 INSERT INTO books (bookID, title, isbn, language_code, num_pages) VALUES ('2', 'Harry Potter and the Order of the Phoenix (Harry Potter #5)', '0439358078', 'eng', '870');
 INSERT INTO books (bookID, title, isbn, language_code, num_pages) VALUES ('4', 'Harry Potter and the Chamber of Secrets (Harry Potter #2)', '0439554896', 'eng', '352');

@@ -3,6 +3,9 @@ CREATE TABLE authors (
     name VARCHAR(255)
 );
 
+drop index if exists authors_id;
+create index authors_id on authors(authorID);
+
 INSERT INTO authors (authorID, name) VALUES
 (1, 'J.K. Rowling'),
 (2, 'Mary GrandPré'),
