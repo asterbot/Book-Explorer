@@ -91,6 +91,18 @@ async function getGenreCounts() {
   }
 }
 
+async function getClubSuggestion(username: string) {
+  try {
+    const response = await fetch(
+      `http://127.0.0.1:5000/suggest-club/${encodeURIComponent(username)}`
+    );
+    return await response.json();       // may contain clubName OR message OR error
+  } catch (error) {
+    console.error(`Error getting suggestion: ${error}`);
+    return { error: "Could not connect to backend" };
+  }
+}
+
 function App() {
   const [books, setBooks] = useState<Book[]>();
   const [searchQuery, setSearchQuery] = useState("");
@@ -113,6 +125,14 @@ function App() {
   // Genre
   const [genreCounts, setGenreCounts] = useState<{ [genre: string]: number }>();
   const [showGenreDropdown, setShowGenreDropdown] = useState(false);
+
+  // Book Club
+  const [suggestion, setSuggestion] = useState<{
+    clubName?: string;
+    reason?: string;
+    message?: string;
+    error?: string;
+  } | null>(null);
 
   const handleSearch = async () => {
     if (searchQuery.trim() !== "") {
@@ -157,6 +177,11 @@ function App() {
     setShowGenreDropdown(false);
   };
 
+  const handleSuggestClub = async () => {
+    if (!username.trim()) return;
+    const res = await getClubSuggestion(username.trim());
+    setSuggestion(res);
+  };
 
   async function getBooksByGenre(genre: string) {
     try {
@@ -335,6 +360,31 @@ function App() {
                       <strong>{genre}</strong>: {count}
                     </div>
                   ))}
+                </div>
+              )}
+            </div>
+            <div className="list-container" style={{ marginTop: "1rem" }}>
+              <button className="list-button" onClick={handleSuggestClub}>
+                Suggest a Book Club
+              </button>
+              {suggestion && (
+                <div style={{ marginTop: "0.5rem", fontSize: "14px" }}>
+                  {"clubName" in suggestion && (
+                    <>
+                      <strong>Recommended Club:</strong>{" "}
+                      <span style={{ color: "#0066cc" }}>
+                        {suggestion.clubName}
+                      </span>
+                      <br />
+                      <em>{suggestion.reason}</em>
+                    </>
+                  )}
+                  {"message" in suggestion && (
+                    <span>{suggestion.message}</span>
+                  )}
+                  {"error" in suggestion && (
+                    <span style={{ color: "red" }}>{suggestion.error}</span>
+                  )}
                 </div>
               )}
             </div>

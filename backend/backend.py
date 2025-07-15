@@ -3,6 +3,7 @@ from flask_cors import CORS
 
 from database import Database
 from config import get_env_config
+from psycopg2.extensions import adapt
 
 # Initialize flask app
 app = Flask(__name__)
@@ -306,6 +307,72 @@ def top_wishlist_books():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/suggest-club/<string:username>', methods=['GET'])
+def suggest_club(username):
+    try:
+        db = Database()
+
+        safe_name = adapt(username).getquoted().decode()
+        db.run(
+            f"SELECT userID                         "
+            f"FROM   users                          "
+            f"WHERE  LOWER(name) = LOWER({safe_name}) "
+            f"LIMIT  1;"
+        )
+        row = db.fetch_one()
+        if row is None:
+            return jsonify({"error": f"username '{username}' does not exist"}), 404
+        user_id = row[0]
+
+        db.run(f"SELECT clubid FROM suggest_club({user_id});")
+        rec = db.fetch_one()
+        if rec is None:
+            return jsonify({
+                "message": "You are already in every book club :/  No new clubs to join!"
+            }), 200
+        club_id = rec[0]
+
+        db.run(
+            f"""
+            WITH u AS (
+                SELECT genreid, score
+                FROM   v_user_genre_score
+                WHERE  userid = {user_id}
+            ),
+            c AS (
+                SELECT genreid, score
+                FROM   v_club_genre_score
+                WHERE  clubid = {club_id}
+            )
+            SELECT g.name
+            FROM   u JOIN c USING (genreid)
+            JOIN   Genre g USING (genreid)
+            ORDER  BY (u.score * c.score) DESC
+            LIMIT  2;
+            """
+        )
+        top_genres = [r[0] for r in db.fetch_all()]
+        if top_genres:
+            reason = (
+                "Based on your interest in "
+                + (", ".join(top_genres) if len(top_genres) > 1 else top_genres[0])
+                + ", we think this club is a great fit."
+            )
+        else:
+            reason = (
+                "This club's reading history best matches your ratings and books in progress."
+            )
+
+        db.run(f"SELECT name FROM bookclubs WHERE clubid = {club_id};")
+        club_name = db.fetch_one()[0]
+
+        return jsonify({
+            "clubName": club_name,
+            "reason":   reason
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True, port=PORT)

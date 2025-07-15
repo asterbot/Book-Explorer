@@ -31,5 +31,6 @@ python runSQL.py data/genres/bookgenre.sql
 
 # Book Club
 python runSQL.py data/book_clubs.sql
+python runSQL.py data/suggest_club_setup.sql
 
 echo "Database setup complete, check tables on postgresSQL"
