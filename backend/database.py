@@ -87,3 +87,13 @@ class Database:
             list[str]: List of rows returned by previous command
         """
         return self.cursor.fetchall()
+
+
+    def fetch_one(self):
+        """
+        Fetch a single row from the previously executed query.
+
+        Returns:
+            tuple or None: The next row from the result set, or None if no more data is available.
+        """
+        return self.cursor.fetchone()
