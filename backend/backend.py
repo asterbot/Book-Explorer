@@ -24,7 +24,16 @@ def search_books():
         limit = request.args.get('limit', 10, type=int)
         
         if search_query:
-            query = f"SELECT * FROM books WHERE LOWER(title) LIKE LOWER('%{search_query}%') LIMIT {limit};"
+            query = f"""
+                SELECT b.bookID, b.title, b.isbn, b.language_code, b.num_pages, 
+                    COALESCE(string_agg(a.name, ', '), '') AS authors
+                FROM books b
+                LEFT JOIN book_authors ba ON b.bookID = ba.bookID
+                LEFT JOIN authors a ON ba.authorID = a.authorID
+                WHERE LOWER(b.title) LIKE LOWER('%{search_query}%')
+                GROUP BY b.bookID
+                LIMIT {limit};
+            """
             db.run(query)
         else:
             db.select_rows("books", num_rows=limit)
@@ -39,6 +48,7 @@ def search_books():
                 "isbn": row[2],
                 "language_code": row[3],
                 "num_pages": row[4],
+                "authors": row[5]
             })
 
         return jsonify({
@@ -116,18 +126,28 @@ def view_userlist():
         username = request.args.get('username')
         status = request.args.get('status')
         query = f"""
-            SELECT b.bookID, b.title
-            FROM userprogress u, books b 
-            WHERE userID = (SELECT userID FROM users WHERE name = '{username}') 
-                    AND b.bookID=u.bookID
-                    AND u.status='{status}'"""
-
+            SELECT 
+                b.bookID,
+                b.title,
+                COALESCE(string_agg(a.name, ', '), '') AS authors
+            FROM userprogress u
+            JOIN books b ON u.bookID = b.bookID
+            LEFT JOIN book_authors ba ON b.bookID = ba.bookID
+            LEFT JOIN authors a ON ba.authorID = a.authorID
+            WHERE u.userID = (SELECT userID FROM users WHERE name = '{username}')
+                AND u.status = '{status}'
+            GROUP BY b.bookID, b.title;
+            """
         db.run(query)
         results = db.fetch_all()
 
         books = []
         for book in results:
-            books.append({"bookID": book[0], "title": book[1]})
+            books.append({
+                "bookID": book[0],
+                "title": book[1],
+                "authors": book[2]
+            })
         
         return jsonify({"results": books}), 200
     except Exception as e:
@@ -186,19 +206,30 @@ def common_books():
         limit = request.args.get('limit', 5, type=int)
 
         query = f"""
-        SELECT b.bookID, b.title
-        FROM userprogress us1, userprogress us2, books b
-        WHERE us1.userID=(SELECT userID from users WHERE name='{user1}') 
-                AND us2.userID=(SELECT userID from users WHERE name='{user2}') 
-                AND us1.bookID=us2.bookID and us1.bookID=b.bookID
-        LIMIT {limit}
+        SELECT 
+            b.bookID,
+            b.title,
+            COALESCE(string_agg(a.name, ', '), '') AS authors
+        FROM userprogress us1
+        JOIN userprogress us2 ON us1.bookID = us2.bookID
+        JOIN books b ON us1.bookID = b.bookID
+        LEFT JOIN book_authors ba ON b.bookID = ba.bookID
+        LEFT JOIN authors a ON ba.authorID = a.authorID
+        WHERE us1.userID = (SELECT userID FROM users WHERE name = '{user1}')
+            AND us2.userID = (SELECT userID FROM users WHERE name = '{user2}')
+        GROUP BY b.bookID, b.title
+        LIMIT {limit};
         """
         db.run(query)
         results = db.fetch_all()
 
         books = []
         for book in results:
-            books.append({"bookID": book[0], "title": book[1]})
+            books.append({
+                "bookID": book[0],
+                "title": book[1],
+                "authors": book[2]
+            })
 
         return jsonify({"results": books}), 200
         
@@ -216,18 +247,22 @@ def book_completion_rates():
         SELECT 
             b.bookID,
             b.title,
-            COUNT(up_all.userID) as total_users,
-            SUM(CASE WHEN up_all.status = 'FINISHED' THEN 1 ELSE 0 END) as completed_users,
+            COALESCE(string_agg(a.name, ', '), '') AS authors,
+            COUNT(up_all.userID) AS total_users,
+            SUM(CASE WHEN up_all.status = 'FINISHED' THEN 1 ELSE 0 END) AS completed_users,
             ROUND(
-                (SUM(CASE WHEN up_all.status = 'FINISHED' THEN 1 ELSE 0 END) * 100.0 / COUNT(up_all.userID)), 1
-            ) as completion_rate
+                SUM(CASE WHEN up_all.status = 'FINISHED' THEN 1 ELSE 0 END) * 100.0 / COUNT(up_all.userID),
+                1
+            ) AS completion_rate
         FROM userprogress up_mine
         JOIN books b ON up_mine.bookID = b.bookID AND up_mine.status = 'IN PROGRESS'
+        LEFT JOIN book_authors ba ON b.bookID = ba.bookID
+        LEFT JOIN authors a ON ba.authorID = a.authorID
         JOIN users u_mine ON up_mine.userID = u_mine.userID
         JOIN userprogress up_all ON b.bookID = up_all.bookID
-        WHERE up_mine.status = 'IN PROGRESS' and u_mine.name = '{username}'
+        WHERE u_mine.name = '{username}'
         GROUP BY b.bookID, b.title
-        ORDER BY completion_rate DESC, total_users DESC
+        ORDER BY completion_rate DESC, total_users DESC;
         """
         
         db.run(query)
@@ -238,9 +273,10 @@ def book_completion_rates():
             completion_data.append({
                 "bookID": row[0],
                 "title": row[1],
-                "total_users": row[2],
-                "completed_users": row[3],
-                "completion_rate": row[4]
+                "authors": row[2],
+                "total_users": row[3],
+                "completed_users": row[4],
+                "completion_rate": row[5]
             })
 
         return jsonify({"results": completion_data}), 200
