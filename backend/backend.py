@@ -421,81 +421,82 @@ def recommend_books():
             return jsonify({"error": "Missing 'username' parameter"}), 400
 
         safe_name = adapt(username).getquoted().decode()
-        # get userID from username
+
+        # Get userID from USERS table
         db.run(f"""
             SELECT userID
-            FROM users
+            FROM {USERS}
             WHERE LOWER(name) = LOWER({safe_name})
             LIMIT 1;
         """)
         row = db.fetch_one()
 
         if not row:
-            return jsonify({"error": f"Username '{safe_name}' not found."}), 404
+            return jsonify({"error": f"Username '{username}' not found."}), 404
 
         user_id = row[0]
 
-        # recommendation query
         query = f"""
-        WITH current_user_tags AS ( -- get top 5 most frequently used user tags
+        WITH current_user_tags AS (
             SELECT tagID
-            FROM user_book_tag
+            FROM {USER_BOOK_TAG}
             WHERE userID = {user_id}
             GROUP BY tagID
             ORDER BY COUNT(*) DESC
             LIMIT 5
         ),
-        similar_users AS ( -- get other users who have utilized the same tags
+        similar_users AS (
             SELECT DISTINCT ubt.userID
-            FROM user_book_tag ubt
+            FROM {USER_BOOK_TAG} ubt
             JOIN current_user_tags cut ON ubt.tagID = cut.tagID
             WHERE ubt.userID != {user_id}
         ),
-        books_read_by_similar_users AS ( -- books those users have started or finished
+        books_read_by_similar_users AS (
             SELECT DISTINCT up.bookID
-            FROM userprogress up
+            FROM {USERPROGRESS} up
             JOIN similar_users su ON up.userID = su.userID
             WHERE up.status IN ('IN PROGRESS', 'FINISHED')
         ),
-        books_tagged_with_interest_tags AS ( -- books tagged with user's top tags
+        books_tagged_with_interest_tags AS (
             SELECT DISTINCT ubt.bookID
-            FROM user_book_tag ubt
+            FROM {USER_BOOK_TAG} ubt
             WHERE ubt.tagID IN (SELECT tagID FROM current_user_tags)
         ),
-        hybrid_candidate_books AS ( -- union of both
+        hybrid_candidate_books AS (
             SELECT bookID FROM books_read_by_similar_users
             UNION
             SELECT bookID FROM books_tagged_with_interest_tags
         ),
-        recommended_books AS ( -- exclude books the user has interacted with
+        recommended_books AS (
             SELECT cb.bookID
             FROM hybrid_candidate_books cb
             WHERE NOT EXISTS (
                 SELECT 1
-                FROM userprogress up
+                FROM {USERPROGRESS} up
                 WHERE up.userID = {user_id}
-                  AND up.bookID = cb.bookID
+                AND up.bookID = cb.bookID
             )
             LIMIT 5
         )
         SELECT b.bookID, b.title, COALESCE(string_agg(a.name, ', '), '') AS authors
         FROM recommended_books rb
-        JOIN books b ON b.bookID = rb.bookID
-        LEFT JOIN book_authors ba ON b.bookID = ba.bookID
-        LEFT JOIN authors a ON ba.authorID = a.authorID
+        JOIN {BOOKS} b ON b.bookID = rb.bookID
+        LEFT JOIN {BOOK_AUTHORS} ba ON b.bookID = ba.bookID
+        LEFT JOIN {AUTHORS} a ON ba.authorID = a.authorID
         GROUP BY b.bookID, b.title;
         """
 
         db.run(query)
         results = db.fetch_all()
 
-        books = []
-        for row in results:
-            books.append({
+        books = [
+            {
                 "bookID": row[0],
                 "title": row[1],
                 "authors": row[2]
-            })
+            }
+            for row in results
+        ]
 
         return jsonify({"results": books, "count": len(books)}), 200
 
