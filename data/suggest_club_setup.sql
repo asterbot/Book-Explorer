@@ -109,5 +109,5 @@ END $$;
 SELECT refresh_reco_views();
 
 COMMENT ON FUNCTION suggest_club(INT)
-IS 'Returns the single best‑match book‑club for the given user, or zero rows if user already belongs to every club.';
+IS 'Returns the single best-match book-club for the given user, or zero rows if user already belongs to every club.';
 
