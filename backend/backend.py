@@ -409,6 +409,99 @@ def suggest_club(username):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
+@app.route('/recommendations', methods=['GET'])
+def recommend_books():
+    try:
+        db = Database()
+        username = request.args.get('username')
+
+        if not username:
+            return jsonify({"error": "Missing 'username' parameter"}), 400
+
+        safe_name = adapt(username).getquoted().decode()
+
+        # Get userID from USERS table
+        db.run(f"""
+            SELECT userID
+            FROM {USERS}
+            WHERE LOWER(name) = LOWER({safe_name})
+            LIMIT 1;
+        """)
+        row = db.fetch_one()
+
+        if not row:
+            return jsonify({"error": f"Username '{username}' not found."}), 404
+
+        user_id = row[0]
+
+        query = f"""
+        WITH current_user_tags AS (
+            SELECT tagID
+            FROM {USER_BOOK_TAG}
+            WHERE userID = {user_id}
+            GROUP BY tagID
+            ORDER BY COUNT(*) DESC
+            LIMIT 5
+        ),
+        similar_users AS (
+            SELECT DISTINCT ubt.userID
+            FROM {USER_BOOK_TAG} ubt
+            JOIN current_user_tags cut ON ubt.tagID = cut.tagID
+            WHERE ubt.userID != {user_id}
+        ),
+        books_read_by_similar_users AS (
+            SELECT DISTINCT up.bookID
+            FROM {USERPROGRESS} up
+            JOIN similar_users su ON up.userID = su.userID
+            WHERE up.status IN ('IN PROGRESS', 'FINISHED')
+        ),
+        books_tagged_with_interest_tags AS (
+            SELECT DISTINCT ubt.bookID
+            FROM {USER_BOOK_TAG} ubt
+            WHERE ubt.tagID IN (SELECT tagID FROM current_user_tags)
+        ),
+        hybrid_candidate_books AS (
+            SELECT bookID FROM books_read_by_similar_users
+            UNION
+            SELECT bookID FROM books_tagged_with_interest_tags
+        ),
+        recommended_books AS (
+            SELECT cb.bookID
+            FROM hybrid_candidate_books cb
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM {USERPROGRESS} up
+                WHERE up.userID = {user_id}
+                AND up.bookID = cb.bookID
+            )
+            LIMIT 5
+        )
+        SELECT b.bookID, b.title, COALESCE(string_agg(a.name, ', '), '') AS authors
+        FROM recommended_books rb
+        JOIN {BOOKS} b ON b.bookID = rb.bookID
+        LEFT JOIN {BOOK_AUTHORS} ba ON b.bookID = ba.bookID
+        LEFT JOIN {AUTHORS} a ON ba.authorID = a.authorID
+        GROUP BY b.bookID, b.title;
+        """
+
+        db.run(query)
+        results = db.fetch_all()
+
+        books = [
+            {
+                "bookID": row[0],
+                "title": row[1],
+                "authors": row[2]
+            }
+            for row in results
+        ]
+
+        return jsonify({"results": books, "count": len(books)}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True, port=PORT)

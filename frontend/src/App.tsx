@@ -22,14 +22,9 @@ enum bookStatus {
   FINISHED = "FINISHED",
 }
 
-async function viewWishlist(
-  username: string,
-  status: bookStatus = bookStatus.NOT_STARTED
-) {
+async function viewWishlist(username: string, status: bookStatus = bookStatus.NOT_STARTED) {
   try {
-    const response = await fetch(
-      `http://127.0.0.1:5000/userlist?username=${username}&status=${status}`
-    );
+    const response = await fetch(`http://127.0.0.1:5000/userlist?username=${username}&status=${status}`);
     const data = await response.json();
     return data.results;
   } catch (error) {
@@ -41,14 +36,8 @@ async function addBook(username: string, bookID: number, status: bookStatus) {
   try {
     const response = await fetch(`http://127.0.0.1:5000/userprogress`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: username,
-        bookID: bookID,
-        status: status,
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, bookID, status }),
     });
     const data = await response.json();
     return data.results;
@@ -59,9 +48,7 @@ async function addBook(username: string, bookID: number, status: bookStatus) {
 
 async function findCommonBooks(username1: string, username2: string) {
   try {
-    const response = await fetch(
-      `http://127.0.0.1:5000/common-books?u1name=${username1}&u2name=${username2}`
-    );
+    const response = await fetch(`http://127.0.0.1:5000/common-books?u1name=${username1}&u2name=${username2}`);
     const data = await response.json();
     return data.results;
   } catch (error) {
@@ -71,9 +58,7 @@ async function findCommonBooks(username1: string, username2: string) {
 
 async function getBookCompletionRates(username: string) {
   try {
-    const response = await fetch(
-      `http://127.0.0.1:5000/book-completion-rates?username=${username}`
-    );
+    const response = await fetch(`http://127.0.0.1:5000/book-completion-rates?username=${username}`);
     const data = await response.json();
     return data.results;
   } catch (error) {
@@ -91,48 +76,51 @@ async function getGenreCounts() {
   }
 }
 
+async function getBooksByGenre(genre: string) {
+  try {
+    const response = await fetch(`http://127.0.0.1:5000/genre?genre=${genre}`);
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    console.error(`Error fetching books by genre: ${error}`);
+  }
+}
+
 async function getClubSuggestion(username: string) {
   try {
-    const response = await fetch(
-      `http://127.0.0.1:5000/suggest-club/${encodeURIComponent(username)}`
-    );
-    return await response.json();       // may contain clubName OR message OR error
+    const response = await fetch(`http://127.0.0.1:5000/suggest-club/${encodeURIComponent(username)}`);
+    return await response.json();
   } catch (error) {
     console.error(`Error getting suggestion: ${error}`);
     return { error: "Could not connect to backend" };
   }
 }
 
+async function getRecommendations(username: string) {
+  try {
+    const response = await fetch(`http://127.0.0.1:5000/recommendations?username=${encodeURIComponent(username)}`);
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    console.error(`Error fetching recommendations: ${error}`);
+  }
+}
+
 function App() {
   const [books, setBooks] = useState<Book[]>();
   const [searchQuery, setSearchQuery] = useState("");
-
-  // Usernames
   const [username, setUsername] = useState("");
   const [otherUsername, setOtherUserName] = useState("");
 
-  // User status lists
   const [wishlist, setWishlist] = useState<Book[]>();
   const [inProgress, setInProgress] = useState<Book[]>();
   const [finished, setFinished] = useState<Book[]>();
-
-  // Common books between 2 users
   const [commonBooks, setCommonBooks] = useState<Book[]>();
-
-  // Book completion rates
   const [completionRates, setCompletionRates] = useState<any[]>();
-
-  // Genre
   const [genreCounts, setGenreCounts] = useState<{ [genre: string]: number }>();
   const [showGenreDropdown, setShowGenreDropdown] = useState(false);
-
-  // Book Club
-  const [suggestion, setSuggestion] = useState<{
-    clubName?: string;
-    reason?: string;
-    message?: string;
-    error?: string;
-  } | null>(null);
+  const [suggestion, setSuggestion] = useState<any>(null);
+  const [recommendedBooks, setRecommendedBooks] = useState<Book[]>();
 
   const handleSearch = async () => {
     if (searchQuery.trim() !== "") {
@@ -151,9 +139,8 @@ function App() {
   };
 
   const handleCommonBooks = async () => {
-    if (username.trim() != "" && otherUsername.trim() != "") {
+    if (username.trim() && otherUsername.trim()) {
       const results = await findCommonBooks(username, otherUsername);
-      console.log(results);
       setCommonBooks(results);
     }
   };
@@ -183,15 +170,11 @@ function App() {
     setSuggestion(res);
   };
 
-  async function getBooksByGenre(genre: string) {
-    try {
-      const response = await fetch(`http://127.0.0.1:5000/genre?genre=${genre}`);
-      const data = await response.json();
-      return data.results;
-    } catch (error) {
-      console.error(`Error fetching books by genre: ${error}`);
-    }
-  }
+  const handleRecommendations = async () => {
+    if (!username.trim()) return;
+    const results = await getRecommendations(username);
+    setRecommendedBooks(results);
+  };
 
   const collapseLists = () => {
     setWishlist(undefined);
@@ -199,9 +182,9 @@ function App() {
     setFinished(undefined);
     setCommonBooks(undefined);
     setCompletionRates(undefined);
+    setRecommendedBooks(undefined);
   };
 
-  // Fetch book data from backend endpoint API
   useEffect(() => {
     setSearchQuery("Harry Potter");
     setUsername("Alex");
@@ -385,6 +368,24 @@ function App() {
                   {"error" in suggestion && (
                     <span style={{ color: "red" }}>{suggestion.error}</span>
                   )}
+                </div>
+              )}
+            </div>
+
+            <div className="list-container">
+              <button className="list-button" onClick={handleRecommendations}>
+                Book Recommendations
+              </button>
+              {recommendedBooks && (
+                <div className="list-grid">
+                  {recommendedBooks.map((book) => (
+                    <div key={book.bookID}>
+                      <p>
+                        <span className="book-title">{book.title}</span>
+                        {book.authors && <span className="book-author"> by {book.authors}</span>}
+                      </p>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
