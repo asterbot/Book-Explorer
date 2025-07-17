@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 from database import Database
-from config import get_env_config
+from config import *
 from psycopg2.extensions import adapt
 
 # Initialize flask app
@@ -27,9 +27,9 @@ def search_books():
             query = f"""
                 SELECT b.bookID, b.title, b.isbn, b.language_code, b.num_pages, 
                     COALESCE(string_agg(a.name, ', '), '') AS authors
-                FROM books b
-                LEFT JOIN book_authors ba ON b.bookID = ba.bookID
-                LEFT JOIN authors a ON ba.authorID = a.authorID
+                FROM {BOOKS} b
+                LEFT JOIN {BOOK_AUTHORS} ba ON b.bookID = ba.bookID
+                LEFT JOIN {AUTHORS} a ON ba.authorID = a.authorID
                 WHERE LOWER(b.title) LIKE LOWER('%{search_query}%')
                 GROUP BY b.bookID
                 LIMIT {limit};
@@ -64,9 +64,9 @@ def genre_counts():
     try:
         db = Database()
         
-        query = """
+        query = f"""
                 SELECT g.name, COUNT(*) as count 
-                FROM BookGenre bg, Genre g
+                FROM {BOOKGENRE} bg, {GENRE} g
                 WHERE bg.genreID=g.genreID 
                 GROUP BY g.name;
         """
@@ -98,7 +98,7 @@ def books_by_genre():
 
         query = f"""
             SELECT b.bookID, b.title
-            FROM books b, BookGenre bg, Genre g
+            FROM {BOOKS} b, {BOOKGENRE} bg, {GENRE} g
             WHERE g.genreID=bg.genreID AND b.bookID=bg.bookID AND
                     LOWER(g.name) = LOWER('{genre}')
             ORDER BY title ASC;
@@ -130,11 +130,11 @@ def view_userlist():
                 b.bookID,
                 b.title,
                 COALESCE(string_agg(a.name, ', '), '') AS authors
-            FROM userprogress u
-            JOIN books b ON u.bookID = b.bookID
-            LEFT JOIN book_authors ba ON b.bookID = ba.bookID
-            LEFT JOIN authors a ON ba.authorID = a.authorID
-            WHERE u.userID = (SELECT userID FROM users WHERE name = '{username}')
+            FROM {USERPROGRESS} u
+            JOIN {BOOKS} b ON u.bookID = b.bookID
+            LEFT JOIN {BOOK_AUTHORS} ba ON b.bookID = ba.bookID
+            LEFT JOIN {AUTHORS} a ON ba.authorID = a.authorID
+            WHERE u.userID = (SELECT userID FROM {USERS} WHERE name = '{username}')
                 AND u.status = '{status}'
             GROUP BY b.bookID, b.title;
             """
@@ -164,8 +164,8 @@ def add_to_userprogress():
         status = data.get('status')
 
         query = f"""
-            INSERT INTO userprogress (userID, bookID, status) 
-            VALUES ((SELECT userID FROM users WHERE name = '{username}'), '{bookID}', '{status}')
+            INSERT INTO {USERPROGRESS} (userID, bookID, status) 
+            VALUES ((SELECT userID FROM {USERS} WHERE name = '{username}'), '{bookID}', '{status}')
             ON CONFLICT (userID, bookID) DO UPDATE SET status = EXCLUDED.status
         """
         db.run(query)
@@ -184,7 +184,7 @@ def top_books_by_rating():
 
         query = f"""
             SELECT b.bookID, b.title, AVG(ur.rating) as avg_rating
-            FROM books b, UserRating ur
+            FROM {BOOKS} b, {USERRATING} ur
             WHERE b.bookID=ur.bookID
             GROUP BY b.bookID, b.title
             ORDER BY avg_rating DESC LIMIT {limit};"""
@@ -210,13 +210,13 @@ def common_books():
             b.bookID,
             b.title,
             COALESCE(string_agg(a.name, ', '), '') AS authors
-        FROM userprogress us1
-        JOIN userprogress us2 ON us1.bookID = us2.bookID
-        JOIN books b ON us1.bookID = b.bookID
-        LEFT JOIN book_authors ba ON b.bookID = ba.bookID
-        LEFT JOIN authors a ON ba.authorID = a.authorID
-        WHERE us1.userID = (SELECT userID FROM users WHERE name = '{user1}')
-            AND us2.userID = (SELECT userID FROM users WHERE name = '{user2}')
+        FROM {USERPROGRESS} us1
+        JOIN {USERPROGRESS} us2 ON us1.bookID = us2.bookID
+        JOIN {BOOKS} b ON us1.bookID = b.bookID
+        LEFT JOIN {BOOK_AUTHORS} ba ON b.bookID = ba.bookID
+        LEFT JOIN {AUTHORS} a ON ba.authorID = a.authorID
+        WHERE us1.userID = (SELECT userID FROM {USERS} WHERE name = '{user1}')
+            AND us2.userID = (SELECT userID FROM {USERS} WHERE name = '{user2}')
         GROUP BY b.bookID, b.title
         LIMIT {limit};
         """
@@ -254,12 +254,12 @@ def book_completion_rates():
                 SUM(CASE WHEN up_all.status = 'FINISHED' THEN 1 ELSE 0 END) * 100.0 / COUNT(up_all.userID),
                 1
             ) AS completion_rate
-        FROM userprogress up_mine
-        JOIN books b ON up_mine.bookID = b.bookID AND up_mine.status = 'IN PROGRESS'
-        LEFT JOIN book_authors ba ON b.bookID = ba.bookID
-        LEFT JOIN authors a ON ba.authorID = a.authorID
-        JOIN users u_mine ON up_mine.userID = u_mine.userID
-        JOIN userprogress up_all ON b.bookID = up_all.bookID
+        FROM {USERPROGRESS} up_mine
+        JOIN {BOOKS} b ON up_mine.bookID = b.bookID AND up_mine.status = 'IN PROGRESS'
+        LEFT JOIN {BOOK_AUTHORS} ba ON b.bookID = ba.bookID
+        LEFT JOIN {AUTHORS} a ON ba.authorID = a.authorID
+        JOIN {USERS} u_mine ON up_mine.userID = u_mine.userID
+        JOIN {USERPROGRESS} up_all ON b.bookID = up_all.bookID
         WHERE u_mine.name = '{username}'
         GROUP BY b.bookID, b.title
         ORDER BY completion_rate DESC, total_users DESC;
@@ -303,7 +303,7 @@ def update_user(user_id):
         if not updates:
             return jsonify({"error": "No valid fields to update"}), 400
 
-        query = f"UPDATE users SET {', '.join(updates)} WHERE userID = {user_id};"
+        query = f"UPDATE {USERS} SET {', '.join(updates)} WHERE userID = {user_id};"
         db.run(query)
 
         return jsonify({"message": "User updated successfully."}), 200
@@ -317,12 +317,12 @@ def top_wishlist_books():
     try:
         db = Database()
 
-        query = """
-        SELECT books.bookID, books.title, COUNT(*) AS wishlist_count
-        FROM userprogress
-        JOIN books ON userprogress.bookID = books.bookID
-        WHERE userprogress.status = 'NOT STARTED'
-        GROUP BY books.bookID, books.title
+        query = f"""
+        SELECT {BOOKS}.bookID, {BOOKS}.title, COUNT(*) AS wishlist_count
+        FROM {USERPROGRESS}
+        JOIN {BOOKS} ON {USERPROGRESS}.bookID = {BOOKS}.bookID
+        WHERE {USERPROGRESS}.status = 'NOT STARTED'
+        GROUP BY {BOOKS}.bookID, {BOOKS}.title
         ORDER BY wishlist_count DESC
         LIMIT 5;
         """
@@ -351,7 +351,7 @@ def suggest_club(username):
         safe_name = adapt(username).getquoted().decode()
         db.run(
             f"SELECT userID                         "
-            f"FROM   users                          "
+            f"FROM   {USERS}                          "
             f"WHERE  LOWER(name) = LOWER({safe_name}) "
             f"LIMIT  1;"
         )
@@ -372,17 +372,17 @@ def suggest_club(username):
             f"""
             WITH u AS (
                 SELECT genreid, score
-                FROM   v_user_genre_score
+                FROM   {V_USER_GENRE_SCORE}
                 WHERE  userid = {user_id}
             ),
             c AS (
                 SELECT genreid, score
-                FROM   v_club_genre_score
+                FROM   {V_CLUB_GENRE_SCORE}
                 WHERE  clubid = {club_id}
             )
             SELECT g.name
             FROM   u JOIN c USING (genreid)
-            JOIN   Genre g USING (genreid)
+            JOIN   {GENRE} g USING (genreid)
             ORDER  BY (u.score * c.score) DESC
             LIMIT  2;
             """
@@ -399,7 +399,7 @@ def suggest_club(username):
                 "This club's reading history best matches your ratings and books in progress."
             )
 
-        db.run(f"SELECT name FROM bookclubs WHERE clubid = {club_id};")
+        db.run(f"SELECT name FROM {BOOKCLUBS} WHERE clubid = {club_id};")
         club_name = db.fetch_one()[0]
 
         return jsonify({
