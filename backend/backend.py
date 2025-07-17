@@ -409,6 +409,98 @@ def suggest_club(username):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
+@app.route('/recommendations', methods=['GET'])
+def recommend_books():
+    try:
+        db = Database()
+        username = request.args.get('username')
+
+        if not username:
+            return jsonify({"error": "Missing 'username' parameter"}), 400
+
+        safe_name = adapt(username).getquoted().decode()
+        # get userID from username
+        db.run(f"""
+            SELECT userID
+            FROM users
+            WHERE LOWER(name) = LOWER({safe_name})
+            LIMIT 1;
+        """)
+        row = db.fetch_one()
+
+        if not row:
+            return jsonify({"error": f"Username '{safe_name}' not found."}), 404
+
+        user_id = row[0]
+
+        # recommendation query
+        query = f"""
+        WITH current_user_tags AS ( -- get top 5 most frequently used user tags
+            SELECT tagID
+            FROM user_book_tag
+            WHERE userID = {user_id}
+            GROUP BY tagID
+            ORDER BY COUNT(*) DESC
+            LIMIT 5
+        ),
+        similar_users AS ( -- get other users who have utilized the same tags
+            SELECT DISTINCT ubt.userID
+            FROM user_book_tag ubt
+            JOIN current_user_tags cut ON ubt.tagID = cut.tagID
+            WHERE ubt.userID != {user_id}
+        ),
+        books_read_by_similar_users AS ( -- books those users have started or finished
+            SELECT DISTINCT up.bookID
+            FROM userprogress up
+            JOIN similar_users su ON up.userID = su.userID
+            WHERE up.status IN ('IN PROGRESS', 'FINISHED')
+        ),
+        books_tagged_with_interest_tags AS ( -- books tagged with user's top tags
+            SELECT DISTINCT ubt.bookID
+            FROM user_book_tag ubt
+            WHERE ubt.tagID IN (SELECT tagID FROM current_user_tags)
+        ),
+        hybrid_candidate_books AS ( -- union of both
+            SELECT bookID FROM books_read_by_similar_users
+            UNION
+            SELECT bookID FROM books_tagged_with_interest_tags
+        ),
+        recommended_books AS ( -- exclude books the user has interacted with
+            SELECT cb.bookID
+            FROM hybrid_candidate_books cb
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM userprogress up
+                WHERE up.userID = {user_id}
+                  AND up.bookID = cb.bookID
+            )
+            LIMIT 5
+        )
+        SELECT b.bookID, b.title, COALESCE(string_agg(a.name, ', '), '') AS authors
+        FROM recommended_books rb
+        JOIN books b ON b.bookID = rb.bookID
+        LEFT JOIN book_authors ba ON b.bookID = ba.bookID
+        LEFT JOIN authors a ON ba.authorID = a.authorID
+        GROUP BY b.bookID, b.title;
+        """
+
+        db.run(query)
+        results = db.fetch_all()
+
+        books = []
+        for row in results:
+            books.append({
+                "bookID": row[0],
+                "title": row[1],
+                "authors": row[2]
+            })
+
+        return jsonify({"results": books, "count": len(books)}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True, port=PORT)
