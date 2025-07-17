@@ -28,9 +28,9 @@ books_tagged_with_interest_tags AS ( -- get books that have been tagged with one
 ),
 
 hybrid_candidate_books AS ( -- union of both books read by similar users and books tagged with user's top tags
-    SELECT bookID FROM books_read_by_similar_users
-    UNION
     SELECT bookID FROM books_tagged_with_interest_tags
+    UNION
+    SELECT bookID FROM books_read_by_similar_users
 ),
 
 recommended_books AS ( -- filter out books the current user has already interacted with (started or finished)
