@@ -18,8 +18,7 @@ user_ids = [row[0] for row in db.fetch_all()]
 db.run("SELECT bookid FROM books;")
 book_ids = [row[0] for row in db.fetch_all()]
 
-db.run("SELECT COALESCE(MAX(clubid), 0) FROM bookclubs;")
-next_club_id = db.fetch_all()[0][0] + 1
+next_club_id = 1
 
 # Generate SQL
 with open(OUT_FILE, "a", encoding="utf-8") as f:
@@ -28,17 +27,17 @@ with open(OUT_FILE, "a", encoding="utf-8") as f:
         name        = f"Book Club {i + 1}"
         description = f"This is the description for {name}."
         creatorid   = choice(user_ids)
-        max_members = randint(5, 20)
+        max_members = randint(2, 12)
 
         # Insert into bookclubs
         f.write(
-            "INSERT INTO bookclubs (clubid, name, description, max_members) "
+            "INSERT INTO production.bookclubs (clubid, name, description, max_members) "
             f"VALUES ({clubid}, '{name}', '{description}', {max_members});\n"
         )
 
         # Insert into bookclub_creators (new table)
         f.write(
-            "INSERT INTO bookclub_creators (clubid, userid) "
+            "INSERT INTO production.bookclub_creators (clubid, userid) "
             f"VALUES ({clubid}, {creatorid});\n"
         )
 
@@ -48,11 +47,11 @@ with open(OUT_FILE, "a", encoding="utf-8") as f:
         members.add(creatorid)
         for uid in members:
             f.write(
-                f"INSERT INTO bookclub_members (clubid, userid) "
+                f"INSERT INTO production.bookclub_members (clubid, userid) "
                 f"VALUES ({clubid}, {uid});\n"
             )
 
-        # Insert bookclub_reads (1–3 current + 5–15 past)
+        # Insert bookclub_reads (1–3 current + 1-3 past)
         used_books = set()
         today = datetime.today().date()
 
@@ -65,12 +64,12 @@ with open(OUT_FILE, "a", encoding="utf-8") as f:
             end   = today + timedelta(days=randint(15, 45))
 
             f.write(
-                "INSERT INTO bookclub_reads (clubid, bookid, start_date, end_date, is_current) "
+                "INSERT INTO production.bookclub_reads (clubid, bookid, start_date, end_date, is_current) "
                 f"VALUES ({clubid}, {bookid}, '{start}', '{end}', TRUE);\n"
             )
 
         # Past reads (is_current = FALSE)
-        for _ in range(randint(5, 15)):
+        for _ in range(randint(1, 3)):
             bookid = choice([b for b in book_ids if b not in used_books])
             used_books.add(bookid)
 
@@ -78,7 +77,7 @@ with open(OUT_FILE, "a", encoding="utf-8") as f:
             start = end - timedelta(days=30)
 
             f.write(
-                "INSERT INTO bookclub_reads (clubid, bookid, start_date, end_date, is_current) "
+                "INSERT INTO production.bookclub_reads (clubid, bookid, start_date, end_date, is_current) "
                 f"VALUES ({clubid}, {bookid}, '{start}', '{end}', FALSE);\n"
             )
 
