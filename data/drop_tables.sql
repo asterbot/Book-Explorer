@@ -1,3 +1,6 @@
+DROP MATERIALIZED VIEW IF EXISTS v_club_genre_score CASCADE;
+DROP MATERIALIZED VIEW IF EXISTS v_user_genre_score CASCADE;
+
 DROP TABLE IF EXISTS bookclub_members;
 DROP TABLE IF EXISTS bookclub_reads;
 DROP TABLE IF EXISTS bookclub_creators;
@@ -25,8 +28,6 @@ DROP TABLE IF EXISTS users;
 DROP FUNCTION IF EXISTS refresh_reco_views() CASCADE;
 DROP FUNCTION IF EXISTS suggest_club(INT)   CASCADE;
 
-DROP MATERIALIZED VIEW IF EXISTS v_club_genre_score CASCADE;
-DROP MATERIALIZED VIEW IF EXISTS v_user_genre_score CASCADE;
 
 DROP INDEX IF EXISTS one_current_book_per_club;
 
