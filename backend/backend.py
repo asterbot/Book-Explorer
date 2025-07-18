@@ -503,5 +503,9 @@ def recommend_books():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/<int:club_id>/join', methods=['POST'])
+def join_book_club(club_id):
+    pass
+
 if __name__ == "__main__":
     app.run(debug=True, port=PORT)

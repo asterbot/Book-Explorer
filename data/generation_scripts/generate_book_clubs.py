@@ -28,11 +28,12 @@ with open(OUT_FILE, "a", encoding="utf-8") as f:
         name        = f"Book Club {i + 1}"
         description = f"This is the description for {name}."
         creatorid   = choice(user_ids)
+        max_members = randint(5, 20)
 
         # Insert into bookclubs
         f.write(
-            "INSERT INTO bookclubs (clubid, name, description) "
-            f"VALUES ({clubid}, '{name}', '{description}');\n"
+            "INSERT INTO bookclubs (clubid, name, description, max_members) "
+            f"VALUES ({clubid}, '{name}', '{description}', {max_members});\n"
         )
 
         # Insert into bookclub_creators (new table)
@@ -42,7 +43,8 @@ with open(OUT_FILE, "a", encoding="utf-8") as f:
         )
 
         # Insert members (creator is included)
-        members = set(sample(user_ids, randint(5, 20) - 1))
+        num_members = randint(1, max_members - 1)
+        members = set(sample([uid for uid in user_ids if uid != creatorid], num_members))
         members.add(creatorid)
         for uid in members:
             f.write(
