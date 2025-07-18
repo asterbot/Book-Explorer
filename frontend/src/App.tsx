@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 
 import { BookCard } from "./components/BookCard";
 
-import type { Book } from "./types";
+import type { Book, BookProgress } from "./types";
 import "./App.css";
+import { ProgressCard } from "./components/ProgressCard";
+import { StreakCounter } from "./components/StreakCounter";
 
 async function searchBooks(query: string) {
   try {
@@ -26,7 +28,14 @@ async function viewWishlist(username: string, status: bookStatus = bookStatus.NO
   try {
     const response = await fetch(`http://127.0.0.1:5000/userlist?username=${username}&status=${status}`);
     const data = await response.json();
-    return data.results;
+    return data.results.map((book: any) => ({
+      bookID: book.bookID,
+      title: book.title,
+      authors: book.authors,
+      page_reached: book.page_reached,
+      last_update: new Date(book.last_updated),  // make it a date object
+    }));
+
   } catch (error) {
     console.error(`Error when connecting to DB: ${error}`);
   }
@@ -127,9 +136,9 @@ function App() {
   const [username, setUsername] = useState("");
   const [otherUsername, setOtherUserName] = useState("");
 
-  const [wishlist, setWishlist] = useState<Book[]>();
-  const [inProgress, setInProgress] = useState<Book[]>();
-  const [finished, setFinished] = useState<Book[]>();
+  const [wishlist, setWishlist] = useState<BookProgress[]>();
+  const [inProgress, setInProgress] = useState<BookProgress[]>();
+  const [finished, setFinished] = useState<BookProgress[]>();
   const [commonBooks, setCommonBooks] = useState<Book[]>();
   const [completionRates, setCompletionRates] = useState<any[]>();
   const [genreCounts, setGenreCounts] = useState<{ [genre: string]: number }>();
@@ -155,6 +164,7 @@ function App() {
       if (status == bookStatus.NOT_STARTED) setWishlist(results);
       else if (status == bookStatus.IN_PROGRESS) setInProgress(results);
       else if (status == bookStatus.FINISHED) setFinished(results);
+      console.log(wishlist)
     }
   };
 
@@ -249,11 +259,9 @@ function App() {
               {wishlist && (
                 <div className="list-grid">
                   {wishlist.map((book) => (
-                    <div key={book.bookID}>
-                      <p>
-                        <span className="book-title">{book.title}</span>
-                        <span className="book-author"> by {book.authors}</span>
-                      </p>
+                    <div className="progress-card">
+                      <ProgressCard book={book} />
+                      <br />
                     </div>
                   ))}
                 </div>
@@ -270,12 +278,10 @@ function App() {
               {inProgress && (
                 <div className="list-grid">
                   {inProgress.map((book) => (
-                    <div key={book.bookID}>
-                      <p>
-                        <span className="book-title">{book.title}</span>
-                        <span className="book-author"> by {book.authors}</span>
-                      </p>
-                    </div>
+                    <div className="progress-card">
+                      <ProgressCard book={book} />
+                      <br />
+                  </div>
                   ))}
                 </div>
               )}
@@ -291,12 +297,10 @@ function App() {
               {finished && (
                 <div className="list-grid">
                   {finished.map((book) => (
-                    <div key={book.bookID}>
-                      <p>
-                        <span className="book-title">{book.title}</span>
-                        <span className="book-author"> by {book.authors}</span>
-                      </p>
-                    </div>
+                    <div className="progress-card">
+                      <ProgressCard book={book} />
+                    <br />
+                  </div>
                   ))}
                 </div>
               )}
@@ -454,7 +458,7 @@ function App() {
             
           </div>
 
-          <div className="sidebar-right">
+          <div className="sidebar-right" style={{ marginLeft: "5rem" }}>
             <div>
               Other Username: <br />
               <input
@@ -488,7 +492,7 @@ function App() {
           </div>
         </div>
 
-        <div className="main-content">
+        <div className="main-content" style={{ marginLeft: "5rem" }}>
           <div className="search-container">
             <input
               type="text"
@@ -503,7 +507,7 @@ function App() {
           <main className="app-main">
             <div className="container">
               {username && (
-                <div className="username-container">
+                <div className="username-container" style={{ marginLeft: "5rem" }}>
                   <p>Hello, {username}!</p>
                 </div>
               )}
@@ -555,13 +559,16 @@ function App() {
                 </div>
               )}
               {!books && (
-                <div className="books-grid">
+                <div className="books-grid" style={{ marginLeft: "5rem" }}>
                   <p>Click "Search" to see books.</p>
                 </div>
               )}
             </div>
           </main>
         </div>
+        <center style={{ marginLeft: "0rem" }}>
+          <StreakCounter username="Alex" streak={5}/>
+          </center>
       </div>
     </div>
   );

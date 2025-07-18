@@ -12,3 +12,11 @@ export interface Book{
     publication_date: string,
     publisher: string
 }
+
+export interface BookProgress{
+    bookID: number,
+    title: string,
+    authors: string,
+    page_reached: number,
+    last_update: Date,
+}

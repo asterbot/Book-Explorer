@@ -130,14 +130,16 @@ def view_userlist():
             SELECT 
                 b.bookID,
                 b.title,
-                COALESCE(string_agg(a.name, ', '), '') AS authors
+                COALESCE(string_agg(a.name, ', '), '') AS authors,
+                u.page_reached,
+                u.last_updated
             FROM {USERPROGRESS} u
             JOIN {BOOKS} b ON u.bookID = b.bookID
             LEFT JOIN {BOOK_AUTHORS} ba ON b.bookID = ba.bookID
             LEFT JOIN {AUTHORS} a ON ba.authorID = a.authorID
             WHERE u.userID = (SELECT userID FROM {USERS} WHERE name = '{username}')
                 AND u.status = '{status}'
-            GROUP BY b.bookID, b.title;
+            GROUP BY b.bookID, b.title, u.page_reached, u.last_updated;
             """
         db.run(query)
         results = db.fetch_all()
@@ -147,7 +149,9 @@ def view_userlist():
             books.append({
                 "bookID": book[0],
                 "title": book[1],
-                "authors": book[2]
+                "authors": book[2],
+                "page_reached": book[3],
+                "last_updated": book[4],
             })
         
         return jsonify({"results": books}), 200

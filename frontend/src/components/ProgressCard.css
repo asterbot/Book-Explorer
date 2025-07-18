@@ -1,0 +1,60 @@
+.progress-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+  }
+  
+  .progress-table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .progress-table td:first-child {
+    width: 30%;
+    font-weight: bold;
+  }
+  
+  .progress-actions {
+    margin-top: 1rem;
+  }
+  
+  .add-progress-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .date-picker-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .input-group label {
+    min-width: 60px;
+  }
+  
+  .action-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .action-buttons button {
+    padding: 0.25rem 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .book-card{
+    width: 120%
+  }
