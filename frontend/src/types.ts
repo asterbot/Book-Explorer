@@ -12,3 +12,18 @@ export interface Book{
     publication_date: string,
     publisher: string
 }
+
+export interface BookProgress{
+    bookID: number,
+    title: string,
+    authors: string,
+    page_reached: number,
+    num_pages: number,
+}
+
+export interface UserLogs{
+    book_title: string,
+    authors: string,
+    timestamp: Date,
+    page_reached: number,
+}

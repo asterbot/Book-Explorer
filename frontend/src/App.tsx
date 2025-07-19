@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 
 import { BookCard } from "./components/BookCard";
 
-import type { Book } from "./types";
+import { type UserLogs, type Book, type BookProgress } from "./types";
 import "./App.css";
+import { ProgressCard } from "./components/ProgressCard";
+import { StreakCounter } from "./components/StreakCounter";
 
 async function searchBooks(query: string) {
   try {
@@ -26,7 +28,14 @@ async function viewWishlist(username: string, status: bookStatus = bookStatus.NO
   try {
     const response = await fetch(`http://127.0.0.1:5000/userlist?username=${username}&status=${status}`);
     const data = await response.json();
-    return data.results;
+    return data.results.map((book: any) => ({
+      bookID: book.bookID,
+      title: book.title,
+      authors: book.authors,
+      page_reached: book.page_reached,
+      num_pages: book.num_pages,
+    }));
+
   } catch (error) {
     console.error(`Error when connecting to DB: ${error}`);
   }
@@ -121,15 +130,66 @@ async function joinBookClub(username: string, clubID: number) {
   }
 }
 
+async function getStreak(username: string){
+  try{
+    const response = await fetch(
+      `http://127.0.0.1:5000/streak?username=${encodeURIComponent(username)}`,
+    )
+    const data = await response.json();
+    return data.streak
+  }
+  catch (error){
+    console.error(`Error finding streak for ${username}: ${error}`)
+  }
+}
+
+
+async function getUserLogs(username: string){
+  try{
+    const response = await fetch(
+      `http://127.0.0.1:5000/userlogs?username=${encodeURIComponent(username)}`,
+    )
+    const data = await response.json()
+    return data.results.map((book: any) => ({
+      book_title: book.book_title,
+      authors: book.authors,
+      timestamp: new Date(book.timestamp),  // make it a date object
+      page_reached: book.page_reached,
+    }));
+  }
+  catch (error){
+    console.error(`Error: ${error}`)
+  }
+}
+
+async function updateProgress(username: string, bookId: number, newpage: number, newdate: string) {
+  try {
+    const response = await fetch(`http://127.0.0.1:5000/updateprogress`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username,
+        bookId,
+        newpage,
+        newdate,
+      }),
+    });
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    console.error(`Error when connecting to DB: ${error}`);
+  }
+}
+
 function App() {
   const [books, setBooks] = useState<Book[]>();
   const [searchQuery, setSearchQuery] = useState("");
   const [username, setUsername] = useState("");
   const [otherUsername, setOtherUserName] = useState("");
 
-  const [wishlist, setWishlist] = useState<Book[]>();
-  const [inProgress, setInProgress] = useState<Book[]>();
-  const [finished, setFinished] = useState<Book[]>();
+  const [wishlist, setWishlist] = useState<BookProgress[]>();
+  const [inProgress, setInProgress] = useState<BookProgress[]>();
+  const [finished, setFinished] = useState<BookProgress[]>();
   const [commonBooks, setCommonBooks] = useState<Book[]>();
   const [completionRates, setCompletionRates] = useState<any[]>();
   const [genreCounts, setGenreCounts] = useState<{ [genre: string]: number }>();
@@ -141,6 +201,9 @@ function App() {
   const [joinClubMessage, setJoinClubMessage] = useState<string | null>(null);
   const [joinClubError, setJoinClubError] = useState<boolean>(false);
 
+  const [streak, setStreak] = useState<number>(0);
+
+  const [userlogs, setUserLogs] = useState<UserLogs[]>();
 
   const handleSearch = async () => {
     if (searchQuery.trim() !== "") {
@@ -196,6 +259,18 @@ function App() {
     setRecommendedBooks(results);
   };
 
+  const findStreak = async () => {
+    if (!username.trim()) return;
+    const result = await getStreak(username);
+    setStreak(result)
+  }
+
+  const findUserLogs = async () => {
+    if (!username.trim()) return;
+    const result = await getUserLogs(username);
+    setUserLogs(result);
+  }
+
   const collapseLists = () => {
     setWishlist(undefined);
     setInProgress(undefined);
@@ -205,11 +280,28 @@ function App() {
     setRecommendedBooks(undefined);
   };
 
+  const handleProgressUpdate = (bookId: number,newDate: Date, newPage: number) => {
+    updateProgress(username, bookId, newPage, newDate.toUTCString())
+  }
+
   useEffect(() => {
     setSearchQuery("Harry Potter");
     setUsername("Alex");
     setOtherUserName("Bob");
   }, []);
+
+
+  useEffect(() => {
+    if (username.trim()) {
+      findStreak();
+    }
+  }, [username, wishlist, inProgress, finished]);
+
+  useEffect(()=>{
+    if (username.trim()){
+      findUserLogs();
+    }
+  }, [username, wishlist, inProgress, finished]);
 
   return (
     <div className="app">
@@ -249,11 +341,9 @@ function App() {
               {wishlist && (
                 <div className="list-grid">
                   {wishlist.map((book) => (
-                    <div key={book.bookID}>
-                      <p>
-                        <span className="book-title">{book.title}</span>
-                        <span className="book-author"> by {book.authors}</span>
-                      </p>
+                    <div className="progress-card">
+                      <ProgressCard book={book} onUpdateProgress={handleProgressUpdate} />
+                      <br />
                     </div>
                   ))}
                 </div>
@@ -270,12 +360,10 @@ function App() {
               {inProgress && (
                 <div className="list-grid">
                   {inProgress.map((book) => (
-                    <div key={book.bookID}>
-                      <p>
-                        <span className="book-title">{book.title}</span>
-                        <span className="book-author"> by {book.authors}</span>
-                      </p>
-                    </div>
+                    <div className="progress-card">
+                      <ProgressCard book={book} onUpdateProgress={handleProgressUpdate} />
+                      <br />
+                  </div>
                   ))}
                 </div>
               )}
@@ -291,12 +379,10 @@ function App() {
               {finished && (
                 <div className="list-grid">
                   {finished.map((book) => (
-                    <div key={book.bookID}>
-                      <p>
-                        <span className="book-title">{book.title}</span>
-                        <span className="book-author"> by {book.authors}</span>
-                      </p>
-                    </div>
+                    <div className="progress-card">
+                      <ProgressCard book={book} onUpdateProgress={handleProgressUpdate} />
+                    <br />
+                  </div>
                   ))}
                 </div>
               )}
@@ -454,7 +540,7 @@ function App() {
             
           </div>
 
-          <div className="sidebar-right">
+          <div className="sidebar-right" style={{ marginLeft: "5rem" }}>
             <div>
               Other Username: <br />
               <input
@@ -488,7 +574,7 @@ function App() {
           </div>
         </div>
 
-        <div className="main-content">
+        <div className="main-content" style={{ marginLeft: "5rem" }}>
           <div className="search-container">
             <input
               type="text"
@@ -503,12 +589,12 @@ function App() {
           <main className="app-main">
             <div className="container">
               {username && (
-                <div className="username-container">
+                <div className="username-container" style={{ marginLeft: "5rem" }}>
                   <p>Hello, {username}!</p>
                 </div>
               )}
               {books && (
-                <div className="books-grid">
+                <div className="books-grid" style={{ marginLeft: "5rem" }}>
                   {books.map((book) => (
                     <div key={book.bookID} className="book-item">
                       <BookCard book={book} />
@@ -555,14 +641,42 @@ function App() {
                 </div>
               )}
               {!books && (
-                <div className="books-grid">
+                <div className="books-grid" style={{ marginLeft: "5rem" }}>
                   <p>Click "Search" to see books.</p>
                 </div>
               )}
             </div>
           </main>
         </div>
+        
+        <div style={{ float: "right", maxWidth: "400px", marginRight: "2rem" }}>
+          <center><StreakCounter username={username} streak={streak} /> </center>
+          <h2 style={{ textAlign: "left" }}>Reading history</h2>
+          <br />
+          <table className="userlog-table">
+            <thead>
+              <tr>
+                <th>Book</th>
+                <th>Authors</th>
+                <th>Page reached</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody>
+              {userlogs?.map((userlog, index) => (
+                <tr key={index}>
+                  <td>{userlog.book_title}</td>
+                  <td>{userlog.authors}</td>
+                  <td>{userlog.page_reached}</td>
+                  <td>{userlog.timestamp.toUTCString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
       </div>
+      
     </div>
   );
 }

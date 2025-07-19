@@ -6,6 +6,8 @@ from config import *
 from psycopg2.extensions import adapt
 import psycopg2
 
+from datetime import datetime
+
 # Initialize flask app
 app = Flask(__name__)
 CORS(app)
@@ -130,14 +132,16 @@ def view_userlist():
             SELECT 
                 b.bookID,
                 b.title,
-                COALESCE(string_agg(a.name, ', '), '') AS authors
+                COALESCE(string_agg(a.name, ', '), '') AS authors,
+                u.page_reached,
+                b.num_pages
             FROM {USERPROGRESS} u
             JOIN {BOOKS} b ON u.bookID = b.bookID
             LEFT JOIN {BOOK_AUTHORS} ba ON b.bookID = ba.bookID
             LEFT JOIN {AUTHORS} a ON ba.authorID = a.authorID
             WHERE u.userID = (SELECT userID FROM {USERS} WHERE name = '{username}')
                 AND u.status = '{status}'
-            GROUP BY b.bookID, b.title;
+            GROUP BY b.bookID, b.title, u.page_reached;
             """
         db.run(query)
         results = db.fetch_all()
@@ -147,7 +151,9 @@ def view_userlist():
             books.append({
                 "bookID": book[0],
                 "title": book[1],
-                "authors": book[2]
+                "authors": book[2],
+                "page_reached": book[3],
+                "num_pages": book[4],
             })
         
         return jsonify({"results": books}), 200
@@ -579,7 +585,124 @@ def join_book_club():
             db.run("ROLLBACK;")
         except:
             pass
+
+
+@app.route('/userlogs', methods=['GET'])
+def get_userlogs():
+    try:
+        username = request.args.get('username')
+        
+        db = Database()
+        
+        query = f"""
+        SELECT b.title, COALESCE(string_agg(a.name, ', '), '') AS authors, u.update_time, u.page_reached
+        FROM {BOOKS} b, {USERLOGS} u, {BOOK_AUTHORS} ba, {AUTHORS} a
+        WHERE u.bookID = b.bookID AND ba.bookID=b.bookID AND ba.authorID=a.authorID
+            AND u.userid = (SELECT userid FROM users WHERE name='{username}')
+        GROUP BY b.title, u.update_time, u.page_reached
+        ORDER BY update_time DESC;
+        """
+        
+        db.run(query)
+        results = db.fetch_all()
+        
+        ret = [
+            {
+                "book_title": row[0],
+                "authors": row[1],
+                "timestamp": row[2],
+                "page_reached": row[3],
+            }
+            for row in results
+        ]
+        
+        return jsonify({"results": ret}), 200
+        
+    except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route('/streak', methods=['GET'])
+def get_streak():
+    try:
+        username = request.args.get('username')
+        
+        db = Database()
+        
+        query = f"""
+        WITH RECURSIVE streak_books(userid, bookid, update_time) AS(
+            -- base case
+            SELECT * FROM(
+                SELECT userid, bookid, update_time 
+                FROM {USERLOGS} 
+                WHERE userid=(SELECT userid FROM users WHERE name='{username}')
+                ORDER BY update_time DESC -- get latest update_time
+                LIMIT 1
+            ) as base
+
+            UNION 
+
+            -- recursive case
+            SELECT * FROM(
+                SELECT t.userid, t.bookid, t.update_time 
+                FROM {USERLOGS} t
+                JOIN streak_books s ON t.userid=s.userid
+                WHERE ABS(t.update_time::date - s.update_time::date) = 1 -- time differs by EXACTLY one day
+                ORDER BY t.update_time
+                LIMIT 1
+            ) as recurse
+        )
+        SELECT COUNT(*) as streak FROM streak_books;
+        """
+        
+        db.run(query)
+        results = db.fetch_all()
+        
+        streak_count = results[0][0]
+        
+        return jsonify({"streak": streak_count})
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/updateprogress', methods=['POST'])
+def update_progress():
+    try:
+        db = Database()
+
+        data = request.get_json()
+        username = data.get('username')
+        bookID = data.get('bookId')
+        newpage = data.get('newpage')
+        date:str = data.get('newdate')
+        
+        print(data)
+
+        date_parsed = datetime.strptime(date, "%a, %d %b %Y %H:%M:%S %Z")
+
+        query = f"""
+            INSERT INTO {USERLOGS} (userID, bookID, update_time, page_reached)
+            VALUES (
+                (SELECT userID FROM {USERS} WHERE name='{username}'),
+                {bookID},
+                '{date_parsed}',
+                {newpage}
+            );
+        """
+        db.run(query)
+        db.commit()
+        
+        query = f"""
+            UPDATE {USERPROGRESS} SET page_reached = {newpage} 
+            WHERE userID = (SELECT userID FROM {USERS} WHERE name='{username}')
+                AND bookID = {bookID};  
+        """
+        db.run(query)
+        db.commit()
+                
+        return jsonify({"message": "Updated progress", "username": username, "bookID": bookID}), 200
+    except Exception as e:
+        return jsonify({"message": "Error adding book to userprogress", "error": str(e)}), 500
+
 
 
 if __name__ == "__main__":

@@ -1,6 +1,8 @@
 DROP MATERIALIZED VIEW IF EXISTS v_club_genre_score CASCADE;
 DROP MATERIALIZED VIEW IF EXISTS v_user_genre_score CASCADE;
 
+DROP TABLE IF EXISTS userlogs;
+
 DROP TABLE IF EXISTS bookclub_members;
 DROP TABLE IF EXISTS bookclub_reads;
 DROP TABLE IF EXISTS bookclub_creators;
@@ -20,6 +22,7 @@ DROP TABLE IF EXISTS publishers;
 
 DROP TABLE IF EXISTS UserRating;
 DROP TABLE IF EXISTS userprogress;
+-- DROP TYPE IF EXISTS status;
 
 DROP TABLE IF EXISTS books;
 DROP TABLE IF EXISTS users;
