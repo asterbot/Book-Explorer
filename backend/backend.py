@@ -583,6 +583,41 @@ def join_book_club():
             db.run("ROLLBACK;")
         except:
             pass
+
+
+@app.route('/userlogs', methods=['GET'])
+def get_userlogs():
+    try:
+        username = request.args.get('username')
+        
+        db = Database()
+        
+        query = f"""
+        SELECT b.title, COALESCE(string_agg(a.name, ', '), '') AS authors, u.update_time 
+        FROM {BOOKS} b, {USERLOGS} u, {BOOK_AUTHORS} ba, {AUTHORS} a
+        WHERE u.bookID = b.bookID AND ba.bookID=b.bookID AND ba.authorID=a.authorID
+            AND u.userid = (SELECT userid FROM users WHERE name='{username}')
+        GROUP BY b.title, u.update_time
+        ORDER BY update_time DESC;
+        """
+        
+        db.run(query)
+        results = db.fetch_all()
+        
+        ret = [
+            {
+                "book_title": row[0],
+                "authors": row[1],
+                "timestamp": row[2]
+            }
+            for row in results
+        ]
+        
+        return jsonify({"results": ret}), 200
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/streak', methods=['GET'])
 def get_streak():
     try:
@@ -595,7 +630,7 @@ def get_streak():
             -- base case
             SELECT * FROM(
                 SELECT userid, bookid, update_time 
-                FROM testing.userlogs 
+                FROM {USERLOGS} 
                 WHERE userid=(SELECT userid FROM users WHERE name='{username}')
                 ORDER BY update_time DESC -- get latest update_time
                 LIMIT 1
@@ -606,7 +641,7 @@ def get_streak():
             -- recursive case
             SELECT * FROM(
                 SELECT t.userid, t.bookid, t.update_time 
-                FROM testing.userlogs t
+                FROM {USERLOGS} t
                 JOIN streak_books s ON t.userid=s.userid
                 WHERE ABS(t.update_time::date - s.update_time::date) = 1 -- time differs by EXACTLY one day
                 ORDER BY t.update_time

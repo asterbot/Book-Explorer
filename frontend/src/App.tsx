@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 import { BookCard } from "./components/BookCard";
 
-import type { Book, BookProgress } from "./types";
+import { type UserLogs, type Book, type BookProgress } from "./types";
 import "./App.css";
 import { ProgressCard } from "./components/ProgressCard";
 import { StreakCounter } from "./components/StreakCounter";
@@ -130,6 +130,37 @@ async function joinBookClub(username: string, clubID: number) {
   }
 }
 
+async function getStreak(username: string){
+  try{
+    const response = await fetch(
+      `http://127.0.0.1:5000/streak?username=${encodeURIComponent(username)}`,
+    )
+    const data = await response.json();
+    return data.streak
+  }
+  catch (error){
+    console.error(`Error finding streak for ${username}: ${error}`)
+  }
+}
+
+
+async function getUserLogs(username: string){
+  try{
+    const response = await fetch(
+      `http://127.0.0.1:5000/userlogs?username=${encodeURIComponent(username)}`,
+    )
+    const data = await response.json()
+    return data.results.map((book: any) => ({
+      book_title: book.book_title,
+      authors: book.authors,
+      timestamp: new Date(book.timestamp),  // make it a date object
+    }));
+  }
+  catch (error){
+    console.error(`Error: ${error}`)
+  }
+}
+
 function App() {
   const [books, setBooks] = useState<Book[]>();
   const [searchQuery, setSearchQuery] = useState("");
@@ -150,6 +181,9 @@ function App() {
   const [joinClubMessage, setJoinClubMessage] = useState<string | null>(null);
   const [joinClubError, setJoinClubError] = useState<boolean>(false);
 
+  const [streak, setStreak] = useState<number>(0);
+
+  const [userlogs, setUserLogs] = useState<UserLogs[]>();
 
   const handleSearch = async () => {
     if (searchQuery.trim() !== "") {
@@ -164,7 +198,6 @@ function App() {
       if (status == bookStatus.NOT_STARTED) setWishlist(results);
       else if (status == bookStatus.IN_PROGRESS) setInProgress(results);
       else if (status == bookStatus.FINISHED) setFinished(results);
-      console.log(wishlist)
     }
   };
 
@@ -206,6 +239,18 @@ function App() {
     setRecommendedBooks(results);
   };
 
+  const findStreak = async () => {
+    if (!username.trim()) return;
+    const result = await getStreak(username);
+    setStreak(result)
+  }
+
+  const findUserLogs = async () => {
+    if (!username.trim()) return;
+    const result = await getUserLogs(username);
+    setUserLogs(result);
+  }
+
   const collapseLists = () => {
     setWishlist(undefined);
     setInProgress(undefined);
@@ -220,6 +265,19 @@ function App() {
     setUsername("Alex");
     setOtherUserName("Bob");
   }, []);
+
+
+  useEffect(() => {
+    if (username.trim()) {
+      findStreak();
+    }
+  }, [username]);
+
+  useEffect(()=>{
+    if (username.trim()){
+      findUserLogs();
+    }
+  }, [username]);
 
   return (
     <div className="app">
@@ -567,8 +625,33 @@ function App() {
           </main>
         </div>
         <center style={{ marginLeft: "0rem" }}>
-          <StreakCounter username="Alex" streak={5}/>
-          </center>
+          <StreakCounter username="Alex" streak={streak}/>
+            
+            <h1 style={{ textAlign: "left" }}>Reading history</h1>
+            <br />
+            <table className="userlog-table">
+              <thead>
+                <tr>
+                  <th>Book</th>
+                  <th>Authors</th>
+                  <th>Timestamp</th>
+                </tr>
+              </thead>
+              <tbody>
+                {userlogs?.map((userlog, index) => (
+                  <tr key={index}>
+                    <td>{userlog.book_title}</td>
+                    <td>{userlog.authors}</td>
+                    <td>{userlog.timestamp.toUTCString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+        </center>
+
+            
+
+
       </div>
     </div>
   );

@@ -20,3 +20,9 @@ export interface BookProgress{
     page_reached: number,
     last_update: Date,
 }
+
+export interface UserLogs{
+    book_title: string,
+    authors: string,
+    timestamp: Date,
+}

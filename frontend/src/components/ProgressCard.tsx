@@ -28,7 +28,7 @@ interface BookCardProps {
               <td>{book.title}</td>
             </tr>
             <tr>
-              <td><strong>Author:</strong></td>
+              <td><strong>Authors:</strong></td>
               <td>{book.authors}</td>
             </tr>
             <tr>
@@ -37,7 +37,7 @@ interface BookCardProps {
             </tr>
             <tr>
               <td><strong>Last Update:</strong></td>
-              <td>{book.last_update.toLocaleDateString()}</td>
+              <td>{book.last_update.toUTCString()}</td>
             </tr>
           </tbody>
         </table>

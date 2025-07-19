@@ -20,5 +20,5 @@ WITH RECURSIVE streak_books(userid, bookid, update_time) AS(
         LIMIT 1
     ) as recurse
 )
-SELECT COUNT(*) as streak FROM streak_books;
+SELECT * FROM streak_books;
 

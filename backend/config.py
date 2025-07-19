@@ -32,6 +32,7 @@ USER_BOOK_TAG = f"{RELATION}.user_book_tag"
 USERPROGRESS = f"{RELATION}.userprogress"
 USERRATING = f"{RELATION}.userrating"
 USERS = f"{RELATION}.users"
+USERLOGS = f"{RELATION}.userlogs"
 
 ## Views
 V_USER_GENRE_SCORE = f"{RELATION}.v_user_genre_score"

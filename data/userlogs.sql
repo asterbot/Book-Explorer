@@ -13,6 +13,3 @@ CREATE TABLE userlogs(
 INSERT INTO userlogs (userID, bookID)
     (SELECT userID, bookID FROM userprogress);
 
-
-
-
