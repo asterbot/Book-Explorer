@@ -108,4 +108,6 @@ BEGIN
 END $$;
 
 -- refresh
-SELECT refresh_reco_views();
+DO $$ BEGIN
+  PERFORM refresh_reco_views();
+END $$;
