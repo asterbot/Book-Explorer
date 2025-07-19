@@ -5,13 +5,6 @@ CREATE TABLE bookclubs (
     max_members INT NOT NULL
 );
 
-CREATE TABLE production.bookclubs (
-    clubid      SERIAL PRIMARY KEY,
-    name        VARCHAR(255),
-    description TEXT,
-    max_members INT NOT NULL
-);
-
 CREATE TABLE bookclub_creators (
     clubid    INT PRIMARY KEY,
     userid    INT,
@@ -20,24 +13,8 @@ CREATE TABLE bookclub_creators (
     FOREIGN KEY (userid) REFERENCES users(userid)     ON DELETE CASCADE
 );
 
-CREATE TABLE production.bookclub_creators (
-    clubid    INT PRIMARY KEY,
-    userid    INT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (clubid) REFERENCES bookclubs(clubid) ON DELETE CASCADE,
-    FOREIGN KEY (userid) REFERENCES users(userid)     ON DELETE CASCADE
-);
 
 CREATE TABLE bookclub_members (
-    clubid    INT,
-    userid    INT,
-    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (clubid, userid),
-    FOREIGN KEY (clubid) REFERENCES bookclubs(clubid) ON DELETE CASCADE,
-    FOREIGN KEY (userid) REFERENCES users(userid)     ON DELETE CASCADE
-);
-
-CREATE TABLE production.bookclub_members (
     clubid    INT,
     userid    INT,
     joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -57,16 +34,6 @@ CREATE TABLE bookclub_reads (
     FOREIGN KEY (bookid) REFERENCES books(bookid)     ON DELETE CASCADE
 );
 
-CREATE TABLE production.bookclub_reads (
-    clubid     INT,
-    bookid     INT,
-    start_date DATE,
-    end_date   DATE,
-    is_current BOOLEAN DEFAULT TRUE,
-    PRIMARY KEY (clubid, bookid),
-    FOREIGN KEY (clubid) REFERENCES bookclubs(clubid) ON DELETE CASCADE,
-    FOREIGN KEY (bookid) REFERENCES books(bookid)     ON DELETE CASCADE
-);
 
 INSERT INTO bookclubs (clubid, name, description, max_members) VALUES (1, 'Book Club 1', 'This is the description for Book Club 1.', 6);
 INSERT INTO bookclub_creators (clubid, userid) VALUES (1, 42);

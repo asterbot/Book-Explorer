@@ -20,7 +20,7 @@ interface BookCardProps {
     };
   
     return (
-      <div className="book-card">
+      <div className="prog-card">
         <table className="progress-table">
           <tbody>
             <tr>

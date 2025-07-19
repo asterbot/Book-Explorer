@@ -55,6 +55,17 @@
     cursor: pointer;
   }
 
-  .book-card{
-    width: 120%
+  .prog-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e1e1e1;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 130% !important; 
+    position: relative;
+    overflow: hidden;
   }
