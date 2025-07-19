@@ -46,9 +46,10 @@ DROP MATERIALIZED VIEW IF EXISTS v_club_genre_score CASCADE;
 CREATE MATERIALIZED VIEW v_club_genre_score AS
 SELECT bcr.clubid,
        bg.genreid,
-       10.00 AS score
+       COUNT(*) * 10.0 AS score
 FROM   bookclub_reads bcr
-JOIN   bookgenre bg ON bg.bookid = bcr.bookid;
+JOIN   bookgenre bg ON bg.bookid = bcr.bookid
+GROUP BY bcr.clubid, bg.genreid;
 
 CREATE UNIQUE INDEX v_club_genre_score_pk
   ON v_club_genre_score(clubid, genreid);
