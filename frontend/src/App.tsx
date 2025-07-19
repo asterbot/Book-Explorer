@@ -512,7 +512,7 @@ function App() {
                 </div>
               )}
               {books && (
-                <div className="books-grid">
+                <div className="books-grid" style={{ marginLeft: "5rem" }}>
                   {books.map((book) => (
                     <div key={book.bookID} className="book-item">
                       <BookCard book={book} />

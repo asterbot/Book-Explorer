@@ -583,6 +583,47 @@ def join_book_club():
             db.run("ROLLBACK;")
         except:
             pass
+@app.route('/streak', methods=['GET'])
+def get_streak():
+    try:
+        username = request.args.get('username')
+        
+        db = Database()
+        
+        query = f"""
+        WITH RECURSIVE streak_books(userid, bookid, update_time) AS(
+            -- base case
+            SELECT * FROM(
+                SELECT userid, bookid, update_time 
+                FROM testing.userlogs 
+                WHERE userid=(SELECT userid FROM users WHERE name='{username}')
+                ORDER BY update_time DESC -- get latest update_time
+                LIMIT 1
+            ) as base
+
+            UNION 
+
+            -- recursive case
+            SELECT * FROM(
+                SELECT t.userid, t.bookid, t.update_time 
+                FROM testing.userlogs t
+                JOIN streak_books s ON t.userid=s.userid
+                WHERE ABS(t.update_time::date - s.update_time::date) = 1 -- time differs by EXACTLY one day
+                ORDER BY t.update_time
+                LIMIT 1
+            ) as recurse
+        )
+        SELECT COUNT(*) as streak FROM streak_books;
+        """
+        
+        db.run(query)
+        results = db.fetch_all()
+        
+        streak_count = results[0][0]
+        
+        return jsonify({"streak": streak_count})
+        
+    except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
