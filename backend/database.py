@@ -1,6 +1,6 @@
 import psycopg2
 from dotenv import load_dotenv
-from config import get_env_config
+from config import get_env_config, RELATION
 
 class Database:
 
@@ -20,6 +20,11 @@ class Database:
         )
 
         self.cursor = self.cnx.cursor()
+        
+        # Set the schema
+        self.cursor.execute(f"SET search_path TO {RELATION}")
+        
+        
         if self.show_logs:
             print("Connection to database successful")
 

@@ -12,6 +12,8 @@ python runSQL.py data/books.sql
 python runSQL.py data/users.sql
 python runSQL.py data/userprogress.sql
 python runSQL.py data/user_rating.sql
+python runSQL.py data/userlogs.sql
+
 
 # Tags
 python runSQL.py data/tags/tag.sql
