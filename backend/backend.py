@@ -133,7 +133,8 @@ def view_userlist():
                 b.bookID,
                 b.title,
                 COALESCE(string_agg(a.name, ', '), '') AS authors,
-                u.page_reached
+                u.page_reached,
+                b.num_pages
             FROM {USERPROGRESS} u
             JOIN {BOOKS} b ON u.bookID = b.bookID
             LEFT JOIN {BOOK_AUTHORS} ba ON b.bookID = ba.bookID
@@ -152,6 +153,7 @@ def view_userlist():
                 "title": book[1],
                 "authors": book[2],
                 "page_reached": book[3],
+                "num_pages": book[4],
             })
         
         return jsonify({"results": books}), 200

@@ -18,7 +18,7 @@ export interface BookProgress{
     title: string,
     authors: string,
     page_reached: number,
-    last_update: Date,
+    num_pages: number,
 }
 
 export interface UserLogs{

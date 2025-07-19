@@ -33,6 +33,7 @@ async function viewWishlist(username: string, status: bookStatus = bookStatus.NO
       title: book.title,
       authors: book.authors,
       page_reached: book.page_reached,
+      num_pages: book.num_pages,
     }));
 
   } catch (error) {

@@ -38,6 +38,10 @@ interface BookCardProps {
               <td><strong>Page Reached:</strong></td>
               <td>{book.page_reached}</td>
             </tr>
+            <tr>
+              <td><strong>Out of:</strong></td>
+              <td>{book.num_pages}</td>
+            </tr>
           </tbody>
         </table>
         
