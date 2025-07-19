@@ -12,19 +12,6 @@ CREATE TABLE userprogress (
 );
 
 
-CREATE OR REPLACE FUNCTION update_last_updated_column()
-RETURNS TRIGGER AS $$
-BEGIN
-   NEW.last_updated = CURRENT_TIMESTAMP;
-   RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER set_last_updated
-BEFORE UPDATE ON userprogress
-FOR EACH ROW
-EXECUTE FUNCTION update_last_updated_column();
-
 -- Trigger to set status based on page reached
 CREATE OR REPLACE FUNCTION set_status()
 RETURNS trigger AS $$

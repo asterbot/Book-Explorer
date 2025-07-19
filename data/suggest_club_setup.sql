@@ -1,5 +1,3 @@
-SET search_path = public;
-
 WITH dupes AS (
     SELECT  clubid,
             bookid,
