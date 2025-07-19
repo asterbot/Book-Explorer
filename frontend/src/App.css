@@ -384,6 +384,7 @@
   font-family: sans-serif;
   border-left: 1px solid #ccc;
   border-right: 1px solid #ccc;
+  font-size: 12px;
 }
 
 .userlog-table th,

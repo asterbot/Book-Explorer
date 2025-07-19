@@ -35,10 +35,6 @@ interface BookCardProps {
               <td><strong>Page Reached:</strong></td>
               <td>{book.page_reached}</td>
             </tr>
-            <tr>
-              <td><strong>Last Update:</strong></td>
-              <td>{book.last_update.toUTCString()}</td>
-            </tr>
           </tbody>
         </table>
         

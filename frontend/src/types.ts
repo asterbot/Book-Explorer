@@ -25,4 +25,5 @@ export interface UserLogs{
     book_title: string,
     authors: string,
     timestamp: Date,
+    page_reached: number,
 }

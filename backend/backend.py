@@ -133,15 +133,14 @@ def view_userlist():
                 b.bookID,
                 b.title,
                 COALESCE(string_agg(a.name, ', '), '') AS authors,
-                u.page_reached,
-                u.last_updated
+                u.page_reached
             FROM {USERPROGRESS} u
             JOIN {BOOKS} b ON u.bookID = b.bookID
             LEFT JOIN {BOOK_AUTHORS} ba ON b.bookID = ba.bookID
             LEFT JOIN {AUTHORS} a ON ba.authorID = a.authorID
             WHERE u.userID = (SELECT userID FROM {USERS} WHERE name = '{username}')
                 AND u.status = '{status}'
-            GROUP BY b.bookID, b.title, u.page_reached, u.last_updated;
+            GROUP BY b.bookID, b.title, u.page_reached;
             """
         db.run(query)
         results = db.fetch_all()
@@ -153,7 +152,6 @@ def view_userlist():
                 "title": book[1],
                 "authors": book[2],
                 "page_reached": book[3],
-                "last_updated": book[4],
             })
         
         return jsonify({"results": books}), 200
@@ -595,11 +593,11 @@ def get_userlogs():
         db = Database()
         
         query = f"""
-        SELECT b.title, COALESCE(string_agg(a.name, ', '), '') AS authors, u.update_time 
+        SELECT b.title, COALESCE(string_agg(a.name, ', '), '') AS authors, u.update_time, u.page_reached
         FROM {BOOKS} b, {USERLOGS} u, {BOOK_AUTHORS} ba, {AUTHORS} a
         WHERE u.bookID = b.bookID AND ba.bookID=b.bookID AND ba.authorID=a.authorID
             AND u.userid = (SELECT userid FROM users WHERE name='{username}')
-        GROUP BY b.title, u.update_time
+        GROUP BY b.title, u.update_time, u.page_reached
         ORDER BY update_time DESC;
         """
         
@@ -610,7 +608,8 @@ def get_userlogs():
             {
                 "book_title": row[0],
                 "authors": row[1],
-                "timestamp": row[2]
+                "timestamp": row[2],
+                "page_reached": row[3],
             }
             for row in results
         ]
@@ -676,12 +675,15 @@ def update_progress():
         
         print(data)
 
+        date_parsed = datetime.strptime(date, "%a, %d %b %Y %H:%M:%S %Z")
+
         query = f"""
-            INSERT INTO {USERLOGS} (userID, bookID, update_time)
+            INSERT INTO {USERLOGS} (userID, bookID, update_time, page_reached)
             VALUES (
                 (SELECT userID FROM {USERS} WHERE name='{username}'),
                 {bookID},
-                '{datetime.strptime(date, "%a, %d %b %Y %H:%M:%S %Z")}'
+                '{date_parsed}',
+                {newpage}
             );
         """
         db.run(query)
@@ -694,8 +696,8 @@ def update_progress():
         """
         db.run(query)
         db.commit()
-        
-        return jsonify({"message": "Added to userlogs", "username": username, "bookID": bookID}), 200
+                
+        return jsonify({"message": "Updated progress", "username": username, "bookID": bookID}), 200
     except Exception as e:
         return jsonify({"message": "Error adding book to userprogress", "error": str(e)}), 500
 

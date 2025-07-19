@@ -33,7 +33,6 @@ async function viewWishlist(username: string, status: bookStatus = bookStatus.NO
       title: book.title,
       authors: book.authors,
       page_reached: book.page_reached,
-      last_update: new Date(book.last_updated),  // make it a date object
     }));
 
   } catch (error) {
@@ -154,6 +153,7 @@ async function getUserLogs(username: string){
       book_title: book.book_title,
       authors: book.authors,
       timestamp: new Date(book.timestamp),  // make it a date object
+      page_reached: book.page_reached,
     }));
   }
   catch (error){
@@ -348,7 +348,7 @@ function App() {
                 </div>
               )}
             </div>
-              
+
             <div className="list-container">
               <button
                 className="list-button"
@@ -647,35 +647,35 @@ function App() {
             </div>
           </main>
         </div>
-        <center style={{ marginLeft: "0rem" }}>
-          <StreakCounter username="Alex" streak={streak}/>
-            
-            <h1 style={{ textAlign: "left" }}>Reading history</h1>
-            <br />
-            <table className="userlog-table">
-              <thead>
-                <tr>
-                  <th>Book</th>
-                  <th>Authors</th>
-                  <th>Timestamp</th>
+        
+        <div style={{ float: "right", maxWidth: "400px", marginRight: "2rem" }}>
+          <center><StreakCounter username={username} streak={streak} /> </center>
+          <h2 style={{ textAlign: "left" }}>Reading history</h2>
+          <br />
+          <table className="userlog-table">
+            <thead>
+              <tr>
+                <th>Book</th>
+                <th>Authors</th>
+                <th>Page reached</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody>
+              {userlogs?.map((userlog, index) => (
+                <tr key={index}>
+                  <td>{userlog.book_title}</td>
+                  <td>{userlog.authors}</td>
+                  <td>{userlog.page_reached}</td>
+                  <td>{userlog.timestamp.toUTCString()}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {userlogs?.map((userlog, index) => (
-                  <tr key={index}>
-                    <td>{userlog.book_title}</td>
-                    <td>{userlog.authors}</td>
-                    <td>{userlog.timestamp.toUTCString()}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-        </center>
-
-            
-
+              ))}
+            </tbody>
+          </table>
+        </div>
 
       </div>
+      
     </div>
   );
 }

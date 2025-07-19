@@ -5,7 +5,7 @@ CREATE TABLE userprogress (
     bookID INT,
     status status DEFAULT 'NOT STARTED',
     page_reached INT DEFAULT 0,
-    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    -- last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (userID, bookID),
     FOREIGN KEY (userID) REFERENCES users(userID) ON DELETE CASCADE,
     FOREIGN KEY (bookID) REFERENCES books(bookID) ON DELETE CASCADE
@@ -24,6 +24,36 @@ CREATE TRIGGER set_last_updated
 BEFORE UPDATE ON userprogress
 FOR EACH ROW
 EXECUTE FUNCTION update_last_updated_column();
+
+-- Trigger to set status based on page reached
+CREATE OR REPLACE FUNCTION set_status()
+RETURNS trigger AS $$
+BEGIN
+    IF NEW.page_reached = 0 THEN
+        UPDATE userprogress
+        SET status = 'NOT STARTED'
+        WHERE userid = NEW.userid AND bookID = NEW.bookID;
+        
+    ELSIF NEW.page_reached < (SELECT num_pages FROM books WHERE bookID=NEW.bookID) THEN
+        UPDATE userprogress
+        SET status = 'IN PROGRESS'
+        WHERE userid = NEW.userid AND bookID = NEW.bookID;
+
+    ELSE
+        UPDATE userprogress
+        SET status = 'DONE'
+        WHERE userid = NEW.userid AND bookID = NEW.bookID;
+    END IF;
+
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER set_status
+    AFTER UPDATE OF page_reached ON userprogress
+    FOR EACH ROW
+        EXECUTE FUNCTION set_status();
 
 
 INSERT INTO userprogress (userID, bookID, status, page_reached) VALUES

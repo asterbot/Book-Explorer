@@ -9,7 +9,7 @@ interface StreakCardProps {
 export const StreakCounter: React.FC<StreakCardProps> = ({ username, streak }) => {
   return (
     <div className="streak">
-        <h1 style={{ marginBottom: "1rem" }}>Current reading streak for {username}:</h1>
+        <h2 style={{ marginBottom: "1rem" }}>Current reading streak for {username}:</h2>
         <div>
         <p style={{ fontSize: "2rem" }}>
           {streak} day
