@@ -4,6 +4,7 @@ from flask_cors import CORS
 from database import Database
 from config import *
 from psycopg2.extensions import adapt
+import psycopg2
 
 # Initialize flask app
 app = Flask(__name__)
@@ -502,6 +503,84 @@ def recommend_books():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route('/join_book_club', methods=['POST'])
+def join_book_club():
+    try:
+        db = Database()
+
+        username = request.args.get('username')
+        club_id = request.args.get('clubID')
+
+        if not username or not club_id:
+            return jsonify({"error": "Missing 'username' or 'clubID' parameter"}), 400
+
+        # Start transaction with SERIALIZABLE isolation level
+        db.run("BEGIN;")
+        db.run("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;")
+
+        # Get userID
+        db.run(f"""
+            SELECT userID FROM {USERS}
+            WHERE LOWER(name) = LOWER('{username}');
+        """)
+        row = db.fetch_one()
+        if not row:
+            db.run("ROLLBACK;")
+            return jsonify({"error": f"User '{username}' not found"}), 404
+        user_id = row[0]
+
+        # Check current count of members in club
+        db.run(f"""
+            SELECT COUNT(*) FROM {BOOKCLUB_MEMBERS}
+            WHERE clubID = {club_id};
+        """)
+        current_count = db.fetch_one()[0]
+
+        # Check max_members
+        db.run(f"""
+            SELECT max_members FROM {BOOKCLUBS}
+            WHERE clubID = {club_id};
+        """)
+        max_members_row = db.fetch_one()
+        if not max_members_row:
+            db.run("ROLLBACK;")
+            return jsonify({"error": f"Book club ID {club_id} not found"}), 404
+        max_members = max_members_row[0]
+
+        if current_count >= max_members:
+            db.run("ROLLBACK;")
+            return jsonify({"error": "Book club is full"}), 403
+
+        # Check if user already in club
+        db.run(f"""
+            SELECT 1 FROM {BOOKCLUB_MEMBERS}
+            WHERE clubID = {club_id} AND userID = {user_id}
+            LIMIT 1;
+        """)
+        if db.fetch_one():
+            db.run("ROLLBACK;")
+            return jsonify({"error": "User already joined this club"}), 409
+
+        # Join the book club
+        db.run(f"""
+            INSERT INTO {BOOKCLUB_MEMBERS}(clubID, userID, joined_at)
+            VALUES ({club_id}, {user_id}, CURRENT_TIMESTAMP);
+        """)
+        db.commit()
+
+        return jsonify({"success": True, "message": f"{username} successfully joined book club {club_id}!"}), 200
+
+    except psycopg2.errors.SerializationFailure:
+        return jsonify({"error": "Too many concurrent requests. Please try again."}), 409
+
+    except Exception as e:
+        try:
+            db.run("ROLLBACK;")
+        except:
+            pass
+        return jsonify({"error": str(e)}), 500
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=PORT)

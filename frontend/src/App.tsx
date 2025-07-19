@@ -106,6 +106,21 @@ async function getRecommendations(username: string) {
   }
 }
 
+async function joinBookClub(username: string, clubID: number) {
+  try {
+    const response = await fetch(
+      `http://127.0.0.1:5000/join_book_club?username=${encodeURIComponent(username)}&clubID=${clubID}`,
+      {
+        method: "POST",
+      }
+    );
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(`Error joining book club: ${error}`);
+  }
+}
+
 function App() {
   const [books, setBooks] = useState<Book[]>();
   const [searchQuery, setSearchQuery] = useState("");
@@ -121,6 +136,11 @@ function App() {
   const [showGenreDropdown, setShowGenreDropdown] = useState(false);
   const [suggestion, setSuggestion] = useState<any>(null);
   const [recommendedBooks, setRecommendedBooks] = useState<Book[]>();
+
+  const [clubID, setClubID] = useState<number|"">("");
+  const [joinClubMessage, setJoinClubMessage] = useState<string | null>(null);
+  const [joinClubError, setJoinClubError] = useState<boolean>(false);
+
 
   const handleSearch = async () => {
     if (searchQuery.trim() !== "") {
@@ -389,6 +409,49 @@ function App() {
                 </div>
               )}
             </div>
+
+            <div className="list-container">
+              <div>
+                <h3>Join a Book Club</h3>
+                <input
+                  type="number"
+                  placeholder="Enter Club ID"
+                  value={clubID}
+                  onChange={(e) => setClubID(e.target.value === "" ? "" : Number(e.target.value))}
+                  style={{ width: "100%", marginBottom: "0.5rem" }}
+                />
+                <button
+                  onClick={async () => {
+                    if (!username.trim()) {
+                      setJoinClubMessage("Please enter your username first.");
+                      setJoinClubError(true);
+                      return;
+                    }
+                    if (!clubID) {
+                      setJoinClubMessage("Please enter a valid club ID.");
+                      setJoinClubError(true);
+                      return;
+                    }
+                    const result = await joinBookClub(username.trim(), clubID);
+                    if (result?.success) {
+                      setJoinClubMessage(result.message);
+                      setJoinClubError(false);
+                    } else {
+                      setJoinClubMessage(result?.error || "Failed to join the club.");
+                      setJoinClubError(true);
+                    }
+                  }}
+                >
+                  Join Book Club
+                </button>
+                {joinClubMessage && (
+                  <p style={{ color: joinClubError ? "red" : "green", marginTop: "0.5rem" }}>
+                    {joinClubMessage}
+                  </p>
+                )}
+              </div>
+            </div>
+            
           </div>
 
           <div className="sidebar-right">
