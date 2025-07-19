@@ -6,6 +6,8 @@ from config import *
 from psycopg2.extensions import adapt
 import psycopg2
 
+from datetime import datetime
+
 # Initialize flask app
 app = Flask(__name__)
 CORS(app)
@@ -660,6 +662,43 @@ def get_streak():
         
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route('/updateprogress', methods=['POST'])
+def update_progress():
+    try:
+        db = Database()
+
+        data = request.get_json()
+        username = data.get('username')
+        bookID = data.get('bookId')
+        newpage = data.get('newpage')
+        date:str = data.get('newdate')
+        
+        print(data)
+
+        query = f"""
+            INSERT INTO {USERLOGS} (userID, bookID, update_time)
+            VALUES (
+                (SELECT userID FROM {USERS} WHERE name='{username}'),
+                {bookID},
+                '{datetime.strptime(date, "%a, %d %b %Y %H:%M:%S %Z")}'
+            );
+        """
+        db.run(query)
+        db.commit()
+        
+        query = f"""
+            UPDATE {USERPROGRESS} SET page_reached = {newpage} 
+            WHERE userID = (SELECT userID FROM {USERS} WHERE name='{username}')
+                AND bookID = {bookID};  
+        """
+        db.run(query)
+        db.commit()
+        
+        return jsonify({"message": "Added to userlogs", "username": username, "bookID": bookID}), 200
+    except Exception as e:
+        return jsonify({"message": "Error adding book to userprogress", "error": str(e)}), 500
+
 
 
 if __name__ == "__main__":

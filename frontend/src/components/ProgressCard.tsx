@@ -4,7 +4,7 @@ import "./ProgressCard.css";
 
 interface BookCardProps {
     book: BookProgress;
-    onUpdateProgress?: (bookId: string, newDate: Date, newPage: number) => void;
+    onUpdateProgress?: (bookId: number, newDate: Date, newPage: number) => void;
   }
   
   export const ProgressCard: React.FC<BookCardProps> = ({ book, onUpdateProgress }) => {
@@ -14,7 +14,7 @@ interface BookCardProps {
   
     const handleAddProgress = () => {
       if (onUpdateProgress) {
-        onUpdateProgress(book.title, new Date(selectedDate), newPage);
+        onUpdateProgress(book.bookID, new Date(selectedDate), newPage);
       }
       setShowDatePicker(false);
     };

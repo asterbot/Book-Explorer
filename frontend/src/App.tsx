@@ -161,6 +161,25 @@ async function getUserLogs(username: string){
   }
 }
 
+async function updateProgress(username: string, bookId: number, newpage: number, newdate: string) {
+  try {
+    const response = await fetch(`http://127.0.0.1:5000/updateprogress`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username,
+        bookId,
+        newpage,
+        newdate,
+      }),
+    });
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    console.error(`Error when connecting to DB: ${error}`);
+  }
+}
+
 function App() {
   const [books, setBooks] = useState<Book[]>();
   const [searchQuery, setSearchQuery] = useState("");
@@ -260,6 +279,10 @@ function App() {
     setRecommendedBooks(undefined);
   };
 
+  const handleProgressUpdate = (bookId: number,newDate: Date, newPage: number) => {
+    updateProgress(username, bookId, newPage, newDate.toUTCString())
+  }
+
   useEffect(() => {
     setSearchQuery("Harry Potter");
     setUsername("Alex");
@@ -271,13 +294,13 @@ function App() {
     if (username.trim()) {
       findStreak();
     }
-  }, [username]);
+  }, [username, wishlist, inProgress, finished]);
 
   useEffect(()=>{
     if (username.trim()){
       findUserLogs();
     }
-  }, [username]);
+  }, [username, wishlist, inProgress, finished]);
 
   return (
     <div className="app">
@@ -318,14 +341,14 @@ function App() {
                 <div className="list-grid">
                   {wishlist.map((book) => (
                     <div className="progress-card">
-                      <ProgressCard book={book} />
+                      <ProgressCard book={book} onUpdateProgress={handleProgressUpdate} />
                       <br />
                     </div>
                   ))}
                 </div>
               )}
             </div>
-
+              
             <div className="list-container">
               <button
                 className="list-button"
@@ -337,7 +360,7 @@ function App() {
                 <div className="list-grid">
                   {inProgress.map((book) => (
                     <div className="progress-card">
-                      <ProgressCard book={book} />
+                      <ProgressCard book={book} onUpdateProgress={handleProgressUpdate} />
                       <br />
                   </div>
                   ))}
@@ -356,7 +379,7 @@ function App() {
                 <div className="list-grid">
                   {finished.map((book) => (
                     <div className="progress-card">
-                      <ProgressCard book={book} />
+                      <ProgressCard book={book} onUpdateProgress={handleProgressUpdate} />
                     <br />
                   </div>
                   ))}
