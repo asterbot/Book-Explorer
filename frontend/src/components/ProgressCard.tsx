@@ -14,7 +14,10 @@ interface BookCardProps {
   
     const handleAddProgress = () => {
       if (onUpdateProgress) {
-        onUpdateProgress(book.bookID, new Date(selectedDate), newPage);
+        const dateWithCurrentTime = new Date(selectedDate + 'T00:00:00.000Z');
+        const now = new Date();
+        dateWithCurrentTime.setUTCHours(now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds());
+        onUpdateProgress(book.bookID, dateWithCurrentTime, newPage);
       }
       setShowDatePicker(false);
     };
