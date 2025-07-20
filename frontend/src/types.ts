@@ -10,7 +10,8 @@ export interface Book{
     ratings_count: number,
     text_reviews_count: number,
     publication_date: string,
-    publisher: string
+    publisher: string,
+    wishlist_count?: number;
 }
 
 export interface BookProgress{

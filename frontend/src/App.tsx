@@ -95,6 +95,19 @@ async function getBooksByGenre(genre: string) {
   }
 }
 
+
+async function viewTopWishlists(count: number) {
+  try {
+    const response = await fetch(
+      `http://127.0.0.1:5000/top-wishlists?n=${count}`
+    );
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(`Error when connecting to DB: ${error}`);
+  }
+}
+
 async function getClubSuggestion(username: string) {
   try {
     const response = await fetch(`http://127.0.0.1:5000/suggest-club/${encodeURIComponent(username)}`);
@@ -194,6 +207,10 @@ function App() {
   const [completionRates, setCompletionRates] = useState<any[]>();
   const [genreCounts, setGenreCounts] = useState<{ [genre: string]: number }>();
   const [showGenreDropdown, setShowGenreDropdown] = useState(false);
+
+  const [topWishlists, setTopWishlists] = useState<Book[]>();
+  const [topN, setTopN] = useState(5);  
+
   const [suggestion, setSuggestion] = useState<any>(null);
   const [recommendedBooks, setRecommendedBooks] = useState<Book[]>();
 
@@ -205,12 +222,14 @@ function App() {
 
   const [userlogs, setUserLogs] = useState<UserLogs[]>();
 
+
   const handleSearch = async () => {
     if (searchQuery.trim() !== "") {
       const results = await searchBooks(searchQuery);
       setBooks(results);
     }
   };
+
 
   const handleViewList = async (status: bookStatus) => {
     if (username.trim() != "") {
@@ -271,12 +290,20 @@ function App() {
     setUserLogs(result);
   }
 
+
+  const handleViewTopWishlist = async () => {
+    setTopWishlists(undefined);
+    const results = await viewTopWishlists(topN);
+    setTopWishlists(results);
+  };
+
   const collapseLists = () => {
     setWishlist(undefined);
     setInProgress(undefined);
     setFinished(undefined);
     setCommonBooks(undefined);
     setCompletionRates(undefined);
+    setTopWishlists(undefined);
     setRecommendedBooks(undefined);
   };
 
@@ -383,6 +410,36 @@ function App() {
                       <ProgressCard book={book} onUpdateProgress={handleProgressUpdate} />
                     <br />
                   </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="list-container">
+            <label>
+              Enter number of top wishlists to fetch:
+              <input
+                type="number"
+                min="1"
+                max="100"
+                value={topN}
+                onChange={(e) => setTopN(Number(e.target.value))}
+              />
+            </label>
+              <button
+                className="list-button"
+                onClick={() => handleViewTopWishlist()}
+              >
+                Top Current Wishlists
+              </button>
+              {topWishlists && (
+                <div className="list-grid">
+                  {topWishlists.map((book) => (
+                    <div key={book.bookID}>
+                      <p>
+                        <span className="book-title">{book.title}</span>
+                        <span className="book-wishlist-count">Count: {book.wishlist_count}</span>
+                      </p>
+                    </div>
                   ))}
                 </div>
               )}
@@ -564,7 +621,6 @@ function App() {
                     <div key={book.bookID}>
                       <p>
                         <span className="book-title">{book.title}</span>
-                        <span className="book-author"> by {book.authors}</span>
                       </p>
                     </div>
                   ))}
