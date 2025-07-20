@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Search, Filter, BookOpen } from "lucide-react";
 import { BookCard } from "../components/BookCard";
-import type { Book, BookProgress } from "../types";
+import type { Book } from "../types";
 
 interface HomePageProps {
   username: string;
@@ -134,7 +134,7 @@ export function HomePage({ username }: HomePageProps) {
               <div className="genre-header">
                 <h4>Select Genre</h4>
                 <button
-                  onClick={() => {setShowGenreDropdown(false); setSelectedGenre("")}}
+                  onClick={() => {setShowGenreDropdown(false); setSelectedGenre(""); setBooks([])}}
                   className="close-button"
                 >
                   ×
