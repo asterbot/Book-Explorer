@@ -322,6 +322,9 @@ def top_wishlist_books():
     try:
         db = Database()
 
+        n = request.args.get('n', default=5, type=int)
+
+
         query = f"""
         SELECT 
             {BOOKS}.bookID,
@@ -332,7 +335,7 @@ def top_wishlist_books():
         WHERE {USERPROGRESS}.status = 'NOT STARTED'
         GROUP BY {BOOKS}.bookID, {BOOKS}.title
         ORDER BY wishlist_count DESC
-        LIMIT 5;
+        LIMIT {n};
         """
 
         db.run(query)
