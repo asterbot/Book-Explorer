@@ -28,7 +28,7 @@ BEGIN
 
     ELSE
         UPDATE userprogress
-        SET status = 'DONE'
+        SET status = 'FINISHED'
         WHERE userid = NEW.userid AND bookID = NEW.bookID;
     END IF;
 
@@ -38,7 +38,7 @@ $$ LANGUAGE plpgsql;
 
 
 CREATE TRIGGER set_status
-    AFTER UPDATE OF page_reached ON userprogress
+    AFTER INSERT OR UPDATE OF page_reached ON userprogress
     FOR EACH ROW
         EXECUTE FUNCTION set_status();
 

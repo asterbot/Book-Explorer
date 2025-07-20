@@ -102,8 +102,21 @@ async function viewTopWishlists(count: number) {
       `http://127.0.0.1:5000/top-wishlists?n=${count}`
     );
     const data = await response.json();
-    return data;
+    return data.results;
   } catch (error) {
+    console.error(`Error when connecting to DB: ${error}`);
+  }
+}
+
+async function viewTopBooks(count: number){
+  try{
+    const response = await fetch(
+      `http://127.0.0.1:5000/top-books?limit=${count}`
+    )
+    const data = await response.json();
+    return data.results;
+  }
+  catch(error){
     console.error(`Error when connecting to DB: ${error}`);
   }
 }
@@ -208,8 +221,7 @@ function App() {
   const [genreCounts, setGenreCounts] = useState<{ [genre: string]: number }>();
   const [showGenreDropdown, setShowGenreDropdown] = useState(false);
 
-  const [topWishlists, setTopWishlists] = useState<Book[]>();
-  const [topN, setTopN] = useState(5);  
+  const [topN, setTopN] = useState(5);  // used for top n wishlisted/rated books
 
   const [suggestion, setSuggestion] = useState<any>(null);
   const [recommendedBooks, setRecommendedBooks] = useState<Book[]>();
@@ -292,10 +304,15 @@ function App() {
 
 
   const handleViewTopWishlist = async () => {
-    setTopWishlists(undefined);
     const results = await viewTopWishlists(topN);
-    setTopWishlists(results);
+    console.log(results);
+    setBooks(results);
   };
+
+  const handleTopRated = async () => {
+    const results = await viewTopBooks(topN);
+    setBooks(results);
+  }
 
   const collapseLists = () => {
     setWishlist(undefined);
@@ -303,7 +320,6 @@ function App() {
     setFinished(undefined);
     setCommonBooks(undefined);
     setCompletionRates(undefined);
-    setTopWishlists(undefined);
     setRecommendedBooks(undefined);
   };
 
@@ -414,36 +430,7 @@ function App() {
                 </div>
               )}
             </div>
-            <div className="list-container">
-            <label>
-              Enter number of top wishlists to fetch:
-              <input
-                type="number"
-                min="1"
-                max="100"
-                value={topN}
-                onChange={(e) => setTopN(Number(e.target.value))}
-              />
-            </label>
-              <button
-                className="list-button"
-                onClick={() => handleViewTopWishlist()}
-              >
-                Top Current Wishlists
-              </button>
-              {topWishlists && (
-                <div className="list-grid">
-                  {topWishlists.map((book) => (
-                    <div key={book.bookID}>
-                      <p>
-                        <span className="book-title">{book.title}</span>
-                        <span className="book-wishlist-count">Count: {book.wishlist_count}</span>
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+
 
             <div className="list-container">
               <p
@@ -621,6 +608,7 @@ function App() {
                     <div key={book.bookID}>
                       <p>
                         <span className="book-title">{book.title}</span>
+                        <i>by</i> <span className="book-authors">{book.authors}</span>
                       </p>
                     </div>
                   ))}
@@ -630,27 +618,63 @@ function App() {
           </div>
         </div>
 
+                
+
         <div className="main-content" style={{ marginLeft: "5rem" }}>
-          <div className="search-container">
-            <input
-              type="text"
-              placeholder="Search for books"
-              value={searchQuery}
-              className="search-input"
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button onClick={handleSearch}>Search</button>
-          </div>
+          
+        <div className="top-N-search">
+            <label style = {{marginRight: '8px'}}>
+                  Top <br />
+                  <input
+                    type="number"
+                    min="1"
+                    max="100"
+                    value={topN}
+                    onChange={(e) => setTopN(Number(e.target.value))}
+                  />
+              </label> 
+              current <br />
+              
+
+              <button style={{ marginRight: '10px', marginTop: '10px' }}
+                    className="list-button"
+                    onClick={() => handleTopRated()}
+                  >
+                    Rated books
+              </button>
+
+                <button
+                      className="list-button"
+                      onClick={() => handleViewTopWishlist()}
+                    >
+                      Wishlisted books
+                </button>
+            </div>
+            
+
+            <center><h2>Search Books by title</h2></center>
+
+            <div className="search-container">
+              <input
+                type="text"
+                placeholder="Search for books"
+                value={searchQuery}
+                className="search-input"
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <button onClick={handleSearch}>Search</button>
+            </div>
+          
 
           <main className="app-main">
             <div className="container">
               {username && (
-                <div className="username-container" style={{ marginLeft: "5rem" }}>
+                <div className="username-container">
                   <p>Hello, {username}!</p>
                 </div>
               )}
               {books && (
-                <div className="books-grid" style={{ marginLeft: "5rem" }}>
+                <div className="books-grid" >
                   {books.map((book) => (
                     <div key={book.bookID} className="book-item">
                       <BookCard book={book} />
