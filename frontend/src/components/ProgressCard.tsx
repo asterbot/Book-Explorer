@@ -31,7 +31,7 @@ interface BookCardProps {
               <td>{book.title}</td>
             </tr>
             <tr>
-              <td><strong>Authors:</strong></td>
+              <td><strong>{book.authors.split(',').length === 1 ? 'Author' : 'Authors'}:</strong></td>
               <td>{book.authors}</td>
             </tr>
             <tr>
