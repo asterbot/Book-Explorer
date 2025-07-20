@@ -100,8 +100,9 @@ def books_by_genre():
             return jsonify({"error": "Missing 'genre' parameter"}), 400
 
         query = f"""
-            SELECT b.bookID, b.title,
-                   COALESCE(string_agg(DISTINCT a.name, ', '), '') AS authors
+            SELECT b.bookID, b.title, 
+                   COALESCE(string_agg(DISTINCT a.name, ', '), '') AS authors,
+                   b.num_pages
             FROM {BOOKS} b
             JOIN {BOOKGENRE} bg ON b.bookID = bg.bookID
             JOIN {GENRE} g ON bg.genreID = g.genreID
@@ -119,7 +120,8 @@ def books_by_genre():
             books.append({
                 "bookID": row[0],
                 "title": row[1],
-                "authors": row[2]
+                "authors": row[2],
+                "num_pages": row[3]
             })
 
         return jsonify({"results": books, "count": len(books)}), 200
@@ -479,9 +481,9 @@ def recommend_books():
             WHERE ubt.tagID IN (SELECT tagID FROM current_user_tags)
         ),
         hybrid_candidate_books AS (
-            SELECT bookID FROM books_read_by_similar_users
-            UNION
             SELECT bookID FROM books_tagged_with_interest_tags
+            UNION
+            SELECT bookID FROM books_read_by_similar_users
         ),
         recommended_books AS (
             SELECT cb.bookID
@@ -494,7 +496,7 @@ def recommend_books():
             )
             LIMIT 5
         )
-        SELECT b.bookID, b.title, COALESCE(string_agg(DISTINCT a.name, ', '), '') AS authors
+        SELECT b.bookID, b.title, COALESCE(string_agg(DISTINCT a.name, ', '), '') AS authors, b.num_pages
         FROM recommended_books rb
         JOIN {BOOKS} b ON b.bookID = rb.bookID
         LEFT JOIN {BOOK_AUTHORS} ba ON b.bookID = ba.bookID
@@ -509,7 +511,8 @@ def recommend_books():
             {
                 "bookID": row[0],
                 "title": row[1],
-                "authors": row[2]
+                "authors": row[2],
+                "num_pages": row[3]
             }
             for row in results
         ]
@@ -712,6 +715,61 @@ def update_progress():
     except Exception as e:
         return jsonify({"message": "Error adding book to userprogress", "error": str(e)}), 500
 
+
+@app.route('/user-book-clubs', methods=['GET'])
+def user_book_clubs():
+    try:
+        db = Database()
+
+        username = request.args.get('username')
+        if not username:
+            return jsonify({"error": "Missing 'username' parameter"}), 400
+
+        # Step 1: Get userID
+        query_user = f"""
+            SELECT userID
+            FROM {USERS}
+            WHERE LOWER(name) = LOWER('{username}')
+            LIMIT 1;
+        """
+        db.run(query_user)
+        user_row = db.fetch_one()
+
+        if not user_row:
+            return jsonify({"error": f"User '{username}' not found"}), 404
+
+        user_id = user_row[0]
+
+        # Step 2: Get all book clubs the user is a member of
+        query_clubs = f"""
+            SELECT 
+                bc.clubID, 
+                bc.name, 
+                bc.description,
+                COUNT(bcm2.userID) AS memberCount
+            FROM {BOOKCLUB_MEMBERS} bcm
+            JOIN {BOOKCLUBS} bc ON bcm.clubID = bc.clubID
+            LEFT JOIN {BOOKCLUB_MEMBERS} bcm2 ON bc.clubID = bcm2.clubID
+            WHERE bcm.userID = {user_id}
+            GROUP BY bc.clubID, bc.name, bc.description
+            ORDER BY bc.name;
+        """
+        db.run(query_clubs)
+        results = db.fetch_all()
+
+        clubs = []
+        for row in results:
+            clubs.append({
+                "clubID": row[0],
+                "clubName": row[1],
+                "description": row[2],
+                "memberCount": row[3]
+            })
+
+        return jsonify({"results": clubs, "count": len(clubs)}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":

@@ -12,9 +12,8 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    // Set default username for development
-    setUsername("Alex");
-    setIsLoggedIn(true);
+    setUsername("Alex"); // default username is alex
+    setIsLoggedIn(true); // logged in by default
   }, []);
 
   const handleLogin = () => {

@@ -61,7 +61,7 @@ export function HomePage({ username }: HomePageProps) {
   const [showGenreDropdown, setShowGenreDropdown] = useState(false);
   const [selectedGenre, setSelectedGenre] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
-  // For demo, track added books in local state
+
   const [addedBooks, setAddedBooks] = useState<{[id: number]: string}>({});
 
   useEffect(() => {
@@ -118,7 +118,7 @@ export function HomePage({ username }: HomePageProps) {
               placeholder="Search for books..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && handleSearch()}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               className="search-input"
             />
           </div>

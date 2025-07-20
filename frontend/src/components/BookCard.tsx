@@ -31,7 +31,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book, currentStatus, onStatu
         </div>
       </div>
       {onStatusChange && (
-        <div className="book-actions" style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto' }}>
+        <div className="book-actions" style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
           <button
             className={`action-btn wishlist-btn${currentStatus === 'NOT STARTED' ? ' active' : ''}`}
             onClick={() => handleClick("NOT STARTED")}

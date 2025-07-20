@@ -21,6 +21,20 @@ interface BookCardProps {
       }
       setShowDatePicker(false);
     };
+
+    const handleSetPage = (pageNumber: number) => {
+      if (pageNumber < 0) {
+        setNewPage(0);
+      }
+
+      else if (pageNumber > book.num_pages) {
+        setNewPage(book.num_pages);
+      }
+
+      else {
+        setNewPage(pageNumber);
+      }
+    }
   
     return (
       <div className="prog-card">
@@ -69,8 +83,10 @@ interface BookCardProps {
                 <input
                   id="progress-page"
                   type="number"
+                  min={0}
+                  max={book.num_pages}
                   value={newPage}
-                  onChange={(e) => setNewPage(parseInt(e.target.value))}
+                  onChange={(e) => handleSetPage(parseInt(e.target.value))}
                 />
               </div>
               <div className="action-buttons">
