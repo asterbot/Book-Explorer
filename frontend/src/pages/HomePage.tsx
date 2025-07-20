@@ -134,7 +134,7 @@ export function HomePage({ username }: HomePageProps) {
               <div className="genre-header">
                 <h4>Select Genre</h4>
                 <button
-                  onClick={() => setShowGenreDropdown(false)}
+                  onClick={() => {setShowGenreDropdown(false); setSelectedGenre("")}}
                   className="close-button"
                 >
                   ×
@@ -181,6 +181,12 @@ export function HomePage({ username }: HomePageProps) {
                       onClick={() => handleAddBook(book.bookID, "IN PROGRESS")}
                     >
                       Start Reading
+                    </button>
+                    <button
+                      className="action-btn reading-btn"
+                      onClick={() => handleAddBook(book.bookID, "FINISHED")}
+                    >
+                      Already Read
                     </button>
                   </div>
                 )}

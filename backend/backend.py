@@ -100,11 +100,16 @@ def books_by_genre():
             return jsonify({"error": "Missing 'genre' parameter"}), 400
 
         query = f"""
-            SELECT b.bookID, b.title
-            FROM {BOOKS} b, {BOOKGENRE} bg, {GENRE} g
-            WHERE g.genreID=bg.genreID AND b.bookID=bg.bookID AND
-                    LOWER(g.name) = LOWER('{genre}')
-            ORDER BY title ASC;
+            SELECT b.bookID, b.title,
+                   COALESCE(string_agg(a.name, ', '), '') AS authors
+            FROM {BOOKS} b
+            JOIN {BOOKGENRE} bg ON b.bookID = bg.bookID
+            JOIN {GENRE} g ON bg.genreID = g.genreID
+            LEFT JOIN {BOOK_AUTHORS} ba ON b.bookID = ba.bookID
+            LEFT JOIN {AUTHORS} a ON ba.authorID = a.authorID
+            WHERE LOWER(g.name) = LOWER('{genre}')
+            GROUP BY b.bookID, b.title
+            ORDER BY b.title ASC;
         """
         db.run(query)
         results = db.fetch_all()
@@ -114,6 +119,7 @@ def books_by_genre():
             books.append({
                 "bookID": row[0],
                 "title": row[1],
+                "authors": row[2]
             })
 
         return jsonify({"results": books, "count": len(books)}), 200

@@ -15,10 +15,6 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
 
       <div className="book-info">
         <p className="book-author">by {book.authors}</p>
-        <div className="book-meta">
-          <span className="book-date">{book.publication_date}</span>
-          <span className="book-pages">{book.num_pages} pages</span>
-        </div>
       </div>
     </div>
   );

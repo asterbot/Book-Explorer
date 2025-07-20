@@ -125,6 +125,12 @@ export function RecommendationsPage({ username }: RecommendationsPageProps) {
                       >
                         Start Reading
                       </button>
+                      <button
+                        className="action-btn reading-btn"
+                        onClick={() => handleAddBook(book.bookID, "FINISHED")}
+                      >
+                        Already Read
+                      </button>
                     </div>
                   </div>
                 ))}

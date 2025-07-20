@@ -7,11 +7,8 @@ interface UserPageProps {
   username: string;
 }
 
-enum BookStatus {
-  NOT_STARTED = "NOT STARTED",
-  IN_PROGRESS = "IN PROGRESS",
-  FINISHED = "FINISHED",
-}
+type BookStatus = "NOT STARTED" | "IN PROGRESS" | "FINISHED";
+
 
 async function viewWishlist(username: string, status: BookStatus) {
   try {
@@ -95,9 +92,9 @@ export function UserPage({ username }: UserPageProps) {
     setIsLoading(true);
     
     const [wishlistData, inProgressData, finishedData, streakData, logsData] = await Promise.all([
-      viewWishlist(username, BookStatus.NOT_STARTED),
-      viewWishlist(username, BookStatus.IN_PROGRESS),
-      viewWishlist(username, BookStatus.FINISHED),
+      viewWishlist(username, "NOT STARTED"),
+      viewWishlist(username, "IN PROGRESS"),
+      viewWishlist(username, "FINISHED"),
       getStreak(username),
       getUserLogs(username)
     ]);
@@ -228,7 +225,7 @@ export function UserPage({ username }: UserPageProps) {
               {activeTab === 'wishlist' && (
                 <div className="tab-panel">
                   <h2>My Wishlist</h2>
-                  {renderBookList(wishlist, "Your wishlist is empty. Start adding books you'd like to read!")}
+                  {renderBookList(wishlist, "Your wishlist is empty. Start adding books you want to read!")}
                 </div>
               )}
 
