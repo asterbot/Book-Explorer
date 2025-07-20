@@ -376,3 +376,33 @@
 .genre-option:hover {
   background-color: #e0e0e0;
 }
+
+
+.userlog-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: sans-serif;
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  font-size: 12px;
+}
+
+.userlog-table th,
+.userlog-table td {
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.userlog-table th {
+  border: 1px solid #ccc;
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+.userlog-table td {
+  border-right: 1px solid #ccc;
+}
+
+.userlog-table td:last-child {
+  border-right: none;
+}

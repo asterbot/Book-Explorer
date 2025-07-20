@@ -1,42 +1,39 @@
-import mysql.connector
-from config import get_env_config
+import psycopg2
+from dotenv import load_dotenv
+from config import get_env_config, RELATION
 
 class Database:
-    LOCALHOST_IP="127.0.0.1"
-    LOCALHOST_PORT=3306
 
-    def __init__(self):
+    def __init__(self, show_logs=True):
         """Initialize connection and cursor"""
-        try:
-            self.cnx = mysql.connector.connect(
-                    host = self.LOCALHOST_IP,
-                    port = self.LOCALHOST_PORT,
-                    user = get_env_config("USER"),
-                    password = get_env_config("PWD")
-            )
-            self.cursor = self.cnx.cursor(buffered=True)
-            print("Connection successful")
-        except Exception:
-            print("Your connection failed, please ensure that your .env file is in the root of the repository and has correct values")
+        
+        self.show_logs = show_logs
+        
+        load_dotenv()
+
+        self.cnx = psycopg2.connect(
+            user = get_env_config("user"),
+            password = get_env_config("password"),
+            host = get_env_config("host"),
+            port = get_env_config("port"),
+            dbname = get_env_config("dbname")
+        )
+
+        self.cursor = self.cnx.cursor()
+        
+        # Set the schema
+        self.cursor.execute(f"SET search_path TO {RELATION}")
+        
+        
+        if self.show_logs:
+            print("Connection to database successful")
 
 
     def __del__(self):
         """Disconnect upon object deletion"""
         self.cnx.close()
-        print("Disconnected from database")
-
-
-    def use_database(self,database: str) -> None:
-        """
-        Switches to provided database
-
-        Args:
-            database (str): Database name
-        """
-        self.cursor.execute(f"use {database};")
-        print(f"Switched to {database}")
-    
-
+        if self.show_logs:
+            print("Disconnected from database")
 
     ## ------------------------------ Query commands -------------------------------------
 
@@ -95,3 +92,13 @@ class Database:
             list[str]: List of rows returned by previous command
         """
         return self.cursor.fetchall()
+
+
+    def fetch_one(self):
+        """
+        Fetch a single row from the previously executed query.
+
+        Returns:
+            tuple or None: The next row from the result set, or None if no more data is available.
+        """
+        return self.cursor.fetchone()

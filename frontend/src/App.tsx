@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 
 import { BookCard } from "./components/BookCard";
 
-import type { Book } from "./types";
+import { type UserLogs, type Book, type BookProgress } from "./types";
 import "./App.css";
+import { ProgressCard } from "./components/ProgressCard";
+import { StreakCounter } from "./components/StreakCounter";
 
 async function searchBooks(query: string) {
   try {
@@ -22,16 +24,18 @@ enum bookStatus {
   FINISHED = "FINISHED",
 }
 
-async function viewWishlist(
-  username: string,
-  status: bookStatus = bookStatus.NOT_STARTED
-) {
+async function viewWishlist(username: string, status: bookStatus = bookStatus.NOT_STARTED) {
   try {
-    const response = await fetch(
-      `http://127.0.0.1:5000/userlist?username=${username}&status=${status}`
-    );
+    const response = await fetch(`http://127.0.0.1:5000/userlist?username=${username}&status=${status}`);
     const data = await response.json();
-    return data.results;
+    return data.results.map((book: any) => ({
+      bookID: book.bookID,
+      title: book.title,
+      authors: book.authors,
+      page_reached: book.page_reached,
+      num_pages: book.num_pages,
+    }));
+
   } catch (error) {
     console.error(`Error when connecting to DB: ${error}`);
   }
@@ -41,14 +45,8 @@ async function addBook(username: string, bookID: number, status: bookStatus) {
   try {
     const response = await fetch(`http://127.0.0.1:5000/userprogress`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: username,
-        bookID: bookID,
-        status: status,
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, bookID, status }),
     });
     const data = await response.json();
     return data.results;
@@ -59,9 +57,7 @@ async function addBook(username: string, bookID: number, status: bookStatus) {
 
 async function findCommonBooks(username1: string, username2: string) {
   try {
-    const response = await fetch(
-      `http://127.0.0.1:5000/common-books?u1name=${username1}&u2name=${username2}`
-    );
+    const response = await fetch(`http://127.0.0.1:5000/common-books?u1name=${username1}&u2name=${username2}`);
     const data = await response.json();
     return data.results;
   } catch (error) {
@@ -71,9 +67,7 @@ async function findCommonBooks(username1: string, username2: string) {
 
 async function getBookCompletionRates(username: string) {
   try {
-    const response = await fetch(
-      `http://127.0.0.1:5000/book-completion-rates?username=${username}`
-    );
+    const response = await fetch(`http://127.0.0.1:5000/book-completion-rates?username=${username}`);
     const data = await response.json();
     return data.results;
   } catch (error) {
@@ -91,11 +85,21 @@ async function getGenreCounts() {
   }
 }
 
+async function getBooksByGenre(genre: string) {
+  try {
+    const response = await fetch(`http://127.0.0.1:5000/genre?genre=${genre}`);
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    console.error(`Error fetching books by genre: ${error}`);
+  }
+}
+
 
 async function viewTopWishlists() {
   try {
     const response = await fetch(
-      `http://127.0.0.1:5000/books/top-wishlists`
+      `http://127.0.0.1:5000/top-wishlists`
     );
     const data = await response.json();
     return data;
@@ -104,30 +108,119 @@ async function viewTopWishlists() {
   }
 }
 
+async function getClubSuggestion(username: string) {
+  try {
+    const response = await fetch(`http://127.0.0.1:5000/suggest-club/${encodeURIComponent(username)}`);
+    return await response.json();
+  } catch (error) {
+    console.error(`Error getting suggestion: ${error}`);
+    return { error: "Could not connect to backend" };
+  }
+}
+
+async function getRecommendations(username: string) {
+  try {
+    const response = await fetch(`http://127.0.0.1:5000/recommendations?username=${encodeURIComponent(username)}`);
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    console.error(`Error fetching recommendations: ${error}`);
+  }
+}
+
+async function joinBookClub(username: string, clubID: number) {
+  try {
+    const response = await fetch(
+      `http://127.0.0.1:5000/join_book_club?username=${encodeURIComponent(username)}&clubID=${clubID}`,
+      {
+        method: "POST",
+      }
+    );
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(`Error joining book club: ${error}`);
+  }
+}
+
+async function getStreak(username: string){
+  try{
+    const response = await fetch(
+      `http://127.0.0.1:5000/streak?username=${encodeURIComponent(username)}`,
+    )
+    const data = await response.json();
+    return data.streak
+  }
+  catch (error){
+    console.error(`Error finding streak for ${username}: ${error}`)
+  }
+}
+
+
+async function getUserLogs(username: string){
+  try{
+    const response = await fetch(
+      `http://127.0.0.1:5000/userlogs?username=${encodeURIComponent(username)}`,
+    )
+    const data = await response.json()
+    return data.results.map((book: any) => ({
+      book_title: book.book_title,
+      authors: book.authors,
+      timestamp: new Date(book.timestamp),  // make it a date object
+      page_reached: book.page_reached,
+    }));
+  }
+  catch (error){
+    console.error(`Error: ${error}`)
+  }
+}
+
+async function updateProgress(username: string, bookId: number, newpage: number, newdate: string) {
+  try {
+    const response = await fetch(`http://127.0.0.1:5000/updateprogress`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username,
+        bookId,
+        newpage,
+        newdate,
+      }),
+    });
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    console.error(`Error when connecting to DB: ${error}`);
+  }
+}
+
 function App() {
   const [books, setBooks] = useState<Book[]>();
   const [searchQuery, setSearchQuery] = useState("");
-
-  // Usernames
   const [username, setUsername] = useState("");
   const [otherUsername, setOtherUserName] = useState("");
 
-  // User status lists
-  const [wishlist, setWishlist] = useState<Book[]>();
-  const [inProgress, setInProgress] = useState<Book[]>();
-  const [finished, setFinished] = useState<Book[]>();
-
-  // Common books between 2 users
+  const [wishlist, setWishlist] = useState<BookProgress[]>();
+  const [inProgress, setInProgress] = useState<BookProgress[]>();
+  const [finished, setFinished] = useState<BookProgress[]>();
   const [commonBooks, setCommonBooks] = useState<Book[]>();
-
-  // Book completion rates
   const [completionRates, setCompletionRates] = useState<any[]>();
-
-  // Genre
   const [genreCounts, setGenreCounts] = useState<{ [genre: string]: number }>();
   const [showGenreDropdown, setShowGenreDropdown] = useState(false);
 
   const [topWishlists, setTopWishlists] = useState<Book[]>();
+
+  const [suggestion, setSuggestion] = useState<any>(null);
+  const [recommendedBooks, setRecommendedBooks] = useState<Book[]>();
+
+  const [clubID, setClubID] = useState<number|"">("");
+  const [joinClubMessage, setJoinClubMessage] = useState<string | null>(null);
+  const [joinClubError, setJoinClubError] = useState<boolean>(false);
+
+  const [streak, setStreak] = useState<number>(0);
+
+  const [userlogs, setUserLogs] = useState<UserLogs[]>();
+
 
   const handleSearch = async () => {
     if (searchQuery.trim() !== "") {
@@ -135,6 +228,7 @@ function App() {
       setBooks(results);
     }
   };
+
 
   const handleViewList = async (status: bookStatus) => {
     if (username.trim() != "") {
@@ -146,9 +240,8 @@ function App() {
   };
 
   const handleCommonBooks = async () => {
-    if (username.trim() != "" && otherUsername.trim() != "") {
+    if (username.trim() && otherUsername.trim()) {
       const results = await findCommonBooks(username, otherUsername);
-      console.log(results);
       setCommonBooks(results);
     }
   };
@@ -172,15 +265,28 @@ function App() {
     setShowGenreDropdown(false);
   };
 
+  const handleSuggestClub = async () => {
+    if (!username.trim()) return;
+    const res = await getClubSuggestion(username.trim());
+    setSuggestion(res);
+  };
 
-  async function getBooksByGenre(genre: string) {
-    try {
-      const response = await fetch(`http://127.0.0.1:5000/genre?genre=${genre}`);
-      const data = await response.json();
-      return data.results;
-    } catch (error) {
-      console.error(`Error fetching books by genre: ${error}`);
-    }
+  const handleRecommendations = async () => {
+    if (!username.trim()) return;
+    const results = await getRecommendations(username);
+    setRecommendedBooks(results);
+  };
+
+  const findStreak = async () => {
+    if (!username.trim()) return;
+    const result = await getStreak(username);
+    setStreak(result)
+  }
+
+  const findUserLogs = async () => {
+    if (!username.trim()) return;
+    const result = await getUserLogs(username);
+    setUserLogs(result);
   }
 
 
@@ -196,14 +302,31 @@ function App() {
     setCommonBooks(undefined);
     setCompletionRates(undefined);
     setTopWishlists(undefined);
+    setRecommendedBooks(undefined);
   };
 
-  // Fetch book data from backend endpoint API
+  const handleProgressUpdate = (bookId: number,newDate: Date, newPage: number) => {
+    updateProgress(username, bookId, newPage, newDate.toUTCString())
+  }
+
   useEffect(() => {
     setSearchQuery("Harry Potter");
     setUsername("Alex");
     setOtherUserName("Bob");
   }, []);
+
+
+  useEffect(() => {
+    if (username.trim()) {
+      findStreak();
+    }
+  }, [username, wishlist, inProgress, finished]);
+
+  useEffect(()=>{
+    if (username.trim()){
+      findUserLogs();
+    }
+  }, [username, wishlist, inProgress, finished]);
 
   return (
     <div className="app">
@@ -243,11 +366,9 @@ function App() {
               {wishlist && (
                 <div className="list-grid">
                   {wishlist.map((book) => (
-                    <div key={book.bookID}>
-                      <p>
-                        <span className="book-title">{book.title}</span>
-                        <span className="book-author"> by {book.authors}</span>
-                      </p>
+                    <div className="progress-card">
+                      <ProgressCard book={book} onUpdateProgress={handleProgressUpdate} />
+                      <br />
                     </div>
                   ))}
                 </div>
@@ -264,12 +385,10 @@ function App() {
               {inProgress && (
                 <div className="list-grid">
                   {inProgress.map((book) => (
-                    <div key={book.bookID}>
-                      <p>
-                        <span className="book-title">{book.title}</span>
-                        <span className="book-author"> by {book.authors}</span>
-                      </p>
-                    </div>
+                    <div className="progress-card">
+                      <ProgressCard book={book} onUpdateProgress={handleProgressUpdate} />
+                      <br />
+                  </div>
                   ))}
                 </div>
               )}
@@ -285,12 +404,10 @@ function App() {
               {finished && (
                 <div className="list-grid">
                   {finished.map((book) => (
-                    <div key={book.bookID}>
-                      <p>
-                        <span className="book-title">{book.title}</span>
-                        <span className="book-author"> by {book.authors}</span>
-                      </p>
-                    </div>
+                    <div className="progress-card">
+                      <ProgressCard book={book} onUpdateProgress={handleProgressUpdate} />
+                    <br />
+                  </div>
                   ))}
                 </div>
               )}
@@ -308,7 +425,7 @@ function App() {
                     <div key={book.bookID}>
                       <p>
                         <span className="book-title">{book.title}</span>
-                        <span className="book-author"> by {book.authors}</span>
+                        <span className="book-wishlist-count">Count: {book.wishlist_count}</span>
                       </p>
                     </div>
                   ))}
@@ -380,9 +497,95 @@ function App() {
                 </div>
               )}
             </div>
+            <div className="list-container" style={{ marginTop: "1rem" }}>
+              <button className="list-button" onClick={handleSuggestClub}>
+                Suggest a Book Club
+              </button>
+              {suggestion && (
+                <div style={{ marginTop: "0.5rem", fontSize: "14px" }}>
+                  {"clubName" in suggestion && (
+                    <>
+                      <strong>Recommended Club:</strong>{" "}
+                      <span style={{ color: "#0066cc" }}>
+                        {suggestion.clubName}
+                      </span>
+                      <br />
+                      <em>{suggestion.reason}</em>
+                    </>
+                  )}
+                  {"message" in suggestion && (
+                    <span>{suggestion.message}</span>
+                  )}
+                  {"error" in suggestion && (
+                    <span style={{ color: "red" }}>{suggestion.error}</span>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="list-container">
+              <button className="list-button" onClick={handleRecommendations}>
+                Book Recommendations
+              </button>
+              {recommendedBooks && (
+                <div className="list-grid">
+                  {recommendedBooks.map((book) => (
+                    <div key={book.bookID}>
+                      <p>
+                        <span className="book-title">{book.title}</span>
+                        {book.authors && <span className="book-author"> by {book.authors}</span>}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="list-container">
+              <div>
+                <h3>Join a Book Club</h3>
+                <input
+                  type="number"
+                  placeholder="Enter Club ID"
+                  value={clubID}
+                  onChange={(e) => setClubID(e.target.value === "" ? "" : Number(e.target.value))}
+                  style={{ width: "100%", marginBottom: "0.5rem" }}
+                />
+                <button
+                  onClick={async () => {
+                    if (!username.trim()) {
+                      setJoinClubMessage("Please enter your username first.");
+                      setJoinClubError(true);
+                      return;
+                    }
+                    if (!clubID) {
+                      setJoinClubMessage("Please enter a valid club ID.");
+                      setJoinClubError(true);
+                      return;
+                    }
+                    const result = await joinBookClub(username.trim(), clubID);
+                    if (result?.success) {
+                      setJoinClubMessage(result.message);
+                      setJoinClubError(false);
+                    } else {
+                      setJoinClubMessage(result?.error || "Failed to join the club.");
+                      setJoinClubError(true);
+                    }
+                  }}
+                >
+                  Join Book Club
+                </button>
+                {joinClubMessage && (
+                  <p style={{ color: joinClubError ? "red" : "green", marginTop: "0.5rem" }}>
+                    {joinClubMessage}
+                  </p>
+                )}
+              </div>
+            </div>
+            
           </div>
 
-          <div className="sidebar-right">
+          <div className="sidebar-right" style={{ marginLeft: "5rem" }}>
             <div>
               Other Username: <br />
               <input
@@ -406,7 +609,6 @@ function App() {
                     <div key={book.bookID}>
                       <p>
                         <span className="book-title">{book.title}</span>
-                        <span className="book-author"> by {book.authors}</span>
                       </p>
                     </div>
                   ))}
@@ -416,7 +618,7 @@ function App() {
           </div>
         </div>
 
-        <div className="main-content">
+        <div className="main-content" style={{ marginLeft: "5rem" }}>
           <div className="search-container">
             <input
               type="text"
@@ -431,12 +633,12 @@ function App() {
           <main className="app-main">
             <div className="container">
               {username && (
-                <div className="username-container">
+                <div className="username-container" style={{ marginLeft: "5rem" }}>
                   <p>Hello, {username}!</p>
                 </div>
               )}
               {books && (
-                <div className="books-grid">
+                <div className="books-grid" style={{ marginLeft: "5rem" }}>
                   {books.map((book) => (
                     <div key={book.bookID} className="book-item">
                       <BookCard book={book} />
@@ -483,14 +685,42 @@ function App() {
                 </div>
               )}
               {!books && (
-                <div className="books-grid">
+                <div className="books-grid" style={{ marginLeft: "5rem" }}>
                   <p>Click "Search" to see books.</p>
                 </div>
               )}
             </div>
           </main>
         </div>
+        
+        <div style={{ float: "right", maxWidth: "400px", marginRight: "2rem" }}>
+          <center><StreakCounter username={username} streak={streak} /> </center>
+          <h2 style={{ textAlign: "left" }}>Reading history</h2>
+          <br />
+          <table className="userlog-table">
+            <thead>
+              <tr>
+                <th>Book</th>
+                <th>Authors</th>
+                <th>Page reached</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody>
+              {userlogs?.map((userlog, index) => (
+                <tr key={index}>
+                  <td>{userlog.book_title}</td>
+                  <td>{userlog.authors}</td>
+                  <td>{userlog.page_reached}</td>
+                  <td>{userlog.timestamp.toUTCString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
       </div>
+      
     </div>
   );
 }

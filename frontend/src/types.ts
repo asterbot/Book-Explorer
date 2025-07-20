@@ -10,5 +10,21 @@ export interface Book{
     ratings_count: number,
     text_reviews_count: number,
     publication_date: string,
-    publisher: string
+    publisher: string,
+    wishlist_count?: number;
+}
+
+export interface BookProgress{
+    bookID: number,
+    title: string,
+    authors: string,
+    page_reached: number,
+    num_pages: number,
+}
+
+export interface UserLogs{
+    book_title: string,
+    authors: string,
+    timestamp: Date,
+    page_reached: number,
 }

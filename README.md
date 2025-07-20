@@ -1,40 +1,23 @@
-# CS 348 Project
-Our project is built using MySQL for the database, Python for the backend, and React/TypeScript for the frontend.
-
 ## Setup instructions
 
-1. Download and setup MySQL from the document on LEARN
-2. Create a `.env` file **at the root of the repository** with the following structure:
+## DB access
+The PostgreSQL database is already deployed on Supabase with all schema and data loaded.
+No setup is required unless you are making changes to the database.
 
-```
-USER=<user>
-PWD=<password>
-```
+However, you should still set up the virtual environment to run the backend:
 
-Note: `<user>` and `<password>` is the username and password that you used when setting up MySQL.
-
-3. To set up the database schema and sample data, run `./setup.sh` (Note: you may need to run `chmod +x setup.sh` first). Note that the script might prompt you to type in your password multiple times if you have a password associated with your MySQL account. 
-
-### Setting up backend
-Run the following to set up the backend:
 ```bash
 cd backend
-chmod +x setup_venv.sh
-./setup_venv.sh
+python -m venv venv/
+source venv/bin/activate
+pip install -r requirements.txt 
 ```
-> **Note:** If you don't want to set up a virtual environment and prefer to install the packages globally, simply run `pip install -r requirements.txt` in the backend folder
 
+If you want to reinitialize the database, run `./setup.sh` in the root directory after setting up the virtual environment
 
-### Setting up frontend
-Run the following to set up the frontend:
-```bash
-cd frontend
-npm install
-```
+Then you should be able to run any SQL query with `python runSQL.py [name-of-sql-file].sql` (even if it is in another directory) and see the output
 
 ## Running locally
-
-Run the frontend and backend in separate terminal sessions
 
 ### Backend
 ```bash
@@ -50,4 +33,39 @@ python backend.py # use python3 instead if you have an older python version inst
 cd frontend
 npm run dev
 ```
+
+
+---
+
+## Features Implemented
+
+The current application supports the following features (linked to SQL queries in `queries/milestone2/`):
+
+- Search for books by title (R6)  
+- Add books to a wishlist (R7)  
+- View common books between two users (R8)  
+- View top 5 highest-rated books (R9)  
+- View top 5 most wishlisted books (R10)
+
+All five features are tested using both sample and production datasets. However, only R6–R8 are fully implemented in the frontend and are accessible through the application interface.
+
+---
+
+## Project Components
+
+### C2. SQL Schema Files
+All schema files are located in `data/`
+
+### C3. Sample Queries   
+All sample queries and outputs are located in `queries/milestone2/sample`
+
+### C4. Production Queries   
+All production queries and outputs are located in `queries/milestone2/prod`
+
+### C5. Application Code  
+- `frontend/`: React + TypeScript client  
+- `backend/`: Python Flask server with REST API for SQL execution  
+- `setup.sh`: Script to load the database with schema and data (do not run unless anything in `data/` has changed) 
+
+---
 
