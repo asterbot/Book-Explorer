@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Sidebar } from "./components/Sidebar";
 import { HomePage } from "./pages/HomePage";
 import { RecommendationsPage } from "./pages/RecommendationsPage";
-import { BookClubsPage } from "./pages/BookClubsPage";
+import { CommunityPage } from "./pages/CommunityPage";
 import { UserPage } from "./pages/UserPage";
 import "./App.css";
 
@@ -60,8 +60,8 @@ function App() {
         return <HomePage username={username} />;
       case "recommendations":
         return <RecommendationsPage username={username} />;
-      case "book-clubs":
-        return <BookClubsPage username={username} />;
+      case "community":
+        return <CommunityPage username={username} />;
       case "profile":
         return <UserPage username={username} />;
       default:
@@ -87,7 +87,7 @@ function App() {
       <main className="main-content">
         <div className="top-bar">
           <div className="user-controls">
-            <span className="username-display">Hello, {username}!</span>
+            <span className="username-display">{username}</span>
             <button onClick={handleLogout} className="logout-button">
               Logout
             </button>

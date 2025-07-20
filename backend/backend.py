@@ -29,7 +29,7 @@ def search_books():
         if search_query:
             query = f"""
                 SELECT b.bookID, b.title, b.isbn, b.language_code, b.num_pages, 
-                    COALESCE(string_agg(a.name, ', '), '') AS authors
+                    COALESCE(string_agg(DISTINCT a.name, ', '), '') AS authors
                 FROM {BOOKS} b
                 LEFT JOIN {BOOK_AUTHORS} ba ON b.bookID = ba.bookID
                 LEFT JOIN {AUTHORS} a ON ba.authorID = a.authorID
@@ -101,7 +101,7 @@ def books_by_genre():
 
         query = f"""
             SELECT b.bookID, b.title,
-                   COALESCE(string_agg(a.name, ', '), '') AS authors
+                   COALESCE(string_agg(DISTINCT a.name, ', '), '') AS authors
             FROM {BOOKS} b
             JOIN {BOOKGENRE} bg ON b.bookID = bg.bookID
             JOIN {GENRE} g ON bg.genreID = g.genreID
@@ -138,7 +138,7 @@ def view_userlist():
             SELECT 
                 b.bookID,
                 b.title,
-                COALESCE(string_agg(a.name, ', '), '') AS authors,
+                COALESCE(string_agg(DISTINCT a.name, ', '), '') AS authors,
                 u.page_reached,
                 b.num_pages
             FROM {USERPROGRESS} u
@@ -222,7 +222,7 @@ def common_books():
         SELECT 
             b.bookID,
             b.title,
-            COALESCE(string_agg(a.name, ', '), '') AS authors
+            COALESCE(string_agg(DISTINCT a.name, ', '), '') AS authors
         FROM {USERPROGRESS} us1
         JOIN {USERPROGRESS} us2 ON us1.bookID = us2.bookID
         JOIN {BOOKS} b ON us1.bookID = b.bookID
@@ -260,7 +260,7 @@ def book_completion_rates():
         SELECT 
             b.bookID,
             b.title,
-            COALESCE(string_agg(a.name, ', '), '') AS authors,
+            COALESCE(string_agg(DISTINCT a.name, ', '), '') AS authors,
             COUNT(up_all.userID) AS total_users,
             SUM(CASE WHEN up_all.status = 'FINISHED' THEN 1 ELSE 0 END) AS completed_users,
             ROUND(
@@ -412,11 +412,14 @@ def suggest_club(username):
                 "This club's reading history best matches your ratings and books in progress."
             )
 
-        db.run(f"SELECT name FROM {BOOKCLUBS} WHERE clubid = {club_id};")
-        club_name = db.fetch_one()[0]
+        db.run(f"SELECT name, clubid FROM {BOOKCLUBS} WHERE clubid = {club_id};")
+        club_row = db.fetch_one()
+        club_name = club_row[0]
+        club_id = club_row[1]
 
         return jsonify({
             "clubName": club_name,
+            "clubID": club_id,
             "reason":   reason
         }), 200
 
@@ -491,7 +494,7 @@ def recommend_books():
             )
             LIMIT 5
         )
-        SELECT b.bookID, b.title, COALESCE(string_agg(a.name, ', '), '') AS authors
+        SELECT b.bookID, b.title, COALESCE(string_agg(DISTINCT a.name, ', '), '') AS authors
         FROM recommended_books rb
         JOIN {BOOKS} b ON b.bookID = rb.bookID
         LEFT JOIN {BOOK_AUTHORS} ba ON b.bookID = ba.bookID
@@ -601,7 +604,7 @@ def get_userlogs():
         db = Database()
         
         query = f"""
-        SELECT b.title, COALESCE(string_agg(a.name, ', '), '') AS authors, u.update_time, u.page_reached
+        SELECT b.title, COALESCE(string_agg(DISTINCT a.name, ', '), '') AS authors, u.update_time, u.page_reached
         FROM {BOOKS} b, {USERLOGS} u, {BOOK_AUTHORS} ba, {AUTHORS} a
         WHERE u.bookID = b.bookID AND ba.bookID=b.bookID AND ba.authorID=a.authorID
             AND u.userid = (SELECT userid FROM users WHERE name='{username}')

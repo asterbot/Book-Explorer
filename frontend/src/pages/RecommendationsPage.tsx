@@ -53,11 +53,32 @@ async function addBook(username: string, bookID: number, status: string) {
   }
 }
 
+async function joinBookClub(username: string, clubID: number) {
+  try {
+    const response = await fetch(
+      `http://127.0.0.1:5000/join_book_club?username=${encodeURIComponent(username)}&clubID=${clubID}`,
+      {
+        method: "POST",
+      }
+    );
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(`Error joining book club: ${error}`);
+    return { error: "Failed to join book club" };
+  }
+}
+
 export function RecommendationsPage({ username }: RecommendationsPageProps) {
   const [recommendedBooks, setRecommendedBooks] = useState<Book[]>([]);
   const [clubSuggestion, setClubSuggestion] = useState<any>(null);
   const [completionRates, setCompletionRates] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [joinClubMessage, setJoinClubMessage] = useState<string | null>(null);
+  const [joinClubError, setJoinClubError] = useState<boolean>(false);
+  const [joinedClubId, setJoinedClubId] = useState<number | null>(null);
+  // For demo, track added books in local state
+  const [addedBooks, setAddedBooks] = useState<{[id: number]: string}>({});
 
   useEffect(() => {
     if (username) {
@@ -81,9 +102,27 @@ export function RecommendationsPage({ username }: RecommendationsPageProps) {
     setIsLoading(false);
   };
 
-  const handleAddBook = async (bookID: number, status: string) => {
+  const handleStatusChange = async (bookID: number, status: string) => {
     if (username) {
-      await addBook(username, bookID, status);
+      if (status === "NONE") {
+        await addBook(username, bookID, "NOT STARTED");
+      } else {
+        await addBook(username, bookID, status);
+        setAddedBooks(prev => ({ ...prev, [bookID]: status }));
+      }
+    }
+  };
+
+  const handleJoinRecommendedClub = async (clubID: number) => {
+    if (!username) return;
+    const result = await joinBookClub(username, clubID);
+    if (result?.success) {
+      setJoinClubMessage(result.message);
+      setJoinClubError(false);
+      setJoinedClubId(clubID);
+    } else {
+      setJoinClubMessage(result?.error || "Failed to join the club.");
+      setJoinClubError(true);
     }
   };
 
@@ -101,77 +140,6 @@ export function RecommendationsPage({ username }: RecommendationsPageProps) {
         </div>
       ) : (
         <div className="recommendations-content">
-          {/* Book Recommendations */}
-          <section className="recommendation-section">
-            <div className="section-header">
-              <Star className="section-icon" size={24} />
-              <h2>Recommended Books</h2>
-            </div>
-            {recommendedBooks.length > 0 ? (
-              <div className="books-grid">
-                {recommendedBooks.map((book) => (
-                  <div key={book.bookID} className="book-item">
-                    <BookCard book={book} />
-                    <div className="book-actions">
-                      <button
-                        className="action-btn wishlist-btn"
-                        onClick={() => handleAddBook(book.bookID, "NOT STARTED")}
-                      >
-                        Add to Wishlist
-                      </button>
-                      <button
-                        className="action-btn reading-btn"
-                        onClick={() => handleAddBook(book.bookID, "IN PROGRESS")}
-                      >
-                        Start Reading
-                      </button>
-                      <button
-                        className="action-btn reading-btn"
-                        onClick={() => handleAddBook(book.bookID, "FINISHED")}
-                      >
-                        Already Read
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="empty-state">
-                <BookOpen className="empty-icon" size={48} />
-                <p>No book recommendations available yet. Start reading more books to get personalized suggestions!</p>
-              </div>
-            )}
-          </section>
-
-          {/* Book Club Recommendations */}
-          <section className="recommendation-section">
-            <div className="section-header">
-              <Users className="section-icon" size={24} />
-              <h2>Book Club Recommendations</h2>
-            </div>
-            <div className="club-recommendation">
-              {clubSuggestion && "clubName" in clubSuggestion ? (
-                <div className="club-card">
-                  <div className="club-info">
-                    <h3>{clubSuggestion.clubName}</h3>
-                    <p className="club-reason">{clubSuggestion.reason}</p>
-                  </div>
-                  <button className="join-club-btn">Join Club</button>
-                </div>
-              ) : clubSuggestion && "message" in clubSuggestion ? (
-                <div className="club-message">
-                  <p>{clubSuggestion.message}</p>
-                </div>
-              ) : (
-                <div className="empty-state">
-                  <Users className="empty-icon" size={48} />
-                  <p>No book club recommendations available at the moment.</p>
-                </div>
-              )}
-            </div>
-          </section>
-
-          {/* Which Book to Finish First */}
           <section className="recommendation-section">
             <div className="section-header">
               <Target className="section-icon" size={24} />
@@ -204,6 +172,73 @@ export function RecommendationsPage({ username }: RecommendationsPageProps) {
                 <div className="empty-state">
                   <Target className="empty-icon" size={48} />
                   <p>No books currently in progress. Start reading some books to get completion recommendations!</p>
+                </div>
+              )}
+            </div>
+          </section>
+
+
+          {/* Book Recommendations */}
+          <section className="recommendation-section">
+            <div className="section-header">
+              <Star className="section-icon" size={24} />
+              <h2>Recommended Books</h2>
+            </div>
+            {recommendedBooks.length > 0 ? (
+              <div className="books-grid">
+                {recommendedBooks.map((book) => (
+                  <div key={book.bookID} className="book-item">
+                    <BookCard
+                      book={book}
+                      currentStatus={addedBooks[book.bookID] as any}
+                      onStatusChange={handleStatusChange}
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-state">
+                <BookOpen className="empty-icon" size={48} />
+                <p>No book recommendations available yet. Start reading more books to get personalized suggestions!</p>
+              </div>
+            )}
+          </section>
+
+          {/* Book Club Recommendations */}
+          <section className="recommendation-section">
+            <div className="section-header">
+              <Users className="section-icon" size={24} />
+              <h2>Book Club Recommendations</h2>
+            </div>
+            <div className="club-recommendation">
+              {clubSuggestion && "clubName" in clubSuggestion ? (
+                <div className="club-card">
+                  <div className="club-info">
+                    <h3>{clubSuggestion.clubName}</h3>
+                    <p className="club-reason">{clubSuggestion.reason}</p>
+                    {joinClubMessage && (
+                      <p style={{ color: joinClubError ? "red" : "green", marginTop: "0.5rem" }}>
+                        {joinClubMessage}
+                      </p>
+                    )}
+                  </div>
+                  
+                  <button
+                    className="join-club-btn"
+                    onClick={() => handleJoinRecommendedClub(clubSuggestion.clubID)}
+                    disabled={joinedClubId === clubSuggestion.clubID}
+                  >
+                    {joinedClubId === clubSuggestion.clubID ? "Joined" : "Join Club"}
+                  </button>
+                </div>
+              ) : clubSuggestion && "message" in clubSuggestion ? (
+                <div className="club-message">
+                  <p>{clubSuggestion.message}</p>
+                </div>
+              ) : (
+                <div className="empty-state">
+                  <Users className="empty-icon" size={48} />
+                  <p>No book club recommendations available at the moment.</p>
                 </div>
               )}
             </div>

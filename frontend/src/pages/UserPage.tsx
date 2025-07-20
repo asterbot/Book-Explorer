@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { User, BookOpen, Clock, CheckCircle, Flame, History } from "lucide-react";
+import { User, BookOpen, Clock, CheckCircle, Flame, History, Users, Search } from "lucide-react";
 import { ProgressCard } from "../components/ProgressCard";
 import type { BookProgress, UserLogs } from "../types";
+import { FindCommonBooks } from "../components/FindCommonBooks";
 
 interface UserPageProps {
   username: string;
@@ -10,7 +11,7 @@ interface UserPageProps {
 type BookStatus = "NOT STARTED" | "IN PROGRESS" | "FINISHED";
 
 
-async function viewWishlist(username: string, status: BookStatus) {
+async function viewProgress(username: string, status: BookStatus) {
   try {
     const response = await fetch(`http://127.0.0.1:5000/userlist?username=${username}&status=${status}`);
     const data = await response.json();
@@ -73,6 +74,17 @@ async function updateProgress(username: string, bookId: number, newpage: number,
   }
 }
 
+async function findCommonBooks(username1: string, username2: string) {
+  try {
+    const response = await fetch(`http://127.0.0.1:5000/common-books?u1name=${encodeURIComponent(username1)}&u2name=${encodeURIComponent(username2)}`);
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    console.error(`Error when connecting to DB: ${error}`);
+    return [];
+  }
+}
+
 export function UserPage({ username }: UserPageProps) {
   const [wishlist, setWishlist] = useState<BookProgress[]>([]);
   const [inProgress, setInProgress] = useState<BookProgress[]>([]);
@@ -81,6 +93,19 @@ export function UserPage({ username }: UserPageProps) {
   const [userLogs, setUserLogs] = useState<UserLogs[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'wishlist' | 'in-progress' | 'finished' | 'history'>('wishlist');
+  const [otherUsername, setOtherUsername] = useState("");
+  const [commonBooks, setCommonBooks] = useState<BookProgress[]>([]);
+  const [commonLoading, setCommonLoading] = useState(false);
+  const [commonError, setCommonError] = useState<string | null>(null);
+  const [commonSearched, setCommonSearched] = useState(false);
+
+  useEffect(() => {
+    setOtherUsername("");
+    setCommonBooks([]);
+    setCommonError(null);
+    setCommonSearched(false);
+  }, [username]);
+
 
   useEffect(() => {
     if (username) {
@@ -92,9 +117,9 @@ export function UserPage({ username }: UserPageProps) {
     setIsLoading(true);
     
     const [wishlistData, inProgressData, finishedData, streakData, logsData] = await Promise.all([
-      viewWishlist(username, "NOT STARTED"),
-      viewWishlist(username, "IN PROGRESS"),
-      viewWishlist(username, "FINISHED"),
+      viewProgress(username, "NOT STARTED"),
+      viewProgress(username, "IN PROGRESS"),
+      viewProgress(username, "FINISHED"),
       getStreak(username),
       getUserLogs(username)
     ]);
@@ -113,6 +138,28 @@ export function UserPage({ username }: UserPageProps) {
     setTimeout(loadUserData, 1000);
   };
 
+  const handleFindCommonBooks = async () => {
+    setCommonError(null);
+    setCommonBooks([]);
+    setCommonSearched(false);
+    if (!otherUsername.trim()) {
+      setCommonError("Please enter another username.");
+      return;
+    }
+    setCommonLoading(true);
+    try {
+      const results = await findCommonBooks(username, otherUsername);
+      setCommonBooks(results);
+      setCommonSearched(true);
+      if (results.length === 0) {
+        setCommonError("No common books found.");
+      }
+    } catch (e) {
+      setCommonError("Error finding common books.");
+    }
+    setCommonLoading(false);
+  };
+
   const renderBookList = (books: BookProgress[], emptyMessage: string) => {
     if (books.length === 0) {
       return (
@@ -126,7 +173,7 @@ export function UserPage({ username }: UserPageProps) {
     return (
       <div className="books-list">
         {books.map((book) => (
-          <div key={book.bookID} className="book-item">
+          <div key={book.bookID}>
             <ProgressCard book={book} onUpdateProgress={handleProgressUpdate} />
           </div>
         ))}

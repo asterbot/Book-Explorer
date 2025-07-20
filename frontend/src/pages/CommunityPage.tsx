@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { Users, Plus, UserCheck, UserPlus } from "lucide-react";
+import { Users, Plus, UserCheck, UserPlus, X } from "lucide-react";
+import { FindCommonBooks } from "../components/FindCommonBooks";
 
-interface BookClubsPageProps {
+interface CommunityPageProps {
   username: string;
 }
 
@@ -51,12 +52,15 @@ interface BookClub {
   isMember?: boolean;
 }
 
-export function BookClubsPage({ username }: BookClubsPageProps) {
+export function CommunityPage({ username }: CommunityPageProps) {
   const [userClubs, setUserClubs] = useState<BookClub[]>([]);
   const [allClubs, setAllClubs] = useState<BookClub[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [joinMessage, setJoinMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
   const [showJoinSection, setShowJoinSection] = useState(false);
+  const [joinClubId, setJoinClubId] = useState<string>("");
+  const [showJoinSuccess, setShowJoinSuccess] = useState(false);
+  const [joinSuccessMsg, setJoinSuccessMsg] = useState("");
 
   useEffect(() => {
     if (username) {
@@ -80,11 +84,12 @@ export function BookClubsPage({ username }: BookClubsPageProps) {
     const result = await joinBookClub(username, clubID);
     
     if (result?.success) {
-      setJoinMessage({ text: result.message, type: 'success' });
-      setTimeout(() => {
-        loadBookClubs();
-        setJoinMessage(null);
-      }, 2000);
+      setJoinMessage(null);
+      setShowJoinSuccess(true);
+      setJoinSuccessMsg(result.message);
+      setTimeout(() => setShowJoinSuccess(false), 2500);
+      setTimeout(() => setJoinSuccessMsg(""), 2500);
+      setTimeout(() => loadBookClubs(), 1000);
     } else {
       setJoinMessage({ 
         text: result?.error || "Failed to join the club", 
@@ -99,10 +104,64 @@ export function BookClubsPage({ username }: BookClubsPageProps) {
   );
 
   return (
-    <div className="book-clubs-page">
+    <div className="community-page">
       <div className="page-header">
-        <h1>Book Clubs</h1>
+        <h1>Community</h1>
         <p>Connect with fellow readers and discover new books together</p>
+      </div>
+
+      {joinMessage && (
+        <div className={`message ${joinMessage.type}`}>
+          {joinMessage.text}
+        </div>
+      )}
+
+      {showJoinSuccess && (
+        <div style={{
+          position: 'fixed',
+          top: '30px',
+          left: 0,
+          right: 0,
+          margin: '0 auto',
+          zIndex: 1000,
+          display: 'flex',
+          justifyContent: 'center',
+        }}>
+          <div style={{
+            background: '#d1fae5',
+            color: '#065f46',
+            border: '1px solid #10b981',
+            borderRadius: '8px',
+            padding: '1rem 2rem',
+            fontWeight: 600,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1rem',
+          }}>
+            <span>{joinSuccessMsg}</span>
+            <button style={{ background: 'none', border: 'none', color: '#065f46', cursor: 'pointer' }} onClick={() => setShowJoinSuccess(false)}><X size={18} /></button>
+          </div>
+        </div>
+      )}
+
+      {/* Join by Club ID */}
+      <div style={{ marginBottom: '2rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
+        <input
+          type="number"
+          min={0}
+          placeholder="Enter club ID"
+          value={joinClubId}
+          onChange={e => setJoinClubId(e.target.value)}
+          style={{ padding: '0.5rem', borderRadius: '6px', border: '1px solid #e2e8f0', fontSize: '1rem', width: '200px' }}
+        />
+        <button
+          className="primary-btn"
+          onClick={() => joinClubId && handleJoinClub(Number(joinClubId))}
+          disabled={!joinClubId}
+        >
+          Join Book Club by ID
+        </button>
       </div>
 
       {isLoading ? (
@@ -117,6 +176,15 @@ export function BookClubsPage({ username }: BookClubsPageProps) {
             <div className="section-header">
               <UserCheck className="section-icon" size={24} />
               <h2>My Book Clubs</h2>
+              <div style={{ marginLeft: "auto" }}>
+                <button 
+                  className="primary-btn"
+                  onClick={() => setShowJoinSection(true)}
+                >
+                  <Plus size={16} />
+                  Join a Book Club
+                </button>
+              </div>
             </div>
             
             {userClubs.length > 0 ? (
@@ -144,13 +212,6 @@ export function BookClubsPage({ username }: BookClubsPageProps) {
                 <Users className="empty-icon" size={48} />
                 <h3>You're not in any book clubs yet</h3>
                 <p>Join a book club to connect with other readers and discover new books!</p>
-                <button 
-                  className="primary-btn"
-                  onClick={() => setShowJoinSection(true)}
-                >
-                  <Plus size={16} />
-                  Join a Book Club
-                </button>
               </div>
             )}
           </section>
@@ -205,13 +266,8 @@ export function BookClubsPage({ username }: BookClubsPageProps) {
               </div>
             )}
           </section>
-
-          {/* Join Message */}
-          {joinMessage && (
-            <div className={`message ${joinMessage.type}`}>
-              {joinMessage.text}
-            </div>
-          )}
+          
+          <FindCommonBooks currentUsername={username} />
         </div>
       )}
     </div>

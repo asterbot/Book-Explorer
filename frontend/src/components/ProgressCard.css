@@ -5,6 +5,9 @@
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
   border: 1px solid #e2e8f0;
   transition: all 0.2s;
+
+  display: flex;
+  flex-direction: column;
 }
 
 .prog-card:hover {
@@ -41,7 +44,7 @@
 }
 
 .progress-actions {
-  margin-top: 1rem;
+  margin-top: auto;
 }
 
 .add-progress-btn {

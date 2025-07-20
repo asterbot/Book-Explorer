@@ -21,10 +21,10 @@ export function Sidebar({ username, activePage, onPageChange }: SidebarProps) {
       description: 'Personalized suggestions'
     },
     {
-      id: 'book-clubs',
-      label: 'Book Clubs',
+      id: 'community',
+      label: 'Community',
       icon: Users,
-      description: 'Join reading communities'
+      description: 'Connect with other readers'
     },
     {
       id: 'profile',

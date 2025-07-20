@@ -61,6 +61,8 @@ export function HomePage({ username }: HomePageProps) {
   const [showGenreDropdown, setShowGenreDropdown] = useState(false);
   const [selectedGenre, setSelectedGenre] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+  // For demo, track added books in local state
+  const [addedBooks, setAddedBooks] = useState<{[id: number]: string}>({});
 
   useEffect(() => {
     loadGenreCounts();
@@ -89,9 +91,14 @@ export function HomePage({ username }: HomePageProps) {
     setIsLoading(false);
   };
 
-  const handleAddBook = async (bookID: number, status: string) => {
+  const handleStatusChange = async (bookID: number, status: string) => {
     if (username) {
-      await addBook(username, bookID, status);
+      if (status === "NONE") {
+        await addBook(username, bookID, "NOT STARTED");
+      } else {
+        await addBook(username, bookID, status);
+        setAddedBooks(prev => ({ ...prev, [bookID]: status }));
+      }
     }
   };
 
@@ -167,29 +174,11 @@ export function HomePage({ username }: HomePageProps) {
           <div className="books-grid">
             {books.map((book) => (
               <div key={book.bookID} className="book-item">
-                <BookCard book={book} />
-                {username && (
-                  <div className="book-actions">
-                    <button
-                      className="action-btn wishlist-btn"
-                      onClick={() => handleAddBook(book.bookID, "NOT STARTED")}
-                    >
-                      Add to Wishlist
-                    </button>
-                    <button
-                      className="action-btn reading-btn"
-                      onClick={() => handleAddBook(book.bookID, "IN PROGRESS")}
-                    >
-                      Start Reading
-                    </button>
-                    <button
-                      className="action-btn reading-btn"
-                      onClick={() => handleAddBook(book.bookID, "FINISHED")}
-                    >
-                      Already Read
-                    </button>
-                  </div>
-                )}
+                <BookCard
+                  book={book}
+                  currentStatus={addedBooks[book.bookID] as any}
+                  onStatusChange={handleStatusChange}
+                />
               </div>
             ))}
           </div>
