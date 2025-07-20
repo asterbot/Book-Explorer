@@ -725,7 +725,6 @@ def user_book_clubs():
         if not username:
             return jsonify({"error": "Missing 'username' parameter"}), 400
 
-        # Step 1: Get userID
         query_user = f"""
             SELECT userID
             FROM {USERS}
@@ -740,7 +739,6 @@ def user_book_clubs():
 
         user_id = user_row[0]
 
-        # Step 2: Get all book clubs the user is a member of
         query_clubs = f"""
             SELECT 
                 bc.clubID, 
