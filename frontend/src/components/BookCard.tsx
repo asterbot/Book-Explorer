@@ -12,7 +12,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book, currentStatus, onStatu
   const handleClick = (status: string) => {
     if (!onStatusChange) return;
     if (currentStatus === status) {
-      onStatusChange(book.bookID, "NONE"); // Deselect
+      onStatusChange(book.bookID, "NONE");
     } else {
       onStatusChange(book.bookID, status);
     }

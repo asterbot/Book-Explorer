@@ -110,7 +110,7 @@ export function UserPage({ username }: UserPageProps) {
 
   const handleProgressUpdate = (bookId: number, newDate: Date, newPage: number) => {
     updateProgress(username, bookId, newPage, newDate.toUTCString());
-    // Reload data after update
+
     setTimeout(loadUserData, 1000);
   };
 

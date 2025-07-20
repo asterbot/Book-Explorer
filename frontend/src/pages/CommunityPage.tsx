@@ -149,7 +149,7 @@ export function CommunityPage({ username }: CommunityPageProps) {
         </div>
       )}
 
-      {/* Join by Club ID */}
+
       <div style={{ marginBottom: '2rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
         <input
           type="number"

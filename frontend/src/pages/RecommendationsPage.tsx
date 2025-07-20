@@ -77,7 +77,7 @@ export function RecommendationsPage({ username }: RecommendationsPageProps) {
   const [joinClubMessage, setJoinClubMessage] = useState<string | null>(null);
   const [joinClubError, setJoinClubError] = useState<boolean>(false);
   const [joinedClubId, setJoinedClubId] = useState<number | null>(null);
-  // For demo, track added books in local state
+
   const [addedBooks, setAddedBooks] = useState<{[id: number]: string}>({});
 
   useEffect(() => {
@@ -178,7 +178,7 @@ export function RecommendationsPage({ username }: RecommendationsPageProps) {
           </section>
 
 
-          {/* Book Recommendations */}
+
           <section className="recommendation-section">
             <div className="section-header">
               <Star className="section-icon" size={24} />
@@ -204,7 +204,7 @@ export function RecommendationsPage({ username }: RecommendationsPageProps) {
             )}
           </section>
 
-          {/* Book Club Recommendations */}
+
           <section className="recommendation-section">
             <div className="section-header">
               <Users className="section-icon" size={24} />

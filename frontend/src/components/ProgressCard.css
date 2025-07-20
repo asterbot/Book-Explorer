@@ -10,10 +10,6 @@
   flex-direction: column;
 }
 
-.prog-card:hover {
-  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.1);
-  border-color: #3b82f6;
-}
 
 .progress-table {
   width: 100%;

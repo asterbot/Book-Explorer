@@ -55,7 +55,6 @@ export function FindCommonBooks({ currentUsername }: FindCommonBooksProps) {
         borderRadius: '12px',
         padding: '2rem',
         margin: '0 auto',
-        boxShadow: '0 1px 3px 0 rgba(0,0,0,0.05)',
       }}>
         <div className="section-header">
           <Users size={24} className="section-icon" />
