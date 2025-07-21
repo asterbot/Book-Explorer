@@ -341,11 +341,9 @@ body {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  /* margin-bottom: 1rem; optional */
 }
 
 .top-n-section {
-  /* Optional: if you want it hard-aligned right */
   margin-left: auto;
 }
 
@@ -354,7 +352,7 @@ body {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  margin-bottom: 1rem; /* optional */
+  margin-bottom: 1rem;
   margin-top: 0.5rem;
 }
 
