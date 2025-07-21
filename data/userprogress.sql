@@ -28,7 +28,7 @@ BEGIN
 
     ELSE
         UPDATE userprogress
-        SET status = 'DONE'
+        SET status = 'FINISHED'
         WHERE userid = NEW.userid AND bookID = NEW.bookID;
     END IF;
 
