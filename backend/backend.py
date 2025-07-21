@@ -29,7 +29,7 @@ def search_books():
         if search_query:
             query = f"""
                 SELECT b.bookID, b.title, b.isbn, b.language_code, b.num_pages, 
-                    COALESCE(string_agg(DISTINCT a.name, ', '), '') AS authors
+                    COALESCE(string_agg(a.name, ', '), '') AS authors
                 FROM {BOOKS} b
                 LEFT JOIN {BOOK_AUTHORS} ba ON b.bookID = ba.bookID
                 LEFT JOIN {AUTHORS} a ON ba.authorID = a.authorID
@@ -100,17 +100,12 @@ def books_by_genre():
             return jsonify({"error": "Missing 'genre' parameter"}), 400
 
         query = f"""
-            SELECT b.bookID, b.title, 
-                   COALESCE(string_agg(DISTINCT a.name, ', '), '') AS authors,
-                   b.num_pages
-            FROM {BOOKS} b
-            JOIN {BOOKGENRE} bg ON b.bookID = bg.bookID
-            JOIN {GENRE} g ON bg.genreID = g.genreID
-            LEFT JOIN {BOOK_AUTHORS} ba ON b.bookID = ba.bookID
-            LEFT JOIN {AUTHORS} a ON ba.authorID = a.authorID
-            WHERE LOWER(g.name) = LOWER('{genre}')
+            SELECT b.bookID, b.title, b.num_pages ,COALESCE(string_agg(a.name, ', '), '') AS authors
+            FROM {BOOKS} b, {BOOKGENRE} bg, {GENRE} g, {BOOK_AUTHORS} ba, {AUTHORS} a
+            WHERE g.genreID=bg.genreID AND b.bookID=bg.bookID AND ba.bookID=b.bookID AND a.authorID=ba.authorID AND
+                    LOWER(g.name) = LOWER('{genre}')
             GROUP BY b.bookID, b.title
-            ORDER BY b.title ASC;
+            ORDER BY title ASC;
         """
         db.run(query)
         results = db.fetch_all()
@@ -120,8 +115,8 @@ def books_by_genre():
             books.append({
                 "bookID": row[0],
                 "title": row[1],
-                "authors": row[2],
-                "num_pages": row[3]
+                "num_pages": row[2],
+                "authors": row[3],
             })
 
         return jsonify({"results": books, "count": len(books)}), 200
@@ -140,7 +135,7 @@ def view_userlist():
             SELECT 
                 b.bookID,
                 b.title,
-                COALESCE(string_agg(DISTINCT a.name, ', '), '') AS authors,
+                COALESCE(string_agg(a.name, ', '), '') AS authors,
                 u.page_reached,
                 b.num_pages
             FROM {USERPROGRESS} u
@@ -198,14 +193,25 @@ def top_books_by_rating():
         limit = request.args.get('limit', 5, type=int)
 
         query = f"""
-            SELECT b.bookID, b.title, AVG(ur.rating) as avg_rating
-            FROM {BOOKS} b, {USERRATING} ur
-            WHERE b.bookID=ur.bookID
-            GROUP BY b.bookID, b.title
+            SELECT b.bookID, b.title, ROUND(AVG(ur.rating),2) as avg_rating, COALESCE(string_agg(a.name, ', '), '') AS authors, b.num_pages
+            FROM {BOOKS} b NATURAL JOIN {USERRATING} ur NATURAL JOIN {AUTHORS} a NATURAL JOIN {BOOK_AUTHORS} ba
+            GROUP BY b.bookID, b.title, b.num_Pages
             ORDER BY avg_rating DESC LIMIT {limit};"""
+        
         db.run(query)
-        results = db.fetch_all()
-        return jsonify({"results": results}), 200
+        results = db.fetch_all()    
+        
+        books = []
+        for book in results:
+            books.append({
+                "bookID": book[0],
+                "title": book[1],
+                "average_rating": book[2],
+                "authors": book[3],
+                "num_pages": book[4],
+            })
+
+        return jsonify({"results": books}), 200
 
     except Exception as e:
         return jsonify({"message": f"Error finding top 5 books by rating: {e}"}), 500
@@ -224,7 +230,7 @@ def common_books():
         SELECT 
             b.bookID,
             b.title,
-            COALESCE(string_agg(DISTINCT a.name, ', '), '') AS authors
+            COALESCE(string_agg(a.name, ', '), '') AS authors
         FROM {USERPROGRESS} us1
         JOIN {USERPROGRESS} us2 ON us1.bookID = us2.bookID
         JOIN {BOOKS} b ON us1.bookID = b.bookID
@@ -251,6 +257,7 @@ def common_books():
     except Exception as e:
         return jsonify({"message": f"Error finding common books between users: {e}"}), 500
 
+
 @app.route('/book-completion-rates', methods=['GET'])
 def book_completion_rates():
     try:
@@ -262,7 +269,7 @@ def book_completion_rates():
         SELECT 
             b.bookID,
             b.title,
-            COALESCE(string_agg(DISTINCT a.name, ', '), '') AS authors,
+            COALESCE(string_agg(a.name, ', '), '') AS authors,
             COUNT(up_all.userID) AS total_users,
             SUM(CASE WHEN up_all.status = 'FINISHED' THEN 1 ELSE 0 END) AS completed_users,
             ROUND(
@@ -327,19 +334,26 @@ def update_user(user_id):
         return jsonify({"error": str(e)}), 500
 
 
-@app.route('/books/top-wishlists', methods=['GET'])
+@app.route('/top-wishlists', methods=['GET'])
 def top_wishlist_books():
     try:
         db = Database()
 
+        n = request.args.get('n', default=5, type=int)
+
+
         query = f"""
-        SELECT {BOOKS}.bookID, {BOOKS}.title, COUNT(*) AS wishlist_count
-        FROM {USERPROGRESS}
-        JOIN {BOOKS} ON {USERPROGRESS}.bookID = {BOOKS}.bookID
-        WHERE {USERPROGRESS}.status = 'NOT STARTED'
-        GROUP BY {BOOKS}.bookID, {BOOKS}.title
+        SELECT 
+            b.bookID,
+            b.title,
+            b.num_pages,
+            COALESCE(string_agg(a.name, ', '), '') AS authors,
+            COUNT(*) AS wishlist_count
+        FROM {USERPROGRESS} up NATURAL JOIN {BOOKS} b NATURAL JOIN {BOOK_AUTHORS} ba NATURAL JOIN {AUTHORS} a
+        WHERE up.status = 'NOT STARTED'
+        GROUP BY b.bookID, b.title, b.num_pages
         ORDER BY wishlist_count DESC
-        LIMIT 5;
+        LIMIT {n};
         """
 
         db.run(query)
@@ -350,10 +364,12 @@ def top_wishlist_books():
             top_books.append({
                 "bookID": row[0],
                 "title": row[1],
-                "wishlist_count": row[2]
+                "num_pages": row[2],
+                "authors": row[3],
+                "wishlist_count": row[4]
             })
 
-        return jsonify(top_books), 200
+        return jsonify({"results": top_books}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -414,14 +430,11 @@ def suggest_club(username):
                 "This club's reading history best matches your ratings and books in progress."
             )
 
-        db.run(f"SELECT name, clubid FROM {BOOKCLUBS} WHERE clubid = {club_id};")
-        club_row = db.fetch_one()
-        club_name = club_row[0]
-        club_id = club_row[1]
+        db.run(f"SELECT name FROM {BOOKCLUBS} WHERE clubid = {club_id};")
+        club_name = db.fetch_one()[0]
 
         return jsonify({
             "clubName": club_name,
-            "clubID": club_id,
             "reason":   reason
         }), 200
 
@@ -481,9 +494,9 @@ def recommend_books():
             WHERE ubt.tagID IN (SELECT tagID FROM current_user_tags)
         ),
         hybrid_candidate_books AS (
-            SELECT bookID FROM books_tagged_with_interest_tags
-            UNION
             SELECT bookID FROM books_read_by_similar_users
+            UNION
+            SELECT bookID FROM books_tagged_with_interest_tags
         ),
         recommended_books AS (
             SELECT cb.bookID
@@ -496,7 +509,7 @@ def recommend_books():
             )
             LIMIT 5
         )
-        SELECT b.bookID, b.title, COALESCE(string_agg(DISTINCT a.name, ', '), '') AS authors, b.num_pages
+        SELECT b.bookID, b.title, COALESCE(string_agg(a.name, ', '), '') AS authors
         FROM recommended_books rb
         JOIN {BOOKS} b ON b.bookID = rb.bookID
         LEFT JOIN {BOOK_AUTHORS} ba ON b.bookID = ba.bookID
@@ -511,8 +524,7 @@ def recommend_books():
             {
                 "bookID": row[0],
                 "title": row[1],
-                "authors": row[2],
-                "num_pages": row[3]
+                "authors": row[2]
             }
             for row in results
         ]
@@ -607,7 +619,7 @@ def get_userlogs():
         db = Database()
         
         query = f"""
-        SELECT b.title, COALESCE(string_agg(DISTINCT a.name, ', '), '') AS authors, u.update_time, u.page_reached
+        SELECT b.title, COALESCE(string_agg(a.name, ', '), '') AS authors, u.update_time, u.page_reached
         FROM {BOOKS} b, {USERLOGS} u, {BOOK_AUTHORS} ba, {AUTHORS} a
         WHERE u.bookID = b.bookID AND ba.bookID=b.bookID AND ba.authorID=a.authorID
             AND u.userid = (SELECT userid FROM users WHERE name='{username}')
@@ -658,7 +670,7 @@ def get_streak():
                 SELECT t.userid, t.bookid, t.update_time 
                 FROM {USERLOGS} t
                 JOIN streak_books s ON t.userid=s.userid
-                WHERE ABS(t.update_time::date - s.update_time::date) = 1 -- time differs by EXACTLY one day
+                WHERE s.update_time::date - t.update_time::date = 1 -- time differs by EXACTLY one day
                 ORDER BY t.update_time
                 LIMIT 1
             ) as recurse
@@ -714,7 +726,6 @@ def update_progress():
         return jsonify({"message": "Updated progress", "username": username, "bookID": bookID}), 200
     except Exception as e:
         return jsonify({"message": "Error adding book to userprogress", "error": str(e)}), 500
-
 
 @app.route('/user-book-clubs', methods=['GET'])
 def user_book_clubs():

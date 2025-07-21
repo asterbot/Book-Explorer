@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Search, Filter, BookOpen } from "lucide-react";
+import { Search, Filter, BookOpen, ScrollText, Tally5 } from "lucide-react";
 import { BookCard } from "../components/BookCard";
 import type { Book } from "../types";
 
@@ -54,6 +54,33 @@ async function addBook(username: string, bookID: number, status: string) {
   }
 }
 
+async function viewTopWishlists(count: number) {
+  try {
+    const response = await fetch(
+      `http://127.0.0.1:5000/top-wishlists?n=${count}`
+    );
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    console.error(`Error when connecting to DB: ${error}`);
+  }
+}
+
+async function viewTopBooks(count: number){
+  try{
+    const response = await fetch(
+      `http://127.0.0.1:5000/top-books?limit=${count}`
+    )
+    const data = await response.json();
+    return data.results;
+  }
+  catch(error){
+    console.error(`Error when connecting to DB: ${error}`);
+  }
+}
+
+
+
 export function HomePage({ username }: HomePageProps) {
   const [books, setBooks] = useState<Book[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -61,6 +88,8 @@ export function HomePage({ username }: HomePageProps) {
   const [showGenreDropdown, setShowGenreDropdown] = useState(false);
   const [selectedGenre, setSelectedGenre] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const [topN, setTopN] = useState(5);  // used for top n wishlisted/rated books
 
   const [addedBooks, setAddedBooks] = useState<{[id: number]: string}>({});
 
@@ -102,6 +131,18 @@ export function HomePage({ username }: HomePageProps) {
     }
   };
 
+  const handleViewTopWishlist = async () => {
+    const results = await viewTopWishlists(topN);
+    console.log(results);
+    setBooks(results);
+  };
+
+  const handleTopRated = async () => {
+    const results = await viewTopBooks(topN);
+    setBooks(results);
+  }
+
+
   return (
     <div className="home-page">
       <div className="welcome-section">
@@ -127,41 +168,77 @@ export function HomePage({ username }: HomePageProps) {
           </button>
         </div>
 
-        <div className="filter-section">
-          <button
-            className="filter-button"
-            onClick={() => setShowGenreDropdown(!showGenreDropdown)}
-          >
-            <Filter size={16} />
-            {selectedGenre ? `Genre: ${selectedGenre}` : "Filter by Genre"}
-          </button>
-          
-          {showGenreDropdown && (
-            <div className="genre-dropdown">
-              <div className="genre-header">
-                <h4>Select Genre</h4>
-                <button
-                  onClick={() => {setShowGenreDropdown(false); setSelectedGenre(""); setBooks([])}}
-                  className="close-button"
-                >
-                  ×
-                </button>
-              </div>
-              <div className="genre-list">
-                {Object.entries(genreCounts).map(([genre, count]) => (
-                  <div
-                    key={genre}
-                    className="genre-option"
-                    onClick={() => handleGenreClick(genre)}
+        <div className="filter-wrapper">
+
+          <div className="filter-section">
+            <button
+              className="filter-button"
+              onClick={() => setShowGenreDropdown(!showGenreDropdown)}
+            >
+              <Filter size={16} />
+              {selectedGenre ? `Genre: ${selectedGenre}` : "Filter by Genre"}
+            </button>
+            
+            {showGenreDropdown && (
+              <div className="genre-dropdown">
+                <div className="genre-header">
+                  <h4>Select Genre</h4>
+                  <button
+                    onClick={() => {setShowGenreDropdown(false); setSelectedGenre(""); setBooks([])}}
+                    className="close-button"
                   >
-                    <span className="genre-name">{genre}</span>
-                    <span className="genre-count">({count} books)</span>
-                  </div>
-                ))}
+                    ×
+                  </button>
+                </div>
+                <div className="genre-list">
+                  {Object.entries(genreCounts).map(([genre, count]) => (
+                    <div
+                      key={genre}
+                      className="genre-option"
+                      onClick={() => handleGenreClick(genre)}
+                    >
+                      <span className="genre-name">{genre}</span>
+                      <span className="genre-count">({count} books)</span>
+                    </div>
+                  ))}
+                </div>
               </div>
+            )}
+          </div>
+
+          <div className="top-n-section">
+
+          <label style = {{marginRight: '8px'}}>
+                  Top <input
+                    type="number"
+                    min="1"
+                    max="100"
+                    value={topN}
+                    onChange={(e) => setTopN(Number(e.target.value))}
+                  />
+              </label> books by
+
+            <br />
+            <div className="top-n-buttons">
+                <button
+                  className="filter-button"
+                  onClick={() => handleTopRated()}
+                  style={{ marginRight: '5px' }}
+                >
+                <Tally5 size={16} /> Rating
+                </button>
+                <button
+                  className="filter-button"
+                  onClick={() => handleViewTopWishlist()}
+                >
+                <ScrollText size={16} />  Wishlist count
+                </button>
             </div>
-          )}
+            
         </div>
+
+        </div>
+
       </div>
 
       <div className="books-section">

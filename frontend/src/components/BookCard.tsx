@@ -28,7 +28,16 @@ export const BookCard: React.FC<BookCardProps> = ({ book, currentStatus, onStatu
         <div className="book-meta">
           {book.publication_date && <span className="book-date">{book.publication_date}</span>}
           {book.num_pages && <span className="book-pages">{book.num_pages} pages</span>}
+          {book.average_rating &&
+            <div>Average rating: {book.average_rating}</div>
+          }
+
+          {book.wishlist_count &&
+            <div>Wishlist count: {book.wishlist_count}</div>
+          }
         </div>
+          
+
       </div>
       {onStatusChange && (
         <div className="book-actions" style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>

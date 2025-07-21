@@ -337,6 +337,27 @@ body {
   border-color: #3b82f6;
 }
 
+.filter-wrapper {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  /* margin-bottom: 1rem; optional */
+}
+
+.top-n-section {
+  /* Optional: if you want it hard-aligned right */
+  margin-left: auto;
+}
+
+.top-n-buttons{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 1rem; /* optional */
+  margin-top: 0.5rem;
+}
+
 .genre-dropdown {
   position: absolute;
   top: 100%;
