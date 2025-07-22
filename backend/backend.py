@@ -348,7 +348,7 @@ def top_wishlist_books():
             b.title,
             b.num_pages,
             COALESCE(string_agg(a.name, ', '), '') AS authors,
-            COUNT(*) AS wishlist_count
+            COUNT(DISTINCT up.userID) AS wishlist_count
         FROM {USERPROGRESS} up NATURAL JOIN {BOOKS} b NATURAL JOIN {BOOK_AUTHORS} ba NATURAL JOIN {AUTHORS} a
         WHERE up.status = 'NOT STARTED'
         GROUP BY b.bookID, b.title, b.num_pages
