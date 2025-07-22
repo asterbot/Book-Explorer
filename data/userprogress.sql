@@ -51,12 +51,12 @@ BEGIN
         SET page_reached=0
         WHERE userid = NEW.userid AND bookID = NEW.bookID;
         
-    ELSIF NEW.status = 'IN PROGRESS' THEN
+    ELSIF NEW.status = 'IN PROGRESS' and NEW.page_reached IS NULL THEN
         UPDATE userprogress
         SET page_reached=1
         WHERE userid = NEW.userid AND bookID = NEW.bookID;
 
-    ELSE
+    ELSIF NEW.status = 'FINISHED' THEN
         UPDATE userprogress
         SET page_reached = (SELECT num_pages FROM books WHERE bookID=NEW.bookID)
         WHERE userid = NEW.userid AND bookID = NEW.bookID;
