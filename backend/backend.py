@@ -228,17 +228,19 @@ def common_books():
 
         query = f"""
         SELECT 
-            {BOOKS}.bookID,
-            {BOOKS}.title,
-            COUNT(*) AS wishlist_count
-        FROM {USERPROGRESS}
-        JOIN {BOOKS} ON {USERPROGRESS}.bookID = {BOOKS}.bookID
-        WHERE {USERPROGRESS}.status = 'NOT STARTED'
-        GROUP BY {BOOKS}.bookID, {BOOKS}.title
-        ORDER BY wishlist_count DESC
-        LIMIT 5;
+            b.bookID,
+            b.title,
+            COALESCE(string_agg(a.name, ', '), '') AS authors
+        FROM {USERPROGRESS} us1
+        JOIN {USERPROGRESS} us2 ON us1.bookID = us2.bookID
+        JOIN {BOOKS} b ON us1.bookID = b.bookID
+        LEFT JOIN {BOOK_AUTHORS} ba ON b.bookID = ba.bookID
+        LEFT JOIN {AUTHORS} a ON ba.authorID = a.authorID
+        WHERE us1.userID = (SELECT userID FROM {USERS} WHERE name = '{user1}')
+            AND us2.userID = (SELECT userID FROM {USERS} WHERE name = '{user2}')
+        GROUP BY b.bookID, b.title
+        LIMIT {limit};
         """
-
         db.run(query)
         results = db.fetch_all()
 
@@ -247,7 +249,7 @@ def common_books():
             books.append({
                 "bookID": book[0],
                 "title": book[1],
-                "wishlist_count": book[2]
+                "authors": book[2]
             })
 
         return jsonify({"results": books}), 200
@@ -343,10 +345,14 @@ def top_wishlist_books():
         query = f"""
         SELECT 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> main
             b.bookID,
             b.title,
             b.num_pages,
             COALESCE(string_agg(a.name, ', '), '') AS authors,
+<<<<<<< HEAD
             COUNT(*) AS wishlist_count
         FROM {USERPROGRESS} up NATURAL JOIN {BOOKS} b NATURAL JOIN {BOOK_AUTHORS} ba NATURAL JOIN {AUTHORS} a
         WHERE up.status = 'NOT STARTED'
@@ -359,6 +365,12 @@ def top_wishlist_books():
         JOIN {BOOKS} ON {USERPROGRESS}.bookID = {BOOKS}.bookID
         WHERE {USERPROGRESS}.status = 'NOT STARTED'
         GROUP BY {BOOKS}.bookID, {BOOKS}.title
+>>>>>>> main
+=======
+            COUNT(*) AS wishlist_count
+        FROM {USERPROGRESS} up NATURAL JOIN {BOOKS} b NATURAL JOIN {BOOK_AUTHORS} ba NATURAL JOIN {AUTHORS} a
+        WHERE up.status = 'NOT STARTED'
+        GROUP BY b.bookID, b.title, b.num_pages
 >>>>>>> main
         ORDER BY wishlist_count DESC
         LIMIT {n};

@@ -38,7 +38,7 @@ $$ LANGUAGE plpgsql;
 
 
 CREATE TRIGGER set_status
-    AFTER UPDATE OF page_reached ON userprogress
+    AFTER INSERT OR UPDATE OF page_reached ON userprogress
     FOR EACH ROW
         EXECUTE FUNCTION set_status();
 
