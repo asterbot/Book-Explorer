@@ -1,76 +1,15 @@
--- CREATE TYPE status AS ENUM('NOT STARTED', 'IN PROGRESS', 'FINISHED');
+CREATE TYPE status AS ENUM('NOT STARTED', 'IN PROGRESS', 'FINISHED');
 
 CREATE TABLE userprogress (
     userID INT,
     bookID INT,
     status status DEFAULT 'NOT STARTED',
     page_reached INT DEFAULT 0,
-    -- last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (userID, bookID),
     FOREIGN KEY (userID) REFERENCES users(userID) ON DELETE CASCADE,
     FOREIGN KEY (bookID) REFERENCES books(bookID) ON DELETE CASCADE
 );
 
-
--- Trigger to set status based on page reached
-CREATE OR REPLACE FUNCTION set_status()
-RETURNS trigger AS $$
-BEGIN
-    IF NEW.page_reached = 0 THEN
-        UPDATE userprogress
-        SET status = 'NOT STARTED'
-        WHERE userid = NEW.userid AND bookID = NEW.bookID;
-        
-    ELSIF NEW.page_reached < (SELECT num_pages FROM books WHERE bookID=NEW.bookID) THEN
-        UPDATE userprogress
-        SET status = 'IN PROGRESS'
-        WHERE userid = NEW.userid AND bookID = NEW.bookID;
-
-    ELSE
-        UPDATE userprogress
-        SET status = 'FINISHED'
-        WHERE userid = NEW.userid AND bookID = NEW.bookID;
-    END IF;
-
-    RETURN NULL;
-END;
-$$ LANGUAGE plpgsql;
-
-
-CREATE TRIGGER set_status
-    AFTER INSERT OR UPDATE OF page_reached ON userprogress
-    FOR EACH ROW
-        EXECUTE FUNCTION set_status();
-
-
-CREATE OR REPLACE FUNCTION set_page_num()
-RETURNS trigger AS $$
-BEGIN
-    IF NEW.status = 'NOT STARTED' THEN
-        UPDATE userprogress
-        SET page_reached=0
-        WHERE userid = NEW.userid AND bookID = NEW.bookID;
-        
-    ELSIF NEW.status = 'IN PROGRESS' and NEW.page_reached IS NULL THEN
-        UPDATE userprogress
-        SET page_reached=1
-        WHERE userid = NEW.userid AND bookID = NEW.bookID;
-
-    ELSIF NEW.status = 'FINISHED' THEN
-        UPDATE userprogress
-        SET page_reached = (SELECT num_pages FROM books WHERE bookID=NEW.bookID)
-        WHERE userid = NEW.userid AND bookID = NEW.bookID;
-    END IF;
-
-    RETURN NULL;
-END;
-$$ LANGUAGE plpgsql;
-
-
-CREATE TRIGGER set_page_num
-    AFTER INSERT ON userprogress
-    FOR EACH ROW
-        EXECUTE FUNCTION set_page_num();
 
 
 INSERT INTO userprogress (userID, bookID, status, page_reached) VALUES
