@@ -15,7 +15,7 @@ WITH RECURSIVE streak_books(userid, bookid, update_time) AS(
         SELECT t.userid, t.bookid, t.update_time 
         FROM userlogs t
         JOIN streak_books s ON t.userid=s.userid
-        WHERE ABS(t.update_time::date - s.update_time::date) = 1 -- time differs by EXACTLY one day
+        WHERE s.update_time::date - t.update_time::date = 1 -- time differs by EXACTLY one day
         ORDER BY t.update_time
         LIMIT 1
     ) as recurse

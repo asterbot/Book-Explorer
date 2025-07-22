@@ -344,14 +344,34 @@ def top_wishlist_books():
 
         query = f"""
         SELECT 
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> main
             b.bookID,
             b.title,
             b.num_pages,
             COALESCE(string_agg(a.name, ', '), '') AS authors,
+<<<<<<< HEAD
             COUNT(*) AS wishlist_count
         FROM {USERPROGRESS} up NATURAL JOIN {BOOKS} b NATURAL JOIN {BOOK_AUTHORS} ba NATURAL JOIN {AUTHORS} a
         WHERE up.status = 'NOT STARTED'
         GROUP BY b.bookID, b.title, b.num_pages
+=======
+            {BOOKS}.bookID,
+            {BOOKS}.title,
+            COUNT(*) AS wishlist_count
+        FROM {USERPROGRESS}
+        JOIN {BOOKS} ON {USERPROGRESS}.bookID = {BOOKS}.bookID
+        WHERE {USERPROGRESS}.status = 'NOT STARTED'
+        GROUP BY {BOOKS}.bookID, {BOOKS}.title
+>>>>>>> main
+=======
+            COUNT(*) AS wishlist_count
+        FROM {USERPROGRESS} up NATURAL JOIN {BOOKS} b NATURAL JOIN {BOOK_AUTHORS} ba NATURAL JOIN {AUTHORS} a
+        WHERE up.status = 'NOT STARTED'
+        GROUP BY b.bookID, b.title, b.num_pages
+>>>>>>> main
         ORDER BY wishlist_count DESC
         LIMIT {n};
         """
@@ -670,7 +690,7 @@ def get_streak():
                 SELECT t.userid, t.bookid, t.update_time 
                 FROM {USERLOGS} t
                 JOIN streak_books s ON t.userid=s.userid
-                WHERE ABS(t.update_time::date - s.update_time::date) = 1 -- time differs by EXACTLY one day
+                WHERE s.update_time::date - t.update_time::date = 1 -- time differs by EXACTLY one day
                 ORDER BY t.update_time
                 LIMIT 1
             ) as recurse
@@ -727,6 +747,58 @@ def update_progress():
     except Exception as e:
         return jsonify({"message": "Error adding book to userprogress", "error": str(e)}), 500
 
+@app.route('/user-book-clubs', methods=['GET'])
+def user_book_clubs():
+    try:
+        db = Database()
+
+        username = request.args.get('username')
+        if not username:
+            return jsonify({"error": "Missing 'username' parameter"}), 400
+
+        query_user = f"""
+            SELECT userID
+            FROM {USERS}
+            WHERE LOWER(name) = LOWER('{username}')
+            LIMIT 1;
+        """
+        db.run(query_user)
+        user_row = db.fetch_one()
+
+        if not user_row:
+            return jsonify({"error": f"User '{username}' not found"}), 404
+
+        user_id = user_row[0]
+
+        query_clubs = f"""
+            SELECT 
+                bc.clubID, 
+                bc.name, 
+                bc.description,
+                COUNT(bcm2.userID) AS memberCount
+            FROM {BOOKCLUB_MEMBERS} bcm
+            JOIN {BOOKCLUBS} bc ON bcm.clubID = bc.clubID
+            LEFT JOIN {BOOKCLUB_MEMBERS} bcm2 ON bc.clubID = bcm2.clubID
+            WHERE bcm.userID = {user_id}
+            GROUP BY bc.clubID, bc.name, bc.description
+            ORDER BY bc.name;
+        """
+        db.run(query_clubs)
+        results = db.fetch_all()
+
+        clubs = []
+        for row in results:
+            clubs.append({
+                "clubID": row[0],
+                "clubName": row[1],
+                "description": row[2],
+                "memberCount": row[3]
+            })
+
+        return jsonify({"results": clubs, "count": len(clubs)}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":
