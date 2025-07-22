@@ -43,6 +43,36 @@ CREATE TRIGGER set_status
         EXECUTE FUNCTION set_status();
 
 
+CREATE OR REPLACE FUNCTION set_page_num()
+RETURNS trigger AS $$
+BEGIN
+    IF NEW.status = 'NOT STARTED' THEN
+        UPDATE userprogress
+        SET page_reached=0
+        WHERE userid = NEW.userid AND bookID = NEW.bookID;
+        
+    ELSIF NEW.status = 'IN PROGRESS' THEN
+        UPDATE userprogress
+        SET page_reached=1
+        WHERE userid = NEW.userid AND bookID = NEW.bookID;
+
+    ELSE
+        UPDATE userprogress
+        SET page_reached = (SELECT num_pages FROM books WHERE bookID=NEW.bookID)
+        WHERE userid = NEW.userid AND bookID = NEW.bookID;
+    END IF;
+
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER set_page_num
+    AFTER INSERT ON userprogress
+    FOR EACH ROW
+        EXECUTE FUNCTION set_page_num();
+
+
 INSERT INTO userprogress (userID, bookID, status, page_reached) VALUES
 ('1', '77', 'NOT STARTED', 0),
 ('1', '78', 'IN PROGRESS', 30),
