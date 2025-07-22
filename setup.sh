@@ -13,7 +13,7 @@ python runSQL.py data/users.sql
 python runSQL.py data/userprogress.sql
 python runSQL.py data/user_rating.sql
 python runSQL.py data/userlogs.sql
-
+python runSQL.py data/triggers.sql
 
 # Tags
 python runSQL.py data/tags/tag.sql
