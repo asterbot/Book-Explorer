@@ -344,34 +344,14 @@ def top_wishlist_books():
 
         query = f"""
         SELECT 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> main
             b.bookID,
             b.title,
             b.num_pages,
             COALESCE(string_agg(a.name, ', '), '') AS authors,
-<<<<<<< HEAD
-            COUNT(*) AS wishlist_count
+            COUNT(DISTINCT up.userID) AS wishlist_count
         FROM {USERPROGRESS} up NATURAL JOIN {BOOKS} b NATURAL JOIN {BOOK_AUTHORS} ba NATURAL JOIN {AUTHORS} a
         WHERE up.status = 'NOT STARTED'
         GROUP BY b.bookID, b.title, b.num_pages
-=======
-            {BOOKS}.bookID,
-            {BOOKS}.title,
-            COUNT(*) AS wishlist_count
-        FROM {USERPROGRESS}
-        JOIN {BOOKS} ON {USERPROGRESS}.bookID = {BOOKS}.bookID
-        WHERE {USERPROGRESS}.status = 'NOT STARTED'
-        GROUP BY {BOOKS}.bookID, {BOOKS}.title
->>>>>>> main
-=======
-            COUNT(*) AS wishlist_count
-        FROM {USERPROGRESS} up NATURAL JOIN {BOOKS} b NATURAL JOIN {BOOK_AUTHORS} ba NATURAL JOIN {AUTHORS} a
-        WHERE up.status = 'NOT STARTED'
-        GROUP BY b.bookID, b.title, b.num_pages
->>>>>>> main
         ORDER BY wishlist_count DESC
         LIMIT {n};
         """
