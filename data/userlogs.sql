@@ -14,3 +14,6 @@ CREATE TABLE userlogs(
 INSERT INTO userlogs (userID, bookID, page_reached)
     (SELECT userID, bookID, page_reached FROM userprogress);
 
+-- Just for one example with streak 2
+INSERT INTO userlogs (userID, bookID, page_reached, update_time) 
+VALUES ('1', '78', 10, CURRENT_TIMESTAMP - INTERVAL '1 day');

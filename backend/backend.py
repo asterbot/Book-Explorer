@@ -374,6 +374,7 @@ def top_wishlist_books():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
 @app.route('/suggest-club/<string:username>', methods=['GET'])
 def suggest_club(username):
     try:

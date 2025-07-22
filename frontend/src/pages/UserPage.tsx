@@ -264,7 +264,7 @@ export function UserPage({ username }: UserPageProps) {
                               <td>{log.book_title}</td>
                               <td>{log.authors}</td>
                               <td>{log.page_reached}</td>
-                              <td>{log.timestamp.toLocaleDateString()}</td>
+                              <td>{log.timestamp.getUTCDate()}/{log.timestamp.getUTCMonth() + 1}/{log.timestamp.getUTCFullYear()}</td>
                             </tr>
                           ))}
                         </tbody>
