@@ -158,7 +158,7 @@ export function HomePage({ username }: HomePageProps) {
               type="text"
               placeholder="Search for books..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => setSearchQuery(e.target.value.replace("\'", ""))}
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               className="search-input"
             />
