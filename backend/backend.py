@@ -196,7 +196,7 @@ def top_books_by_rating():
             SELECT b.bookID, b.title, ROUND(AVG(ur.rating),2) as avg_rating, COALESCE(string_agg(a.name, ', '), '') AS authors, b.num_pages
             FROM {BOOKS} b NATURAL JOIN {USERRATING} ur NATURAL JOIN {AUTHORS} a NATURAL JOIN {BOOK_AUTHORS} ba
             GROUP BY b.bookID, b.title, b.num_Pages
-            ORDER BY avg_rating DESC LIMIT {limit};"""
+            ORDER BY avg_rating DESC, b.title LIMIT {limit};"""
         
         db.run(query)
         results = db.fetch_all()    
