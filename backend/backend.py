@@ -352,7 +352,7 @@ def top_wishlist_books():
         FROM {USERPROGRESS} up NATURAL JOIN {BOOKS} b NATURAL JOIN {BOOK_AUTHORS} ba NATURAL JOIN {AUTHORS} a
         WHERE up.status = 'NOT STARTED'
         GROUP BY b.bookID, b.title, b.num_pages
-        ORDER BY wishlist_count DESC
+        ORDER BY wishlist_count DESC, b.title 
         LIMIT {n};
         """
 
