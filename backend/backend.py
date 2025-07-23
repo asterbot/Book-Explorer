@@ -780,6 +780,32 @@ def user_book_clubs():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
+@app.route('/user-exists', methods=['GET'])
+def user_exists():
+    try:
+        db = Database()
+
+        username = request.args.get('username')
+        if not username:
+            return jsonify({"error": "Missing 'username' parameter"}), 400
+
+        safe_name = adapt(username).getquoted().decode()
+
+        query = f"""
+            SELECT 1
+            FROM {USERS}
+            WHERE LOWER(name) = LOWER({safe_name})
+            LIMIT 1;
+        """
+        db.run(query)
+        result = db.fetch_one()
+
+        return jsonify({"exists": result is not None}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":

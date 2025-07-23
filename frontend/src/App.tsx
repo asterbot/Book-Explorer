@@ -10,15 +10,37 @@ function App() {
   const [username, setUsername] = useState("");
   const [activePage, setActivePage] = useState("home");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    setUsername("Alex"); // default username is alex
-    setIsLoggedIn(true); // logged in by default
+    setUsername("Alex");
+    setIsLoggedIn(true);
   }, []);
 
-  const handleLogin = () => {
-    if (username.trim()) {
+  async function checkUserExists(username: string) {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/user-exists?username=${encodeURIComponent(username)}`);
+      const data = await response.json();
+      return data.exists;
+    } catch (error) {
+      console.error("Error checking user:", error);
+      return false;
+    }
+  }
+
+  const handleLogin = async () => {
+    const trimmed = username.trim();
+    if (!trimmed) {
+      setErrorMessage("Please enter a username.");
+      return;
+    }
+
+    const exists = await checkUserExists(trimmed);
+    if (exists) {
       setIsLoggedIn(true);
+      setErrorMessage("");
+    } else {
+      setErrorMessage("Username not found. Please try again.");
     }
   };
 
@@ -26,6 +48,7 @@ function App() {
     setIsLoggedIn(false);
     setUsername("");
     setActivePage("home");
+    setErrorMessage("");
   };
 
   const renderPage = () => {
@@ -35,19 +58,20 @@ function App() {
           <div className="login-container">
             <h1>Welcome to Book Explorer</h1>
             <p>Track your reading journey and discover new books!</p>
-            
+
             <div className="login-form">
               <input
                 type="text"
                 placeholder="Enter your username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && handleLogin()}
+                onKeyDown={(e) => e.key === "Enter" && handleLogin()}
                 className="login-input"
               />
               <button onClick={handleLogin} className="login-button">
                 Get Started
               </button>
+              {errorMessage && <p style={{color: 'red', marginBottom: 0}}>{errorMessage}</p>}
             </div>
           </div>
         </div>
@@ -69,19 +93,15 @@ function App() {
   };
 
   if (!isLoggedIn) {
-    return (
-      <div className="app">
-        {renderPage()}
-      </div>
-    );
+    return <div className="app">{renderPage()}</div>;
   }
 
   return (
     <div className="app">
-      <Sidebar 
-        username={username} 
-        activePage={activePage} 
-        onPageChange={setActivePage} 
+      <Sidebar
+        username={username}
+        activePage={activePage}
+        onPageChange={setActivePage}
       />
       <main className="main-content">
         <div className="top-bar">
@@ -92,9 +112,7 @@ function App() {
             </button>
           </div>
         </div>
-        <div className="page-content">
-          {renderPage()}
-        </div>
+        <div className="page-content">{renderPage()}</div>
       </main>
     </div>
   );
