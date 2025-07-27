@@ -16,4 +16,4 @@ VALUES (76, 1, CURRENT_TIMESTAMP);
 
 COMMIT;
 
--- ROLLBACK is performed if any of these steps fails
+-- ROLLBACK is performed if any of these steps fails through backend script
