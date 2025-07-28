@@ -46,7 +46,7 @@ recommended_books AS ( -- filter out books the current user has already interact
 
 SELECT b.bookID, b.title, COALESCE(string_agg(a.name, ', '), '') AS authors
 FROM recommended_books rb
-JOIN books b ON b.bookID = rb.bookID
-LEFT JOIN book_authors ba ON b.bookID = ba.bookID
-LEFT JOIN authors a ON ba.authorID = a.authorID
+JOIN production.books b ON b.bookID = rb.bookID
+LEFT JOIN production.book_authors ba ON b.bookID = ba.bookID
+LEFT JOIN production.authors a ON ba.authorID = a.authorID
 GROUP BY b.bookID, b.title;
