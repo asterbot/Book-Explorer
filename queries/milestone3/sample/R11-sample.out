@@ -1,20 +1,9 @@
-+----------+-----------------------------------------------------------------------------------------------------------+--------------------------------------------------+
-|   bookid | title                                                                                                     | authors                                          |
-|----------+-----------------------------------------------------------------------------------------------------------+--------------------------------------------------|
-|       34 | The Fellowship of the Ring (The Lord of the Rings #1)                                                     | J.R.R. Tolkien                                   |
-|       67 | The Known World                                                                                           | Edward P. Jones                                  |
-|      201 | Una arruga en el tiempo – A Wrinkle in Time                                                               | Madeleine L'Engle                                |
-|       66 | The Changeling (Daughters of England #15)                                                                 | Philippa Carr                                    |
-|      497 | Nikola Tesla: A Spark of Genius                                                                           | Carol Dommermuth-Costa                           |
-|       16 | The Hitchhikers Guide to the Galaxy (Hitchhikers Guide to the Galaxy #1)                                  | Douglas Adams, Stephen Fry                       |
-|      103 | God Emperor of Dune (Dune Chronicles #4)                                                                  | Frank Herbert                                    |
-|      157 | Anna Karenina                                                                                             | Leo Tolstoy, Amy Mandelker, Constance Garnett    |
-|       26 | The Lost Continent: Travels in Small Town America                                                         | Bill Bryson                                      |
-|       12 | The Ultimate Hitchhikers Guide: Five Complete Novels and One Story (Hitchhikers Guide to the Galaxy #1-5) | Douglas Adams                                    |
-|      137 | Starting an eBay Business for Dummies                                                                     | Marsha Collier                                   |
-|       37 | The Lord of the Rings: Complete Visual Companion                                                          | Jude Fisher                                      |
-|       18 | The Ultimate Hitchhikers Guide (Hitchhikers Guide to the Galaxy #1-5)                                     | Douglas Adams                                    |
-|      130 | Power of an Hour: Business and Life Mastery in One Hour a Week                                            | Dave Lakhani                                     |
-|       27 | Neither Here nor There: Travels in Europe                                                                 | Bill Bryson                                      |
-|      151 | Anna Karenina                                                                                             | Leo Tolstoy, Richard Pevear, Larissa Volokhonsky |
-+----------+-----------------------------------------------------------------------------------------------------------+--------------------------------------------------+
++----------+-----------------------------------------------------------------------------------------------------------+----------------------------+
+|   bookid | title                                                                                                     | authors                    |
+|----------+-----------------------------------------------------------------------------------------------------------+----------------------------|
+|       12 | The Ultimate Hitchhikers Guide: Five Complete Novels and One Story (Hitchhikers Guide to the Galaxy #1-5) | Douglas Adams              |
+|       16 | The Hitchhikers Guide to the Galaxy (Hitchhikers Guide to the Galaxy #1)                                  | Douglas Adams, Stephen Fry |
+|       18 | The Ultimate Hitchhikers Guide (Hitchhikers Guide to the Galaxy #1-5)                                     | Douglas Adams              |
+|       26 | The Lost Continent: Travels in Small Town America                                                         | Bill Bryson                |
+|       27 | Neither Here nor There: Travels in Europe                                                                 | Bill Bryson                |
++----------+-----------------------------------------------------------------------------------------------------------+----------------------------+

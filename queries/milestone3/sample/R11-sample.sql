@@ -42,6 +42,7 @@ recommended_books AS ( -- filter out books the current user has already interact
         WHERE up.userID = 1
           AND up.bookID = cb.bookID
     )
+    LIMIT 5
 )
 
 SELECT b.bookID, b.title, COALESCE(string_agg(a.name, ', '), '') AS authors
