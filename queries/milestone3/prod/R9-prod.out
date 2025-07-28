@@ -1,9 +1,19 @@
-+----------+-----------------------------------------------------------------+--------------+
-|   bookid | title                                                           |   avg_rating |
-|----------+-----------------------------------------------------------------+--------------|
-|       83 | Rising from the Plains                                          |           10 |
-|       61 | The Changeling                                                  |           10 |
-|       59 | The Changeling Sea                                              |           10 |
-|       50 | Hatchet (Brian's Saga  #1)                                      |           10 |
-|       96 | There's Always Enough: The Miraculous Move of God in Mozambique |           10 |
-+----------+-----------------------------------------------------------------+--------------+
++----------+-----------------------------------------------------------------+--------------+---------------------------------------------------------+-------------+
+|   bookid | title                                                           |   avg_rating | authors                                                 |   num_pages |
+|----------+-----------------------------------------------------------------+--------------+---------------------------------------------------------+-------------|
+|      987 | A Killing Rain (Louis Kincaid  #6)                              |           10 | P.J. Parrish                                            |         383 |
+|      662 | Atlas Shrugged                                                  |           10 | Ayn Rand, Leonard Peikoff                               |        1168 |
+|       50 | Hatchet (Brian's Saga  #1)                                      |           10 | Gary Paulsen                                            |         208 |
+|       83 | Rising from the Plains                                          |           10 | John McPhee                                             |         208 |
+|      672 | Sailing for Dummies                                             |           10 | J.J. Isler, Peter Isler                                 |         416 |
+|       61 | The Changeling                                                  |           10 | Zilpha Keatley Snyder                                   |         228 |
+|       59 | The Changeling Sea                                              |           10 | Patricia A. McKillip                                    |         137 |
+|      408 | The Names                                                       |           10 | Don DeLillo                                             |         339 |
+|      382 | The Phantom Tollbooth: A Children's Play in Two Acts            |           10 | Susan Nanus, Norton Juster                              |          72 |
+|      269 | The Portrait of a Lady                                          |           10 | Henry James, Gabriel Brownstein, Mary Cregan            |         635 |
+|      129 | The Power of One: One Person  One Rule  One Month               |           10 | John C. Maxwell, Stephen R. Graves, Thomas G. Addington |         256 |
+|       96 | There's Always Enough: The Miraculous Move of God in Mozambique |           10 | Heidi Baker, Rolland Baker                              |         192 |
+|      249 | Tropic of Cancer                                                |           10 | Henry Miller, Jiří Níl                                  |         318 |
+|      399 | Underworld                                                      |           10 | Don DeLillo                                             |         827 |
+|      668 | We the Living                                                   |           10 | Ayn Rand, Ayn Rand, Leonard Peikoff, Leonard Peikoff    |         464 |
++----------+-----------------------------------------------------------------+--------------+---------------------------------------------------------+-------------+

@@ -1,11 +1,11 @@
-+----------+-----------------------------------------------------------------------------------------+------------+-----------------+-------------+
-|   bookid | title                                                                                   | isbn       | language_code   |   num_pages |
-|----------+-----------------------------------------------------------------------------------------+------------+-----------------+-------------|
-|        1 | Harry Potter and the Half-Blood Prince (Harry Potter #6)                                | 0439785960 | eng             |         652 |
-|        2 | Harry Potter and the Order of the Phoenix (Harry Potter #5)                             | 0439358078 | eng             |         870 |
-|        4 | Harry Potter and the Chamber of Secrets (Harry Potter #2)                               | 0439554896 | eng             |         352 |
-|        5 | Harry Potter and the Prisoner of Azkaban (Harry Potter #3)                              | 043965548X | eng             |         435 |
-|        8 | Harry Potter Boxed Set Books 1-5 (Harry Potter #1-5)                                    | 0439682584 | eng             |        2690 |
-|        9 | Unauthorized Harry Potter Book Seven News: "Half-Blood Prince" Analysis and Speculation | 0976540606 | en-US           |         152 |
-|       10 | Harry Potter Collection (Harry Potter #1-6)                                             | 0439827604 | eng             |        3342 |
-+----------+-----------------------------------------------------------------------------------------+------------+-----------------+-------------+
++----------+-----------------------------------------------------------------------------------------+------------+-----------------+-------------+-----------------------------+
+|   bookid | title                                                                                   | isbn       | language_code   |   num_pages | authors                     |
+|----------+-----------------------------------------------------------------------------------------+------------+-----------------+-------------+-----------------------------|
+|        5 | Harry Potter and the Prisoner of Azkaban (Harry Potter #3)                              | 043965548X | eng             |         435 | J.K. Rowling, Mary GrandPré |
+|        4 | Harry Potter and the Chamber of Secrets (Harry Potter #2)                               | 0439554896 | eng             |         352 | J.K. Rowling                |
+|        2 | Harry Potter and the Order of the Phoenix (Harry Potter #5)                             | 0439358078 | eng             |         870 | J.K. Rowling, Mary GrandPré |
+|        8 | Harry Potter Boxed Set Books 1-5 (Harry Potter #1-5)                                    | 0439682584 | eng             |        2690 | J.K. Rowling, Mary GrandPré |
+|       10 | Harry Potter Collection (Harry Potter #1-6)                                             | 0439827604 | eng             |        3342 | J.K. Rowling                |
+|        9 | Unauthorized Harry Potter Book Seven News: "Half-Blood Prince" Analysis and Speculation | 0976540606 | en-US           |         152 | W. Frederick Zimmerman      |
+|        1 | Harry Potter and the Half-Blood Prince (Harry Potter #6)                                | 0439785960 | eng             |         652 | J.K. Rowling, Mary GrandPré |
++----------+-----------------------------------------------------------------------------------------+------------+-----------------+-------------+-----------------------------+

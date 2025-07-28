@@ -1,6 +1,13 @@
-SELECT b.bookID, b.title
-FROM userprogress us1, userprogress us2, books b
-WHERE us1.userID=(SELECT userID from users WHERE name='Alex') 
-        AND us2.userID=(SELECT userID from users WHERE name='Bob') 
-        AND us1.bookID=us2.bookID and us1.bookID=b.bookID
+SELECT 
+        b.bookID,
+        b.title,
+        COALESCE(string_agg(a.name, ', '), '') AS authors
+FROM userprogress us1
+JOIN userprogress us2 ON us1.bookID = us2.bookID
+JOIN books b ON us1.bookID = b.bookID
+LEFT JOIN book_authors ba ON b.bookID = ba.bookID
+LEFT JOIN authors a ON ba.authorID = a.authorID
+WHERE us1.userID = (SELECT userID FROM users WHERE name = 'Alex')
+        AND us2.userID = (SELECT userID FROM users WHERE name = 'Bob')
+GROUP BY b.bookID, b.title
 LIMIT 15;
