@@ -1,7 +1,11 @@
-SELECT b.bookID, b.title, COUNT(*) AS wishlist_count
-FROM production.userprogress up
-JOIN production.books b ON up.bookID = b.bookID
+SELECT 
+    b.bookID,
+    b.title,
+    b.num_pages,
+    COALESCE(string_agg(a.name, ', '), '') AS authors,
+    COUNT(DISTINCT up.userID) AS wishlist_count
+FROM userprogress up NATURAL JOIN books b NATURAL JOIN book_authors ba NATURAL JOIN authors a
 WHERE up.status = 'NOT STARTED'
-GROUP BY b.bookID, b.title
-ORDER BY wishlist_count DESC
-LIMIT 5;
+GROUP BY b.bookID, b.title, b.num_pages
+ORDER BY wishlist_count DESC, b.title 
+LIMIT 15;

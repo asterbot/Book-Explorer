@@ -1,9 +1,19 @@
-+----------+-----------------------------------------------------------------------------------+------------------+
-|   bookid | title                                                                             |   wishlist_count |
-|----------+-----------------------------------------------------------------------------------+------------------|
-|      823 | Quicksilver (The Baroque Cycle  #1)                                               |                4 |
-|      385 | On Bullshit                                                                       |                3 |
-|      154 | CliffsNotes on Tolstoy's Anna Karenina                                            |                3 |
-|       25 | I'm a Stranger Here Myself: Notes on Returning to America After Twenty Years Away |                3 |
-|     1097 | Fast Food Nation: The Dark Side of the All-American Meal                          |                3 |
-+----------+-----------------------------------------------------------------------------------+------------------+
++----------+-----------------------------------------------------------------------------------+-------------+---------------------------------------------------------------------------------------------+------------------+
+|   bookid | title                                                                             |   num_pages | authors                                                                                     |   wishlist_count |
+|----------+-----------------------------------------------------------------------------------+-------------+---------------------------------------------------------------------------------------------+------------------|
+|      823 | Quicksilver (The Baroque Cycle  #1)                                               |         927 | Neal Stephenson, Neal Stephenson, Neal Stephenson, Neal Stephenson                          |                4 |
+|      154 | CliffsNotes on Tolstoy's Anna Karenina                                            |          80 | Leo Tolstoy, Marianne Sturman, Leo Tolstoy, Marianne Sturman, Marianne Sturman, Leo Tolstoy |                3 |
+|     1097 | Fast Food Nation: The Dark Side of the All-American Meal                          |         399 | Eric Schlosser, Eric Schlosser, Eric Schlosser                                              |                3 |
+|       25 | I'm a Stranger Here Myself: Notes on Returning to America After Twenty Years Away |         304 | Bill Bryson, Bill Bryson, Bill Bryson                                                       |                3 |
+|      385 | On Bullshit                                                                       |          67 | Harry G. Frankfurt, Harry G. Frankfurt, Harry G. Frankfurt                                  |                3 |
+|      576 | 1000 Record Covers                                                                |         575 | Ulrike Wasel, Michael Ochs, Patrick Javault, Patrick Javault, Michael Ochs, Ulrike Wasel    |                2 |
+|       22 | Bill Bryson's African Diary                                                       |          55 | Bill Bryson, Bill Bryson                                                                    |                2 |
+|      477 | Collapse of Complex Societies                                                     |         262 | Joseph A. Tainter, Joseph A. Tainter                                                        |                2 |
+|      980 | Deception Point                                                                   |         448 | Dan Brown, Dan Brown                                                                        |                2 |
+|      975 | Deception Point                                                                   |         736 | Dan Brown, Dan Brown                                                                        |                2 |
+|      140 | eBay Business All-in-One Desk Reference for Dummies                               |         864 | Marsha Collier, Marsha Collier                                                              |                2 |
+|      868 | Fullmetal Alchemist  Vol. 3 (Fullmetal Alchemist  #3)                             |         192 | Hiromu Arakawa, Akira Watanabe, Hiromu Arakawa, Akira Watanabe                              |                2 |
+|      245 | Henry Miller on Writing                                                           |         217 | Henry Miller, Thomas H. Moore, Henry Miller, Thomas H. Moore                                |                2 |
+|       30 | J.R.R. Tolkien 4-Book Boxed Set: The Hobbit and The Lord of the Rings             |        1728 | J.R.R. Tolkien, J.R.R. Tolkien                                                              |                2 |
+|      702 | Modern Latin America                                                              |         528 | Thomas E. Skidmore, Peter H. Smith, Thomas E. Skidmore, Peter H. Smith                      |                2 |
++----------+-----------------------------------------------------------------------------------+-------------+---------------------------------------------------------------------------------------------+------------------+

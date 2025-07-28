@@ -17,4 +17,3 @@ JOIN userprogress up_all ON b.bookID = up_all.bookID
 WHERE u_mine.name = 'Alex'
 GROUP BY b.bookID, b.title
 ORDER BY completion_rate DESC, total_users DESC;
-

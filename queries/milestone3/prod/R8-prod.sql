@@ -1,7 +1,14 @@
--- Books common in the user lists of user 112 and user 1097
-SELECT b.bookID, b.title
-FROM production.userprogress us1, production.userprogress us2, production.books b
-WHERE us1.userID=362 
-AND us2.userID=242
-AND us1.bookID=us2.bookID and us1.bookID=b.bookID
-;
+--362 242
+SELECT 
+        b.bookID,
+        b.title,
+        COALESCE(string_agg(a.name, ', '), '') AS authors
+FROM production.userprogress us1
+JOIN production.userprogress us2 ON us1.bookID = us2.bookID
+JOIN production.books b ON us1.bookID = b.bookID
+LEFT JOIN production.book_authors ba ON b.bookID = ba.bookID
+LEFT JOIN authors a ON ba.authorID = a.authorID
+WHERE us1.userID = 362
+        AND us2.userID = 242
+GROUP BY b.bookID, b.title
+LIMIT 15;

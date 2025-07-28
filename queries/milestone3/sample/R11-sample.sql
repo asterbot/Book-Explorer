@@ -44,7 +44,9 @@ recommended_books AS ( -- filter out books the current user has already interact
     )
 )
 
-SELECT b.bookID, b.title -- get top 5 recommended books that are relevant and socially validated
-FROM books b
-JOIN recommended_books rb ON b.bookID = rb.bookID
-LIMIT 5;
+SELECT b.bookID, b.title, COALESCE(string_agg(a.name, ', '), '') AS authors
+FROM recommended_books rb
+JOIN books b ON b.bookID = rb.bookID
+LEFT JOIN book_authors ba ON b.bookID = ba.bookID
+LEFT JOIN authors a ON ba.authorID = a.authorID
+GROUP BY b.bookID, b.title;

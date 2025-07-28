@@ -1,9 +1,19 @@
-+----------+--------------------------------------------+--------------+
-|   bookid | title                                      |   avg_rating |
-|----------+--------------------------------------------+--------------|
-|       22 | Bill Brysons African Diary                 |           10 |
-|      117 | Heretics of Dune (Dune Chronicles #5)      |           10 |
-|      576 | 1000 Record Covers                         |           10 |
-|      299 | Treasure Island                            |           10 |
-|      171 | The Evidence-Based Social Work Skills Book |           10 |
-+----------+--------------------------------------------+--------------+
++----------+---------------------------------------------------+--------------+---------------------------------------------------+-------------+
+|   bookid | title                                             |   avg_rating | authors                                           |   num_pages |
+|----------+---------------------------------------------------+--------------+---------------------------------------------------+-------------|
+|      576 | 1000 Record Covers                                |           10 | Michael Ochs, Patrick Javault, Ulrike Wasel       |         575 |
+|       22 | Bill Brysons African Diary                        |           10 | Bill Bryson                                       |          55 |
+|      511 | Boys of Summer                                    |           10 | Julie Elizabeth Leto, Leslie Kelly, Kimberly Raye |         249 |
+|      763 | Cien años de soledad                              |           10 | Gabriel García Márquez                            |         496 |
+|      337 | El perfume: Historia de un asesino                |           10 | Patrick Süskind                                   |         239 |
+|       94 | Getting Results with Curriculum Mapping           |           10 | Heidi Hayes Jacobs                                |         192 |
+|      117 | Heretics of Dune (Dune Chronicles #5)             |           10 | Frank Herbert                                     |         471 |
+|      400 | Libra                                             |           10 | Don DeLillo                                       |         480 |
+|       54 | Molly Hatchet - 5 of the Best                     |           10 | Molly Hatchet                                     |          56 |
+|      681 | Natural Cures "They" Dont Want You to Know about  |           10 | Kevin Trudeau                                     |         571 |
+|       28 | Notes from a Small Island                         |           10 | Bill Bryson                                       |         324 |
+|      880 | Pompeii                                           |           10 | Robert Harris                                     |         274 |
+|      515 | Programming Ruby: The Pragmatic Programmers Guide |           10 | Dave Thomas, Chad Fowler, Andy Hunt               |         828 |
+|      247 | Quiet Days in Clichy                              |           10 | Henry Miller                                      |         154 |
+|      903 | The Egypt Game                                    |           10 | Zilpha Keatley Snyder                             |         215 |
++----------+---------------------------------------------------+--------------+---------------------------------------------------+-------------+
