@@ -39,15 +39,21 @@ npm run dev
 
 ## Features Implemented
 
-The current application supports the following features (linked to SQL queries in `queries/milestone2/`):
+The application supports the following features (linked to SQL queries in `queries/milestone3/`):
 
+### Basic Features
 - Search for books by title (R6)  
 - Add books to a wishlist (R7)  
 - View common books between two users (R8)  
 - View top 5 highest-rated books (R9)  
 - View top 5 most wishlisted books (R10)
 
-All five features are tested using both sample and production datasets. However, only R6–R8 are fully implemented in the frontend and are accessible through the application interface.
+### Fancy Features
+- Tag-Based Book Recommendations (R11)
+- Finding Book Clubs Based on Genre (R12)
+- Book Completion Rate (R13)
+- Book Club Limit (R14)
+- Reading Streak (R15)
 
 ---
 
@@ -57,10 +63,10 @@ All five features are tested using both sample and production datasets. However,
 All schema files are located in `data/`
 
 ### C3. Sample Queries   
-All sample queries and outputs are located in `queries/milestone2/sample`
+All sample queries and outputs are located in `queries/milestone3/sample`
 
 ### C4. Production Queries   
-All production queries and outputs are located in `queries/milestone2/prod`
+All production queries and outputs are located in `queries/milestone3/prod`
 
 ### C5. Application Code  
 - `frontend/`: React + TypeScript client  
