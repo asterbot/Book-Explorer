@@ -561,6 +561,16 @@ def join_book_club():
             return jsonify({"error": f"User '{username}' not found"}), 404
         user_id = row[0]
 
+        # Check if user already in club
+        db.run(f"""
+            SELECT 1 FROM {BOOKCLUB_MEMBERS}
+            WHERE clubID = {club_id} AND userID = {user_id}
+            LIMIT 1;
+        """)
+        if db.fetch_one():
+            db.run("ROLLBACK;")
+            return jsonify({"error": "You have already joined this club"}), 409
+
         # Check current count of members in club
         db.run(f"""
             SELECT COUNT(*) FROM {BOOKCLUB_MEMBERS}
@@ -582,16 +592,6 @@ def join_book_club():
         if current_count >= max_members:
             db.run("ROLLBACK;")
             return jsonify({"error": "Book club is full"}), 403
-
-        # Check if user already in club
-        db.run(f"""
-            SELECT 1 FROM {BOOKCLUB_MEMBERS}
-            WHERE clubID = {club_id} AND userID = {user_id}
-            LIMIT 1;
-        """)
-        if db.fetch_one():
-            db.run("ROLLBACK;")
-            return jsonify({"error": "User already joined this club"}), 409
 
         # Join the book club
         db.run(f"""
