@@ -1,5 +1,5 @@
 SELECT b.bookID, b.title, b.isbn, b.language_code, b.num_pages, 
-    COALESCE(string_agg(a.name, ', '), '') AS authors
+    COALESCE(string_agg(DISTINCT a.name, ', '), '') AS authors
 FROM books b
 LEFT JOIN book_authors ba ON b.bookID = ba.bookID
 LEFT JOIN authors a ON ba.authorID = a.authorID
