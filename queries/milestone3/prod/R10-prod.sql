@@ -2,7 +2,7 @@ SELECT
     b.bookID,
     b.title,
     b.num_pages,
-    COALESCE(string_agg(a.name, ', '), '') AS authors,
+    COALESCE(string_agg(DISTINCT a.name, ', '), '') AS authors,
     COUNT(DISTINCT up.userID) AS wishlist_count
 FROM production.userprogress up NATURAL JOIN production.books b NATURAL JOIN production.book_authors ba NATURAL JOIN production.authors a
 WHERE up.status = 'NOT STARTED'

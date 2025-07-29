@@ -1,7 +1,7 @@
 SELECT 
 b.bookID,
 b.title,
-COALESCE(string_agg(a.name, ', '), '') AS authors,
+COALESCE(string_agg(DISTINCT a.name, ', '), '') AS authors,
 COUNT(up_all.userID) AS total_users,
 SUM(CASE WHEN up_all.status = 'FINISHED' THEN 1 ELSE 0 END) AS completed_users,
 ROUND(

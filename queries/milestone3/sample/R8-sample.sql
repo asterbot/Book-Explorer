@@ -1,7 +1,4 @@
-SELECT 
-        b.bookID,
-        b.title,
-        COALESCE(string_agg(a.name, ', '), '') AS authors
+SELECT b.bookID, b.title, COALESCE(string_agg(DISTINCT a.name, ', '), '') AS authors
 FROM userprogress us1
 JOIN userprogress us2 ON us1.bookID = us2.bookID
 JOIN books b ON us1.bookID = b.bookID
