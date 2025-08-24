@@ -120,7 +120,7 @@ The application supports the following features (linked to SQL queries in `queri
 
 # Tech stack
 
-- **Frontend:** React with typescript
+- **Frontend:** React with TypeScript
 - **Backend:** Python (Flask REST API, Psycopg2 for PostgreSQL integration)
 - **Database:** PostgreSQL (hosted on Supabase)
 
